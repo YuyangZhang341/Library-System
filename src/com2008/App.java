@@ -16,21 +16,21 @@ public class App {
         viewArticlesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null,"View the articles");
+                ViewArticles.main();
             }
         });
 
         logInButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null,"Log in");
+                LogIn.main();
             }
         });
 
         submitArticleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(null,"Submit an article");
+                SubmitArticle.main();
             }
         });
     }
