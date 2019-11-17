@@ -1,6 +1,7 @@
 package com2008;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -12,11 +13,21 @@ public class App {
     private JButton logInButton;
     private JButton submitArticleButton;
 
+    private static JFrame frame = new JFrame("App");
+
     public App() {
         viewArticlesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ViewArticles.main();
+//                ViewArticles.main();
+                JFrame journalsFrame = new JournalsView().getFrame();
+
+                Toolkit toolkit = Toolkit.getDefaultToolkit();
+                Dimension screenDimensions = toolkit.getScreenSize();
+                journalsFrame.setSize(screenDimensions.width, screenDimensions.height);
+                journalsFrame.setVisible(true);
+
+                frame.dispose();
             }
         });
 
@@ -36,10 +47,14 @@ public class App {
     }
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("App");
         frame.setContentPane(new App().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
+
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        Dimension screenDimensions = toolkit.getScreenSize();
+        frame.setSize(screenDimensions.width, screenDimensions.height);
+
         frame.setVisible(true);
     }
 }
