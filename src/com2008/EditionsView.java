@@ -26,7 +26,7 @@ public class EditionsView {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new VolumesView().showVolumesView();
+                VolumesView.showVolumesView(issn);
                 frame.dispose();
             }
         });
@@ -34,13 +34,13 @@ public class EditionsView {
         openButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                String targetIssn = editionsTable.getValueAt(editionsTable.getSelectedRow(), 0).toString();
+                String targetNumber = editionsTable.getValueAt(editionsTable.getSelectedRow(), 1).toString();
             }
         });
     }
 
-    public static void showEditionsView() {
-        frame.setContentPane(new EditionsView().editionsPanel);
+    public static void showEditionsView(String issn, int vol) {
+        frame.setContentPane(new EditionsView(issn, vol).editionsPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
 
@@ -58,6 +58,6 @@ public class EditionsView {
             };
         };
 
-        PublicationsController.fetchEditions(editionsTable);
+        PublicationsController.fetchEditions(editionsTable, issn, vol);
     }
 }

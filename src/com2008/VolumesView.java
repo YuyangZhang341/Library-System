@@ -32,7 +32,11 @@ public class VolumesView {
         openButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //TODO: see what happens when no journals are selected
+                int targetVol = Integer.parseInt(volumesTable.getValueAt(volumesTable.getSelectedRow(), 0).toString());
 
+                EditionsView.showEditionsView(issn, targetVol);
+                frame.dispose();
             }
         });
     }
