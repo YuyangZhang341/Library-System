@@ -32,6 +32,27 @@ public class PublicationsController {
         }
     }
 
+    public static void fetchEditions(JTable table) {
+        Statement stmt = null;
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Volume Number", "Edition Number"}, 0);
+        table.setModel(model);
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+            ResultSet res = stmt.executeQuery("SELECT vol, number FROM editions WHERE vol");
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                String vol = res.getString("vol");
+                String number = res.getString("number");
+
+                model.addRow(new Object[]{vol,number});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
 
     }

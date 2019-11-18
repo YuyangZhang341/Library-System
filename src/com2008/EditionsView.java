@@ -13,10 +13,16 @@ public class EditionsView {
     private JButton backButton;
     private JButton openButton;
 
+    private String issn;
+    private int vol;
+
     //TODO: set frame title to be the current journal's names with edition number
     private static JFrame frame = new JFrame("Editions");
 
-    public EditionsView() {
+    public EditionsView(String issn, int vol) {
+        this.issn = issn;
+        this.vol = vol;
+
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -33,7 +39,7 @@ public class EditionsView {
         });
     }
 
-    public void showEditionsView() {
+    public static void showEditionsView() {
         frame.setContentPane(new EditionsView().editionsPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
