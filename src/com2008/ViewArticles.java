@@ -10,7 +10,7 @@ public class ViewArticles {
         JOptionPane.showMessageDialog(null,"View the articles");
     }
 
-    public static String[] getJournals() {
+    public static void fetchJournals(JTable table) {
         Statement stmt = null;
         String[] journalsList = new String[0];
 
@@ -18,22 +18,16 @@ public class ViewArticles {
             stmt = con.createStatement();
             ResultSet res = stmt.executeQuery("SELECT issn, name FROM journals");
 
-//            Array a = res.getArray("issn");
-//            String[] nullable = (String[])a.getArray();
-//            journalsList = nullable.clone();
+            // Fetch each row from the result set
+            while (res.next()) {
+                String issn = res.getString("issn");
+                String name = res.getString("name");
 
-//            // Fetch each row from the result set
-//            while (res.next()) {
-//                String issn = res.getString("issn");
-//                String name = res.getString("name");
-//
-//                journalsList.add(new Journal(issn, name));
-//            }
+                table.addRow(new Object[]{issn,name});
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return journalsList;
     }
 
     public static void main(String[] args) {
