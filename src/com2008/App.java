@@ -19,7 +19,6 @@ public class App {
         viewArticlesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                ViewArticles.main();
                 JFrame journalsFrame = new JournalsView().getFrame();
 
                 Toolkit toolkit = Toolkit.getDefaultToolkit();
