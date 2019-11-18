@@ -31,20 +31,12 @@ public class JournalsView {
     }
 
     private void createUIComponents() {
-        // Data to be displayed in the JTable
-        String[][] data = {
-                { "Kundan Kumar Jha", "4031", "CSE" },
-                { "Anand Jha", "6014", "IT" }
-        };
-
-        // Column Names
-        String[] columnNames = { "Name", "Roll Number", "Department" };
-
         // Initializing the JTable
-        journalsTable = new JTable(data, columnNames){
+        journalsTable = new JTable(){
             public boolean isCellEditable(int row, int column) {
                 return false;
             };
         };
+        ViewArticles.fetchJournals(journalsTable);
     }
 }
