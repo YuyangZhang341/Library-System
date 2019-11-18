@@ -36,7 +36,7 @@ public class JournalsView {
         });
     }
 
-    public void showJournalsView() {
+    public static void showJournalsView() {
         frame.setContentPane(new JournalsView().journalsPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();

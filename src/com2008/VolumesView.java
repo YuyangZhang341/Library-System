@@ -23,7 +23,7 @@ public class VolumesView {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new JournalsView().showJournalsView();
+                JournalsView.showJournalsView();
 
                 frame.dispose();
             }
