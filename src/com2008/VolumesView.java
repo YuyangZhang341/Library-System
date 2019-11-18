@@ -12,10 +12,14 @@ public class VolumesView {
     private JTable volumesTable;
     private JScrollPane volumesScrollPane;
 
+    private String issn;
+
     //TODO: set frame title to journal's name
     private static JFrame frame = new JFrame("Volumes");
 
-    public VolumesView() {
+    public VolumesView(String issn) {
+        this.issn = issn;
+
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -33,8 +37,8 @@ public class VolumesView {
         });
     }
 
-    public void showVolumesView() {
-        frame.setContentPane(new VolumesView().volumesPanel);
+    public static void showVolumesView(String issn) {
+        frame.setContentPane(new VolumesView(issn).volumesPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
 
@@ -52,6 +56,6 @@ public class VolumesView {
             };
         };
 
-        //TODO:: populate the volumesTable with a function defined in PublicationsController
+        PublicationsController.fetchVolumes(volumesTable, issn);
     }
 }
