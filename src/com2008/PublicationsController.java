@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ViewArticles {
+public class PublicationsController {
     public static void main() {
         JOptionPane.showMessageDialog(null,"View the articles");
     }

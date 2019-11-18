@@ -10,6 +10,7 @@ public class JournalsView {
     private JScrollPane journalsScrollPane;
     private JButton backButton;
     private JPanel backPanel;
+    private JButton openButton;
 
     private static JFrame frame = new JFrame("Journals");
 
@@ -19,6 +20,13 @@ public class JournalsView {
             public void actionPerformed(ActionEvent e) {
                 new App().main(new String[0]);
                 frame.dispose();
+            }
+        });
+
+        openButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String targetIssn = journalsTable.getValueAt(journalsTable.getSelectedRow(), 0).toString();
             }
         });
     }
@@ -31,12 +39,12 @@ public class JournalsView {
     }
 
     private void createUIComponents() {
-        // Initializing the JTable
         journalsTable = new JTable(){
             public boolean isCellEditable(int row, int column) {
                 return false;
             };
         };
-        ViewArticles.fetchJournals(journalsTable);
+
+        PublicationsController.fetchJournals(journalsTable);
     }
 }
