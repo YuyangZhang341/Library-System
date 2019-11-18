@@ -5,21 +5,22 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class JournalsView {
-    private JTable journalsTable;
-    private JPanel journalsPanel;
-    private JScrollPane journalsScrollPane;
+public class VolumesView {
+    private JPanel volumesPanel;
     private JButton backButton;
-    private JPanel backPanel;
     private JButton openButton;
+    private JTable volumesTable;
+    private JScrollPane volumesScrollPane;
 
-    private static JFrame frame = new JFrame("Journals");
+    //TODO: set frame title to journal's name
+    private static JFrame frame = new JFrame("Volumes");
 
-    public JournalsView() {
+    public VolumesView() {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new App().main(new String[0]);
+                new JournalsView().showJournalsView();
+
                 frame.dispose();
             }
         });
@@ -27,29 +28,30 @@ public class JournalsView {
         openButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String targetIssn = journalsTable.getValueAt(journalsTable.getSelectedRow(), 0).toString();
+
             }
         });
     }
 
-    public void showJournalsView() {
-        frame.setContentPane(new JournalsView().journalsPanel);
+    public void showVolumesView() {
+        frame.setContentPane(new VolumesView().volumesPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
 
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         Dimension screenDimensions = toolkit.getScreenSize();
+
         frame.setSize(screenDimensions.width, screenDimensions.height);
         frame.setVisible(true);
     }
 
     private void createUIComponents() {
-        journalsTable = new JTable(){
+        volumesTable = new JTable(){
             public boolean isCellEditable(int row, int column) {
                 return false;
             };
         };
 
-        PublicationsController.fetchJournals(journalsTable);
+        //TODO:: populate the volumesTable with a function defined in PublicationsController
     }
 }
