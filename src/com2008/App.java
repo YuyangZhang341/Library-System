@@ -19,12 +19,7 @@ public class App {
         viewArticlesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFrame journalsFrame = new JournalsView().getFrame();
-
-                Toolkit toolkit = Toolkit.getDefaultToolkit();
-                Dimension screenDimensions = toolkit.getScreenSize();
-                journalsFrame.setSize(screenDimensions.width, screenDimensions.height);
-                journalsFrame.setVisible(true);
+                new JournalsView().showJournalsView();
 
                 frame.dispose();
             }
