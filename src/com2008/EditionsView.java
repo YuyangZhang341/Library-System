@@ -5,26 +5,28 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class VolumesView {
-    private JPanel volumesPanel;
+public class EditionsView {
+    private JPanel backPanel;
+    private JScrollPane editionsScrollPane;
+    private JTable editionsTable;
+    private JPanel editionsPanel;
     private JButton backButton;
     private JButton openButton;
-    private JTable volumesTable;
-    private JScrollPane volumesScrollPane;
 
     private String issn;
+    private int vol;
 
-    //TODO: set frame title to journal's name
-    private static JFrame frame = new JFrame("Volumes");
+    //TODO: set frame title to be the current journal's names with edition number
+    private static JFrame frame = new JFrame("Editions");
 
-    public VolumesView(String issn) {
+    public EditionsView(String issn, int vol) {
         this.issn = issn;
+        this.vol = vol;
 
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                JournalsView.showJournalsView();
-
+                VolumesView.showVolumesView(issn);
                 frame.dispose();
             }
         });
@@ -32,34 +34,30 @@ public class VolumesView {
         openButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO: see what happens when no journals are selected
-                int targetVol = Integer.parseInt(volumesTable.getValueAt(volumesTable.getSelectedRow(), 0).toString());
-
-                EditionsView.showEditionsView(issn, targetVol);
-                frame.dispose();
+                String targetNumber = editionsTable.getValueAt(editionsTable.getSelectedRow(), 1).toString();
             }
         });
     }
 
-    public static void showVolumesView(String issn) {
-        frame.setContentPane(new VolumesView(issn).volumesPanel);
+    public static void showEditionsView(String issn, int vol) {
+        frame.setContentPane(new EditionsView(issn, vol).editionsPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
 
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         Dimension screenDimensions = toolkit.getScreenSize();
-
         frame.setSize(screenDimensions.width, screenDimensions.height);
         frame.setVisible(true);
     }
 
+
     private void createUIComponents() {
-        volumesTable = new JTable(){
+        editionsTable = new JTable(){
             public boolean isCellEditable(int row, int column) {
                 return false;
             };
         };
 
-        PublicationsController.fetchVolumes(volumesTable, issn);
+        PublicationsController.fetchEditions(editionsTable, issn, vol);
     }
 }
