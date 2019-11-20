@@ -28,9 +28,9 @@ public class App {
         logInButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new LogIn().showLogInPage();//Test01
+                new LogIn().showLogIn();
 
-                LogIn.main();
+                frame.dispose();
             }
         });
 
