@@ -5,28 +5,33 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class EditionsView {
+public class ArticlesView {
     private JPanel backPanel;
-    private JScrollPane editionsScrollPane;
-    private JTable editionsTable;
-    private JPanel editionsPanel;
+    private JScrollPane articlesScrollPane;
+    private JTable articlesTable;
+    private JPanel articlesPanel;
     private JButton backButton;
     private JButton openButton;
 
+    private int submissionID;
     private String issn;
     private int vol;
+    private int number;
+    private int startPage;
+    private int endPage;
 
-    //TODO: set frame title to be the current journal's names with edition number
-    private static JFrame frame = new JFrame("Editions");
+    //TODO: set frame title to be the current journal's names with article number
+    private static JFrame frame = new JFrame("Articles");
 
-    public EditionsView(String issn, int vol) {
+    public ArticlesView(String issn, int vol, int number) {
         this.issn = issn;
         this.vol = vol;
+        this.number = number;
 
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                VolumesView.showVolumesView(issn);
+                EditionsView.showEditionsView(issn, vol);
                 frame.dispose();
             }
         });
@@ -34,16 +39,13 @@ public class EditionsView {
         openButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int targetNumber = Integer.parseInt(editionsTable.getValueAt(editionsTable.getSelectedRow(), 1).toString());
-
-                ArticlesView.showArticlesView(issn, vol, targetNumber);
-                frame.dispose();
+                int targetSubmissionID = Integer.parseInt(articlesTable.getValueAt(articlesTable.getSelectedRow(), 0).toString());
             }
         });
     }
 
-    public static void showEditionsView(String issn, int vol) {
-        frame.setContentPane(new EditionsView(issn, vol).editionsPanel);
+    public static void showArticlesView(String issn, int vol, int number) {
+        frame.setContentPane(new ArticlesView(issn, vol, number).articlesPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
 
@@ -55,12 +57,12 @@ public class EditionsView {
 
 
     private void createUIComponents() {
-        editionsTable = new JTable(){
+        articlesTable = new JTable(){
             public boolean isCellEditable(int row, int column) {
                 return false;
             };
         };
 
-        PublicationsController.fetchEditions(editionsTable, issn, vol);
+        PublicationsController.fetchArticles(articlesTable, issn, vol, number);
     }
 }
