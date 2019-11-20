@@ -1,24 +1,67 @@
+
 package com2008;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class LogIn {
 
-    private JButton logIn;
+    private JPanel mainPanel;
+    private JPanel buttonsPanel;
+    private JPanel usernamePanel;
+    private JPanel Title;
+    private JPanel mainBody;
+    private JPanel goBack;
+
+    private JLabel usernameLabel;
+    private JLabel passwordLabel;
+    private JTextField Username;
+    private JPasswordField Password;
     private JButton signUpAsEditor;
     private JButton signUpAsReviewer;
+    private JButton logIn;
+    private JButton back;
 
+    private static JFrame frame = new JFrame("LogIn");
 
-    public static void main() {
+    public LogIn(){
+        back.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                new App().main(new String[0]);
+                frame.dispose();
+            }
+        });
 
-        JOptionPane.showMessageDialog(null,"Log in");
+        logIn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {}
+        });
+
+        signUpAsEditor.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {}
+        });
+
+        signUpAsReviewer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {}
+        });
+
 
     }
 
+    public static void showLogIn(){
+        frame.setContentPane(new LogIn().mainPanel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
 
-    public static void showLogInPage(){
-
-
-
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        Dimension screenDimensions = toolkit.getScreenSize();
+        frame.setSize(screenDimensions.width, screenDimensions.height);
+        frame.setVisible(true);
     }
 }
+
