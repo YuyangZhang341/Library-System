@@ -6,5 +6,5 @@ public class LogIn {
     public static void main() {
         JOptionPane.showMessageDialog(null,"Log in");
     }
-    //test
+
 }
