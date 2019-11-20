@@ -12,5 +12,7 @@ public class LogIn {
 
     public static void showLogInPage(){
 
+        System.out.println("Hello");
+
     }
 }
