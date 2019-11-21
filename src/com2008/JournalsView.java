@@ -29,7 +29,7 @@ public class JournalsView {
         openButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                showJournalsView();
+                showSelectedJournal();
             }
         });
     }
