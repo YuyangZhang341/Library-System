@@ -70,18 +70,19 @@ public class AddSubmissionView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (verifyFields()) {
+                    Author authors[] = new Author[coauthorsTable.getRowCount() + 1];
+                    authors[0] = new Author(titleField.getText(), forenamesField.getText(), surnameField.getText(),
+                                            universityAffiliationFIeld.getText(), emailField.getText(), passwordField.getPassword().toString());
 
+                    for(int i = 0; i < coauthorsTable.getRowCount(); i++) {
+                        authors[i+1] = new Author(coauthorsTable.getValueAt(i, 0).toString(), coauthorsTable.getValueAt(i,1).toString(),
+                                                  coauthorsTable.getValueAt(i, 2).toString(), coauthorsTable.getValueAt(i, 3).toString(),
+                                                  coauthorsTable.getValueAt(i, 4).toString(), coauthorsTable.getValueAt(i, 5).toString());
+                    }
 
-                    // add main author
-                    PublicationsController.addUser(emailField.getText(), titleField.getText(), forenamesField.getText(),
-                            surnameField.getText(), universityAffiliationLabel.getText(), passwordLabel.getText());
+                    Submission submission = new Submission(-1, titleField.getText(), abstractTextArea.getText(), null);
 
-                    // add coauthors
-
-                    // add article
-                    PublicationsController.addSubmission(articleTitleLabel.getText(), abstractTextArea.getText(), "", emailField.getText());
-
-                    // connect authors to the article
+                    PublicationsController.addSubmission(submission, authors);
                 } else {
                     //TODO:: not correct
                 }
@@ -101,7 +102,7 @@ public class AddSubmissionView {
     }
 
     public boolean verifyFields() {
-        //TODO::
+        //TODO:: check emails, check if no empry rows ets.
         return false;
     }
 
@@ -111,5 +112,9 @@ public class AddSubmissionView {
                 return true;
             };
         };
+    }
+
+    public static void main(String[] args) {
+        showAddSubmissionView();
     }
 }
