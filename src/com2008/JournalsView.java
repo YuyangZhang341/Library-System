@@ -1,6 +1,7 @@
 package com2008;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -15,6 +16,8 @@ public class JournalsView {
     private static JFrame frame = new JFrame("Journals");
 
     public JournalsView() {
+        loadJournalsTable();
+
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -49,6 +52,15 @@ public class JournalsView {
         frame.dispose();
     }
 
+    private void loadJournalsTable() {
+        DefaultTableModel model = new DefaultTableModel(new String[]{"ISSN", "Name"}, 0);
+        journalsTable.setModel(model);
+
+        for(Journal journal : PublicationsController.getJournals()) {
+            model.addRow(new Object[]{journal.getIssn(), journal.getName()});
+        }
+    }
+
     private void createUIComponents() {
         // disable editing cells in the table
         journalsTable = new JTable(){
@@ -56,9 +68,6 @@ public class JournalsView {
                 return false;
             };
         };
-
-        // fill the table with data
-        PublicationsController.fetchJournals(journalsTable);
 
         // add listeners for enter press and for double click
         journalsTable.setSurrendersFocusOnKeystroke(true); //make it work for the first press as well

@@ -31,6 +31,29 @@ public class PublicationsController {
         }
     }
 
+    public static Journal[] getJournals() {
+        Statement stmt = null;
+        ArrayList<Journal> results = new ArrayList<Journal>();
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+            ResultSet res = stmt.executeQuery("SELECT issn, name FROM journals");
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                String issn = res.getString("issn");
+                String name = res.getString("name");
+
+                results.add(new Journal(issn, name));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        Journal arrayResults[] = new Journal[results.size()];
+        return results.toArray(arrayResults);
+    }
+
     public static void fetchVolumes(JTable table, String issn) {
         Statement stmt = null;
         DefaultTableModel model = new DefaultTableModel(new String[]{"Volume", "Year"}, 0);
