@@ -73,6 +73,34 @@ public class PublicationsController {
         }
     }
 
+    public static void fetchArticles(JTable table, String issn, int vol, int number) {
+        Statement stmt = null;
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Submission ID", "Title", "Abstract", "Author's Forenames", "Surname"}, 0);
+        table.setModel(model);
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+            ResultSet res = stmt.executeQuery("SELECT s.submissionID, s.title, s.abstract, u.forenames, u.surname " +
+            "FROM publishedArticles pa " +
+            "LEFT JOIN submissions s ON pa.submissionID = s.submissionID " +
+            "LEFT JOIN users u ON s.mainAuthorsEmail = u.email " +
+            "WHERE pa.issn='" + issn + "' AND pa.vol=" + vol + " AND pa.number=" + number + ";");
+            // Fetch each row from the result set
+
+            while (res.next()) {
+                int submissionID = res.getInt("submissionID");
+                String title = res.getString("title");
+                String abs = res.getString("abstract");
+                String forenames = res.getString("forenames");
+                String surname = res.getString("surname");
+
+                model.addRow(new Object[]{submissionID,title,abs,forenames,surname});
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void fetchArticleAuthors(JTable table, int submissionId) {
         Statement stmt = null;
         DefaultTableModel model = new DefaultTableModel(new String[]{"Title", "Forename", "Surname"}, 0);

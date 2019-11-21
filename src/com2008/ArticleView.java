@@ -35,9 +35,13 @@ public class ArticleView {
 
         Map<String, String> articleInfo = PublicationsController.getArticleInfo(submissionId);
 
+        String issn = articleInfo.get("issn");
+        int vol = Integer.parseInt(articleInfo.get("vol"));
+        int no = Integer.parseInt(articleInfo.get("number"));
+
         journalNameLabel.setText("Journal: " + articleInfo.get("name"));
-        issnLabel.setText("ISSN: " + articleInfo.get("issn"));
-        volNoLabel.setText("vol. " + articleInfo.get("vol") + ", no. " + articleInfo.get("no"));
+        issnLabel.setText("ISSN: " + issn);
+        volNoLabel.setText("vol. " + vol + ", no. " + no);
         pageRangeLabel.setText("Page range: " + articleInfo.get("startPage") + " - " + articleInfo.get("endPage"));
         articleTitleLabel.setText("Article title: " + articleInfo.get("title"));
         abstractTextArea.setText(articleInfo.get("abstract"));
@@ -45,14 +49,15 @@ public class ArticleView {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                ArticlesView.showArticlesView(issn, vol, no);
+                frame.dispose();
             }
         });
 
         openButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                //TODO:: open the article's pdf
             }
         });
     }

@@ -153,6 +153,7 @@
                   <editable value="false"/>
                   <lineWrap value="true"/>
                   <text value="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum venenatis iaculis finibus. Nam sodales tellus commodo est venenatis sodales. Sed id sapien pharetra, fringilla tortor id, commodo nulla. Proin vitae lacus quis eros convallis pulvinar sit amet eu felis. Vestibulum dapibus enim eros, congue malesuada orci feugiat at. Quisque ullamcorper justo in justo placerat porta. Mauris porttitor augue a nulla ornare, non consequat arcu pellentesque. In eu hendrerit ligula, id pretium magna. Integer euismod sit amet metus hendrerit mollis. Maecenas consectetur euismod urna, eu suscipit massa hendrerit a. Quisque vel gravida tortor. Morbi pellentesque sem sed rhoncus dignissim. Aliquam quis."/>
+                  <wrapStyleWord value="true"/>
                 </properties>
               </component>
               <hspacer id="26f95">
