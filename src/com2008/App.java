@@ -37,7 +37,10 @@ public class App {
         submitArticleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                SubmitArticle.main();
+
+                new AddSubmissionView().showAddSubmissionView();
+
+                frame.dispose();
             }
         });
     }
