@@ -61,7 +61,7 @@ public class VolumesView {
         DefaultTableModel model = new DefaultTableModel(new String[]{"ISSN", "Vol", "Year"}, 0);
         volumesTable.setModel(model);
 
-        for(Volume volume : PublicationsController.getVolumes()) {
+        for(Volume volume : PublicationsController.getVolumes(issn)) {
             model.addRow(new Object[]{volume.getIssn(),volume.getVol(),volume.getYear()});
         }
     }

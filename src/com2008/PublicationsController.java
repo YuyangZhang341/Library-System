@@ -33,17 +33,16 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
-    public static Volume[] getVolumes() {
+    public static Volume[] getVolumes(String issn) {
         Statement stmt = null;
         ArrayList<Volume> results = new ArrayList<Volume>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT issn, vol, year FROM volumes");
+            ResultSet res = stmt.executeQuery("SELECT vol, year FROM volumes WHERE issn LIKE '" + issn + "'");
 
             // Fetch each row from the result set
             while (res.next()) {
-                String issn = res.getString("issn");
                 int vol = res.getInt("vol");
                 int year = res.getInt("year");
 
@@ -57,18 +56,16 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
-    public static Edition[] getEditions() {
+    public static Edition[] getEditions(String issn, int vol) {
         Statement stmt = null;
         ArrayList<Edition> results = new ArrayList<Edition>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT issn, vol, number FROM editions");
+            ResultSet res = stmt.executeQuery("SELECT number FROM editions WHERE issn='" + issn + "' AND vol=" + vol);
 
             // Fetch each row from the result set
             while (res.next()) {
-                String issn = res.getString("issn");
-                int vol = res.getInt("vol");
                 int number = res.getInt("number");
 
                 results.add(new Edition(issn, vol, number));
