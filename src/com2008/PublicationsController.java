@@ -10,27 +10,6 @@ public class PublicationsController {
         JOptionPane.showMessageDialog(null,"View the articles");
     }
 
-    public static void fetchJournals(JTable table) {
-        Statement stmt = null;
-        DefaultTableModel model = new DefaultTableModel(new String[]{"ISSN", "Name"}, 0);
-        table.setModel(model);
-
-        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT issn, name FROM journals");
-
-            // Fetch each row from the result set
-            while (res.next()) {
-                String issn = res.getString("issn");
-                String name = res.getString("name");
-
-                model.addRow(new Object[]{issn,name});
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     public static Journal[] getJournals() {
         Statement stmt = null;
         ArrayList<Journal> results = new ArrayList<Journal>();
@@ -54,46 +33,52 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
-    public static void fetchVolumes(JTable table, String issn) {
+    public static Volume[] getVolumes() {
         Statement stmt = null;
-        DefaultTableModel model = new DefaultTableModel(new String[]{"Volume", "Year"}, 0);
-        table.setModel(model);
+        ArrayList<Volume> results = new ArrayList<Volume>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT vol, year FROM volumes WHERE issn LIKE '" + issn);
+            ResultSet res = stmt.executeQuery("SELECT issn, vol, year FROM volumes");
 
             // Fetch each row from the result set
             while (res.next()) {
-                String vol = res.getString("vol");
-                String year = res.getString("year");
+                String issn = res.getString("issn");
+                int vol = res.getInt("vol");
+                int year = res.getInt("year");
 
-                model.addRow(new Object[]{vol,year});
+                results.add(new Volume(issn, vol, year));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        Volume arrayResults[] = new Volume[results.size()];
+        return results.toArray(arrayResults);
     }
 
-    public static void fetchEditions(JTable table, String issn, int vol) {
+    public static Edition[] getEditions() {
         Statement stmt = null;
-        DefaultTableModel model = new DefaultTableModel(new String[]{"Volume Number", "Edition Number"}, 0);
-        table.setModel(model);
+        ArrayList<Edition> results = new ArrayList<Edition>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT vol, number FROM editions WHERE issn='" + issn + "' AND vol=" + vol);
+            ResultSet res = stmt.executeQuery("SELECT issn, vol, number FROM editions");
 
             // Fetch each row from the result set
             while (res.next()) {
-                String volume = res.getString("vol");
-                String number = res.getString("number");
+                String issn = res.getString("issn");
+                int vol = res.getInt("vol");
+                int number = res.getInt("number");
 
-                model.addRow(new Object[]{volume,number});
+                results.add(new Edition(issn, vol, number));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        Edition arrayResults[] = new Edition[results.size()];
+        return results.toArray(arrayResults);
     }
 
     public static void fetchArticles(JTable table, String issn, int vol, int number) {
@@ -197,9 +182,10 @@ public class PublicationsController {
         }
     }
 
-    public static void addSubmission(Submission submission) {
+    public static void addSubmission(Submission submission, Author[] authors) {
         Statement stmt = null;
 
+        System.out.println();
         //TODO: check if authors already exist, if so don't replace passwords. LAter on include hashing passwords.
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {

@@ -1,6 +1,7 @@
 package com2008;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -18,6 +19,7 @@ public class VolumesView {
 
     public VolumesView(String issn) {
         this.issn = issn;
+        loadVolumesTable();
 
         backButton.addActionListener(new ActionListener() {
             @Override
@@ -49,10 +51,19 @@ public class VolumesView {
     }
 
     private void showSelectedVolume() {
-        int targetVol = Integer.parseInt(volumesTable.getValueAt(volumesTable.getSelectedRow(), 0).toString());
+        int targetVol = Integer.parseInt(volumesTable.getValueAt(volumesTable.getSelectedRow(), 1).toString());
 
         EditionsView.showEditionsView(issn, targetVol);
         frame.dispose();
+    }
+
+    private void loadVolumesTable() {
+        DefaultTableModel model = new DefaultTableModel(new String[]{"ISSN", "Vol", "Year"}, 0);
+        volumesTable.setModel(model);
+
+        for(Volume volume : PublicationsController.getVolumes()) {
+            model.addRow(new Object[]{volume.getIssn(),volume.getVol(),volume.getYear()});
+        }
     }
 
     private void createUIComponents() {
@@ -62,9 +73,6 @@ public class VolumesView {
                 return false;
             };
         };
-
-        // fill the table with data
-        PublicationsController.fetchVolumes(volumesTable, issn);
 
         // add listeners for enter press and for double click
         volumesTable.setSurrendersFocusOnKeystroke(true); //make it work for the first press as well

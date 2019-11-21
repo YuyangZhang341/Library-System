@@ -1,6 +1,7 @@
 package com2008;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -21,6 +22,8 @@ public class EditionsView {
     public EditionsView(String issn, int vol) {
         this.issn = issn;
         this.vol = vol;
+
+        loadEditionsTable();
 
         backButton.addActionListener(new ActionListener() {
             @Override
@@ -56,6 +59,15 @@ public class EditionsView {
         frame.dispose();
     }
 
+    private void loadEditionsTable() {
+        DefaultTableModel model = new DefaultTableModel(new String[]{"ISSN", "Vol", "Number"}, 0);
+        editionsTable.setModel(model);
+
+        for(Edition edition : PublicationsController.getEditions()) {
+            model.addRow(new Object[]{edition.getIssn(),edition.getVol(),edition.getNumber()});
+        }
+    }
+
     private void createUIComponents() {
         // disable editing cells in the table
         editionsTable = new JTable(){
@@ -63,9 +75,6 @@ public class EditionsView {
                 return false;
             };
         };
-
-        // fill the table with data
-        PublicationsController.fetchEditions(editionsTable, issn, vol);
 
         // add listeners for enter press and for double click
         editionsTable.setSurrendersFocusOnKeystroke(true); //make it work for the first press as well

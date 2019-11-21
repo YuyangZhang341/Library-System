@@ -80,7 +80,9 @@ public class AddSubmissionView {
                                                   coauthorsTable.getValueAt(i, 4).toString(), coauthorsTable.getValueAt(i, 5).toString());
                     }
 
-//                    PublicationsController.addSubmission();
+                    Submission submission = new Submission(-1, titleField.getText(), abstractTextArea.getText(), null);
+
+                    PublicationsController.addSubmission(submission, authors);
                 } else {
                     //TODO:: not correct
                 }
