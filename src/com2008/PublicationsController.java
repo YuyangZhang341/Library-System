@@ -173,4 +173,16 @@ public class PublicationsController {
             e.printStackTrace();
         }
     }
+
+    public static void addAuthorToSubmission(int submissionId, String email) {
+        Statement stmt = null;
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+            int dbUpdate = stmt.executeUpdate("INSERT INTO authors (submissionID, email)" +
+                    "VALUES (" + submissionId + ", " + email + ")");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
