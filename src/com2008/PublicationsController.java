@@ -162,6 +162,18 @@ public class PublicationsController {
         return results;
     }
 
+    public static void addUser(String email, String title, String forenames, String surname, String uniAffiliation, String password) {
+        Statement stmt = null;
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+            int dbUpdate = stmt.executeUpdate("INSERT INTO users (email, title, forenames, surname, universityAffiliation, password)" +
+                    "VALUES (" + email + ", " + title + ", " + forenames + ", " + surname + ", " + uniAffiliation + ", " + password + ")");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void addSubmission(String title, String abs, String pdf, String mainAuthorsEmail) {
         Statement stmt = null;
 

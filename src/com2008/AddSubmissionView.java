@@ -5,6 +5,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddSubmissionView {
     private JPanel mainPanel;
@@ -64,6 +66,27 @@ public class AddSubmissionView {
                 coauthorsTableModel.addRow(new Object[]{"","","","",""});
             }
         });
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (verifyFields()) {
+
+
+                    // add main author
+                    PublicationsController.addUser(emailField.getText(), titleField.getText(), forenamesField.getText(),
+                            surnameField.getText(), universityAffiliationLabel.getText(), passwordLabel.getText());
+
+                    // add coauthors
+
+                    // add article
+                    PublicationsController.addSubmission(articleTitleLabel.getText(), abstractTextArea.getText(), "", emailField.getText());
+
+                    // connect authors to the article
+                } else {
+                    //TODO:: not correct
+                }
+            }
+        });
     }
 
     public static void showAddSubmissionView() {
@@ -75,6 +98,11 @@ public class AddSubmissionView {
         Dimension screenDimensions = toolkit.getScreenSize();
         frame.setSize(screenDimensions.width, screenDimensions.height);
         frame.setVisible(true);
+    }
+
+    public boolean verifyFields() {
+        //TODO::
+        return false;
     }
 
     private void createUIComponents() {
