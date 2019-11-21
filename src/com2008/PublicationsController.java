@@ -197,25 +197,14 @@ public class PublicationsController {
         }
     }
 
-    public static void addSubmission(String title, String abs, String pdf, String mainAuthorsEmail) {
+    public static void addSubmission(Submission submission) {
         Statement stmt = null;
+
+        //TODO: check if authors already exist, if so don't replace passwords. LAter on include hashing passwords.
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            int dbUpdate = stmt.executeUpdate("INSERT INTO submissions (title, abstract, pdf, mainAuthorsEmail)" +
-                    "VALUES (" + title + ", " + abs + ", " + pdf + ", " + mainAuthorsEmail + ")");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void addAuthorToSubmission(int submissionId, String email) {
-        Statement stmt = null;
-
-        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            int dbUpdate = stmt.executeUpdate("INSERT INTO authors (submissionID, email)" +
-                    "VALUES (" + submissionId + ", " + email + ")");
+            int dbUpdate = stmt.executeUpdate("");
         } catch (SQLException e) {
             e.printStackTrace();
         }
