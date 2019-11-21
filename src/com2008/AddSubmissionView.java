@@ -112,8 +112,4 @@ public class AddSubmissionView {
             };
         };
     }
-
-    public static void main (String[] args) {
-        showAddSubmissionView();
-    }
 }
