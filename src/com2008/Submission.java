@@ -1,10 +1,10 @@
 package com2008;
 
 public class Submission {
-    int submissionId;
-    String title;
-    String abs;
-    String pdfLink;
+    private int submissionId;
+    private String title;
+    private String abs;
+    private String pdfLink;
     private String mainAuthorsEmail;
 
     public Submission(int submissionId, String title, String abs, String pdfLink, String mainAuthorsEmail) {

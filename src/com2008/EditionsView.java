@@ -53,7 +53,7 @@ public class EditionsView {
     }
 
     private void showSelectedEdition() {
-        int targetNumber = Integer.parseInt(editionsTable.getValueAt(editionsTable.getSelectedRow(), 1).toString());
+        int targetNumber = Integer.parseInt(editionsTable.getValueAt(editionsTable.getSelectedRow(), 2).toString());
 
         ArticlesView.showArticlesView(issn, vol, targetNumber);
         frame.dispose();
@@ -63,7 +63,7 @@ public class EditionsView {
         DefaultTableModel model = new DefaultTableModel(new String[]{"ISSN", "Vol", "Number"}, 0);
         editionsTable.setModel(model);
 
-        for(Edition edition : PublicationsController.getEditions()) {
+        for(Edition edition : PublicationsController.getEditions(issn,vol)) {
             model.addRow(new Object[]{edition.getIssn(),edition.getVol(),edition.getNumber()});
         }
     }

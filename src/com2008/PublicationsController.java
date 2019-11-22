@@ -35,17 +35,16 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
-    public static Volume[] getVolumes() {
+    public static Volume[] getVolumes(String issn) {
         Statement stmt = null;
         ArrayList<Volume> results = new ArrayList<Volume>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT issn, vol, year FROM volumes");
+            ResultSet res = stmt.executeQuery("SELECT vol, year FROM volumes WHERE issn LIKE '" + issn + "'");
 
             // Fetch each row from the result set
             while (res.next()) {
-                String issn = res.getString("issn");
                 int vol = res.getInt("vol");
                 int year = res.getInt("year");
 
@@ -59,18 +58,16 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
-    public static Edition[] getEditions() {
+    public static Edition[] getEditions(String issn, int vol) {
         Statement stmt = null;
         ArrayList<Edition> results = new ArrayList<Edition>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT issn, vol, number FROM editions");
+            ResultSet res = stmt.executeQuery("SELECT number FROM editions WHERE issn='" + issn + "' AND vol=" + vol);
 
             // Fetch each row from the result set
             while (res.next()) {
-                String issn = res.getString("issn");
-                int vol = res.getInt("vol");
                 int number = res.getInt("number");
 
                 results.add(new Edition(issn, vol, number));
@@ -83,14 +80,13 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
-    public static void fetchArticles(JTable table, String issn, int vol, int number) {
+    public static Article[] getArticles( String issn, int vol, int number) {
         Statement stmt = null;
-        DefaultTableModel model = new DefaultTableModel(new String[]{"Submission ID", "Title", "Abstract", "Author's Forenames", "Surname"}, 0);
-        table.setModel(model);
+        ArrayList<Article> results = new ArrayList<Article>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT s.submissionID, s.title, s.abstract, u.forenames, u.surname " +
+            ResultSet res = stmt.executeQuery("SELECT s.submissionID, s.title, s.abstract, s.pdf, pa.startPage, pa.endPage " +
             "FROM publishedArticles pa " +
             "LEFT JOIN submissions s ON pa.submissionID = s.submissionID " +
             "LEFT JOIN users u ON s.mainAuthorsEmail = u.email " +
@@ -101,14 +97,18 @@ public class PublicationsController {
                 int submissionID = res.getInt("submissionID");
                 String title = res.getString("title");
                 String abs = res.getString("abstract");
-                String forenames = res.getString("forenames");
-                String surname = res.getString("surname");
+                String pdf = res.getString("pdf");
+                int startPage = res.getInt("startPage");
+                int endPage = res.getInt("endPage");
 
-                model.addRow(new Object[]{submissionID,title,abs,forenames,surname});
+                results.add(new Article(submissionID, title, abs, pdf, issn, vol, number, startPage, endPage));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        Article arrayResults[] = new Article[results.size()];
+        return results.toArray(arrayResults);
     }
 
     public static void fetchArticleAuthors(JTable table, int submissionId) {
