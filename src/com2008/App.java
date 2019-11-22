@@ -30,7 +30,7 @@ public class App {
         logInButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new LogIn().showLogIn();
+                LogIn.showLogIn();
 
                 frame.dispose();
             }
