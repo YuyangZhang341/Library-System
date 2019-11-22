@@ -7,8 +7,8 @@ public class Article extends Submission {
     private int startPage;
     private int endPage;
 
-    public Article(int submissionId, String title, String abs, String pdfLink, String issn, int vol, int number, int startPage, int endPage) {
-        super(submissionId, title, abs, pdfLink);
+    public Article(int submissionId, String title, String abs, String pdfLink, String mainAuthorsEmail, String issn, int vol, int number, int startPage, int endPage) {
+        super(submissionId, title, abs, pdfLink, mainAuthorsEmail);
         this.issn = issn;
         this.vol = vol;
         this.number = number;

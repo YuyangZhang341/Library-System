@@ -86,7 +86,7 @@ public class PublicationsController {
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT s.submissionID, s.title, s.abstract, s.pdf, pa.startPage, pa.endPage " +
+            ResultSet res = stmt.executeQuery("SELECT s.submissionID, s.title, s.abstract, s.pdf, pa.startPage, pa.endPage, s.mainAuthorsEmail " +
             "FROM publishedArticles pa " +
             "LEFT JOIN submissions s ON pa.submissionID = s.submissionID " +
             "LEFT JOIN users u ON s.mainAuthorsEmail = u.email " +
@@ -98,10 +98,11 @@ public class PublicationsController {
                 String title = res.getString("title");
                 String abs = res.getString("abstract");
                 String pdf = res.getString("pdf");
+                String mainAuthorsEmail = res.getString("mainAuthorsEmail");
                 int startPage = res.getInt("startPage");
                 int endPage = res.getInt("endPage");
 
-                results.add(new Article(submissionID, title, abs, pdf, issn, vol, number, startPage, endPage));
+                results.add(new Article(submissionID, title, abs, pdf, mainAuthorsEmail, issn, vol, number, startPage, endPage));
             }
         } catch (SQLException e) {
             e.printStackTrace();
