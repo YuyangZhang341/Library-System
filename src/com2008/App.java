@@ -12,6 +12,8 @@ public class App {
     private JButton viewArticlesButton;
     private JButton logInButton;
     private JButton submitArticleButton;
+    private JLabel imageLabelLeft;
+    private JPanel leftPanel;
 
     private static JFrame frame = new JFrame("App");
 

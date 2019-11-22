@@ -53,7 +53,7 @@ public class EditionsView {
     }
 
     private void showSelectedEdition() {
-        int targetNumber = Integer.parseInt(editionsTable.getValueAt(editionsTable.getSelectedRow(), 1).toString());
+        int targetNumber = Integer.parseInt(editionsTable.getValueAt(editionsTable.getSelectedRow(), 2).toString());
 
         ArticlesView.showArticlesView(issn, vol, targetNumber);
         frame.dispose();

@@ -1,6 +1,7 @@
 package com2008;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -26,6 +27,8 @@ public class ArticlesView {
         this.issn = issn;
         this.vol = vol;
         this.number = number;
+
+        loadArticlesTable();
 
         backButton.addActionListener(new ActionListener() {
             @Override
@@ -61,6 +64,15 @@ public class ArticlesView {
         frame.dispose();
     }
 
+    private void loadArticlesTable() {
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Submission ID", "Title", "Abstract", "Start Page", "End Page"}, 0);
+        articlesTable.setModel(model);
+
+        for(Article article: PublicationsController.getArticles(issn,vol,number)) {
+            model.addRow(new Object[]{article.getSubmissionId(), article.getTitle(), article.getAbs(), article.getStartPage(), article.getEndPage()});
+        }
+    }
+
     private void createUIComponents() {
         // disable editing cells in the table
         articlesTable = new JTable(){
@@ -68,9 +80,6 @@ public class ArticlesView {
                 return false;
             };
         };
-
-        // fill the table with data
-        PublicationsController.fetchArticles(articlesTable, issn, vol, number);
 
         // add listeners for enter press and for double click
         articlesTable.setSurrendersFocusOnKeystroke(true); //make it work for the first press as well

@@ -1,12 +1,12 @@
 package com2008;
 
 abstract class Stakeholder {
-    String title;
-    String forenames;
-    String surname;
-    String universityAffiliation;
-    String email;
-    String password;
+    private String title;
+    private String forenames;
+    private String surname;
+    private String universityAffiliation;
+    private String email;
+    private String password;
 
     public Stakeholder(String title, String forenames, String surname, String universityAffiliation, String email, String password) {
         this.title = title;
