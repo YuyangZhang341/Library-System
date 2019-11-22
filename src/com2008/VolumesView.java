@@ -1,9 +1,9 @@
 package com2008;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
 public class VolumesView {
     private JPanel volumesPanel;
@@ -19,6 +19,7 @@ public class VolumesView {
 
     public VolumesView(String issn) {
         this.issn = issn;
+        loadVolumesTable();
 
         backButton.addActionListener(new ActionListener() {
             @Override
@@ -32,11 +33,7 @@ public class VolumesView {
         openButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO: see what happens when no journals are selected
-                int targetVol = Integer.parseInt(volumesTable.getValueAt(volumesTable.getSelectedRow(), 0).toString());
-
-                EditionsView.showEditionsView(issn, targetVol);
-                frame.dispose();
+                showSelectedVolume();
             }
         });
     }
@@ -53,13 +50,56 @@ public class VolumesView {
         frame.setVisible(true);
     }
 
+    private void showSelectedVolume() {
+        int targetVol = Integer.parseInt(volumesTable.getValueAt(volumesTable.getSelectedRow(), 1).toString());
+
+        EditionsView.showEditionsView(issn, targetVol);
+        frame.dispose();
+    }
+
+    private void loadVolumesTable() {
+        DefaultTableModel model = new DefaultTableModel(new String[]{"ISSN", "Vol", "Year"}, 0);
+        volumesTable.setModel(model);
+
+        for(Volume volume : PublicationsController.getVolumes(issn)) {
+            model.addRow(new Object[]{volume.getIssn(),volume.getVol(),volume.getYear()});
+        }
+    }
+
     private void createUIComponents() {
+        // disable editing cells in the table
         volumesTable = new JTable(){
             public boolean isCellEditable(int row, int column) {
                 return false;
             };
         };
 
-        PublicationsController.fetchVolumes(volumesTable, issn);
+        // add listeners for enter press and for double click
+        volumesTable.setSurrendersFocusOnKeystroke(true); //make it work for the first press as well
+        volumesTable.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                showSelectedVolume();
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+        });
+
+        volumesTable.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent mouseEvent) {
+                JTable table =(JTable) mouseEvent.getSource();
+                Point point = mouseEvent.getPoint();
+                int row = table.rowAtPoint(point);
+                if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
+                    showSelectedVolume();
+                }
+            }
+        });
     }
 }
