@@ -41,13 +41,19 @@ public class LogIn {
         });
 
         signUpAsEditor.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {}
+
+            public void actionPerformed(ActionEvent e) {
+                new SignUp().showSignUp();
+                frame.dispose();
+            }
         });
 
         signUpAsReviewer.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {}
+
+            public void actionPerformed(ActionEvent e) {
+                new SignUp().showSignUp();
+                frame.dispose();
+            }
         });
 
 
