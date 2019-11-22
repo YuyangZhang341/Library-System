@@ -66,13 +66,14 @@ public class AddSubmissionView {
                 coauthorsTableModel.addRow(new Object[]{"","","","",""});
             }
         });
+
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (verifyFields()) {
                     Author authors[] = new Author[coauthorsTable.getRowCount() + 1];
-                    authors[0] = new Author(titleField.getText(), forenamesField.getText(), surnameField.getText(),
-                                            universityAffiliationFIeld.getText(), emailField.getText(), passwordField.getPassword().toString());
+                    authors[0] = new Author(emailField.getText(), titleField.getText(), forenamesField.getText(), surnameField.getText(),
+                                            universityAffiliationFIeld.getText(), passwordField.getPassword().toString());
 
                     for(int i = 0; i < coauthorsTable.getRowCount(); i++) {
                         authors[i+1] = new Author(coauthorsTable.getValueAt(i, 0).toString(), coauthorsTable.getValueAt(i,1).toString(),
@@ -80,9 +81,13 @@ public class AddSubmissionView {
                                                   coauthorsTable.getValueAt(i, 4).toString(), coauthorsTable.getValueAt(i, 5).toString());
                     }
 
-                    Submission submission = new Submission(-1, titleField.getText(), abstractTextArea.getText(), null);
+                    Submission submission = new Submission(-1, articleTitleField.getText(), abstractTextArea.getText(), null, emailField.getText());
 
                     PublicationsController.addSubmission(submission, authors);
+
+                    JOptionPane.showMessageDialog(null,"Submitted.");
+                    App.showMainApp();
+                    frame.dispose();
                 } else {
                     //TODO:: not correct
                 }
@@ -103,7 +108,7 @@ public class AddSubmissionView {
 
     public boolean verifyFields() {
         //TODO:: check emails, check if no empry rows ets.
-        return false;
+        return true;
     }
 
     private void createUIComponents() {

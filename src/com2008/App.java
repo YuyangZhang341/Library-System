@@ -19,7 +19,7 @@ public class App {
         viewArticlesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new JournalsView().showJournalsView();
+                JournalsView.showJournalsView();
 
                 frame.dispose();
             }
@@ -37,15 +37,14 @@ public class App {
         submitArticleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                new AddSubmissionView().showAddSubmissionView();
+                AddSubmissionView.showAddSubmissionView();
 
                 frame.dispose();
             }
         });
     }
 
-    public static void main(String[] args) {
+    public static void showMainApp() {
         frame.setContentPane(new App().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -55,5 +54,9 @@ public class App {
         frame.setSize(screenDimensions.width, screenDimensions.height);
 
         frame.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        showMainApp();
     }
 }

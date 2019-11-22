@@ -5,12 +5,14 @@ public class Submission {
     String title;
     String abs;
     String pdfLink;
+    private String mainAuthorsEmail;
 
-    public Submission(int submissionId, String title, String abs, String pdfLink) {
+    public Submission(int submissionId, String title, String abs, String pdfLink, String mainAuthorsEmail) {
         this.submissionId = submissionId;
         this.title = title;
         this.abs = abs;
         this.pdfLink = pdfLink;
+        this.mainAuthorsEmail = mainAuthorsEmail;
     }
 
     public int getSubmissionId() {
@@ -29,6 +31,10 @@ public class Submission {
         return pdfLink;
     }
 
+    public String getMainAuthorsEmail() {
+        return mainAuthorsEmail;
+    }
+
     public void setSubmissionId(int submissionId) {
         this.submissionId = submissionId;
     }
@@ -43,5 +49,9 @@ public class Submission {
 
     public void setPdfLink(String pdfLink) {
         this.pdfLink = pdfLink;
+    }
+
+    public void setMainAuthorsEmail(String mainAuthorsEmail) {
+        this.mainAuthorsEmail = mainAuthorsEmail;
     }
 }

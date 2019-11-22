@@ -21,7 +21,7 @@ public class JournalsView {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new App().main(new String[0]);
+                App.showMainApp();
                 frame.dispose();
             }
         });

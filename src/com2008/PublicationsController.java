@@ -1,5 +1,7 @@
 package com2008;
 
+import com.mysql.cj.protocol.Resultset;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.sql.*;
@@ -176,7 +178,7 @@ public class PublicationsController {
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
             int dbUpdate = stmt.executeUpdate("INSERT INTO users (email, title, forenames, surname, universityAffiliation, password)" +
-                    "VALUES (" + email + ", " + title + ", " + forenames + ", " + surname + ", " + uniAffiliation + ", " + password + ")");
+                    "VALUES ('" + email + "', '" + title + "', '" + forenames + "', '" + surname + "', '" + uniAffiliation + "', '" + password + "')");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -185,12 +187,45 @@ public class PublicationsController {
     public static void addSubmission(Submission submission, Author[] authors) {
         Statement stmt = null;
 
-        System.out.println();
         //TODO: check if authors already exist, if so don't replace passwords. LAter on include hashing passwords.
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            con.setAutoCommit(false);
             stmt = con.createStatement();
-            int dbUpdate = stmt.executeUpdate("");
+
+            int submissionId = submission.getSubmissionId();
+
+            int dbUpdate = stmt.executeUpdate("INSERT INTO submissions (title, abstract, pdf, mainAuthorsEmail)" +
+                    "VALUES ('" + submission.getTitle() + "', '" + submission.getAbs() + "', '" + submission.getPdfLink() + "', '" + submission.getMainAuthorsEmail()+ "')");
+
+            // check the submission id assigned
+            ResultSet submissionRes = stmt.executeQuery("SELECT submissionID FROM submissions\n" +
+                    "    WHERE mainAuthorsEmail = '" + submission.getMainAuthorsEmail() + "'\n" +
+                    "    AND abstract = '" + submission.getAbs() + "'");
+            while (submissionRes.next()) {
+                submissionId = Integer.parseInt(submissionRes.getString("submissionID"));
+            }
+
+            // add author accounts
+            for (Author author : authors) {
+                // check if an account already exists
+                ResultSet res = stmt.executeQuery("SELECT COUNT(email) AS count FROM users WHERE email = '" + author.getEmail() + "'");
+                int count = 0;
+                while (res.next()) {
+                    count = Integer.parseInt(res.getString("count"));
+                }
+
+                if (count < 1) {
+                    //TODO: make sure the password is hashed or whatever
+                    addUser(author.getEmail(), author.getTitle(), author.getForenames(), author.getSurname(), author.getUniversityAffiliation(), author.getPassword());
+                }
+
+                if (submissionId != -1) {
+                    int authorsUpdate = stmt.executeUpdate("INSERT INTO authors (submissionID, email) VALUES (" + submissionId + ", '" + author.getEmail() + "')");
+                }
+            }
+
+            con.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         }
