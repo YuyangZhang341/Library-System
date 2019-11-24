@@ -31,6 +31,14 @@ public class EditorView {
         this.journalIssn = journalIssn;
         this.isChiefEditor = isChiefEditor;
 
+        // Change interface depending on who's viewing it
+        if (isChiefEditor) {
+            buttonsPanel.remove(retireButton);
+        } else {
+            buttonsPanel.remove(changeEditorButton);
+            buttonsPanel.remove(publishButton);
+        }
+
         changeEditorButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -52,6 +60,6 @@ public class EditorView {
     }
 
     public static void main(String[] args) {
-        showEditorView("1234-4321", true);
+        showEditorView("1234-4321", false);
     }
 }
