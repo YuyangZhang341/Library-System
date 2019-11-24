@@ -15,6 +15,8 @@ public class ChangeMainEditorDialog extends JDialog {
 
     private String journalIssn;
 
+    static ChangeMainEditorDialog d;
+
     public ChangeMainEditorDialog(String journalIssn) {
         this.journalIssn = journalIssn;
 
@@ -55,6 +57,8 @@ public class ChangeMainEditorDialog extends JDialog {
     private void onOK() {
         changeChiefEditor(journalIssn);
         dispose();
+        ((Window)d.getParent()).dispose();
+        EditorView.showEditorView(journalIssn, false);
     }
 
     private void onCancel() {
@@ -72,7 +76,7 @@ public class ChangeMainEditorDialog extends JDialog {
     }
 
     public static void showChangeMainEditorDialog(String journalIssn) {
-        ChangeMainEditorDialog d = new ChangeMainEditorDialog(journalIssn);
+        d = new ChangeMainEditorDialog(journalIssn);
         d.pack();
         d.setSize(400,300);
         d.setLocationRelativeTo(null);
