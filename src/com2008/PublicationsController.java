@@ -143,10 +143,10 @@ public class PublicationsController {
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
             ResultSet res = stmt.executeQuery("SELECT s.submissionID, s.title, s.abstract, s.pdf, pa.startPage, pa.endPage, s.mainAuthorsEmail " +
-            "FROM publishedArticles3 pa " +
+            "FROM publishedArticles pa " +
             "LEFT JOIN submissions s ON pa.submissionID = s.submissionID " +
             "LEFT JOIN users u ON s.mainAuthorsEmail = u.email " +
-            "WHERE pa.issn='" + issn + "' AND pa.vol=" + vol + " AND pa.number=" + number);
+            "WHERE s.issn='" + issn + "' AND pa.vol=" + vol + " AND pa.number=" + number);
             // Fetch each row from the result set
 
             while (res.next()) {
@@ -197,9 +197,9 @@ public class PublicationsController {
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT j.name, pa.issn, pa.vol, pa.number, pa.startPage, pa.endPage, s.title, s.abstract FROM publishedArticles3 pa\n" +
+            ResultSet res = stmt.executeQuery("SELECT j.name, s.issn, pa.vol, pa.number, pa.startPage, pa.endPage, s.title, s.abstract FROM publishedArticles pa\n" +
                     "    LEFT JOIN submissions s on s.submissionID = pa.submissionID\n" +
-                    "    LEFT JOIN journals j on pa.issn = j.issn\n" +
+                    "    LEFT JOIN journals j on s.issn = j.issn\n" +
                     "    WHERE pa.submissionID = " + submissionId);
 
             // Fetch each row from the result set

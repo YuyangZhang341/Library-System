@@ -148,6 +148,6 @@ public class EditorView {
     }
 
     public static void main(String[] args) {
-        showEditorView("1234-4321", false);
+        showEditorView("1234-4321", true);
     }
 }
