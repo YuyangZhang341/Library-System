@@ -11,6 +11,7 @@ public class VolumesView {
     private JButton openButton;
     private JTable volumesTable;
     private JScrollPane volumesScrollPane;
+    private JButton homeButton;
 
     private String issn;
 
@@ -20,6 +21,14 @@ public class VolumesView {
     public VolumesView(String issn) {
         this.issn = issn;
         loadVolumesTable();
+
+        homeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                App.showMainApp();
+                frame.dispose();
+            }
+        });
 
         backButton.addActionListener(new ActionListener() {
             @Override

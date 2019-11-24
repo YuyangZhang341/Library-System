@@ -12,6 +12,7 @@ public class EditionsView {
     private JPanel editionsPanel;
     private JButton backButton;
     private JButton openButton;
+    private JButton homeButton;
 
     private String issn;
     private int vol;
@@ -24,6 +25,14 @@ public class EditionsView {
         this.vol = vol;
 
         loadEditionsTable();
+
+        homeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                App.showMainApp();
+                frame.dispose();
+            }
+        });
 
         backButton.addActionListener(new ActionListener() {
             @Override
