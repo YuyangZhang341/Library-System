@@ -7,6 +7,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class EditorView {
     private JPanel mainPanel;
@@ -50,6 +52,42 @@ public class EditorView {
             buttonsPanel.remove(changeEditorButton);
             buttonsPanel.remove(publishButton);
         }
+
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
+        changePasswordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
+        changeEditorButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println(journalIssn);
+                ChangeMainEditorDialog.showChangeMainEditorDialog(journalIssn);
+            }
+        });
+
+        retireButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
+        publishButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
     }
 
     public static void showEditorView(String journalIssn, Boolean isChiefEditor) {
@@ -70,10 +108,6 @@ public class EditorView {
         for(ConsideredSubmission cSubmission : PublicationsController.getConsideredSubmissions(journalIssn)) {
             model.addRow(new Object[]{cSubmission.getDecision(), cSubmission.getSubmissionId(), cSubmission.getTitle(), cSubmission.getAbs()});
         }
-    }
-
-    public static void main(String[] args) {
-        showEditorView("1234-4321", false);
     }
 
     private void createUIComponents() {
@@ -111,5 +145,9 @@ public class EditorView {
                 }
             }
         });
+    }
+
+    public static void main(String[] args) {
+        showEditorView("1234-4321", false);
     }
 }

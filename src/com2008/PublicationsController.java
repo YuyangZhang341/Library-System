@@ -12,6 +12,40 @@ public class PublicationsController {
         JOptionPane.showMessageDialog(null,"View the articles");
     }
 
+    public static Editor[] getEditors(String journalIssn) {
+        Statement stmt = null;
+        ArrayList<Editor> results = new ArrayList<Editor>();
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+            ResultSet res = stmt.executeQuery("SELECT u.title, u.forenames, u.surname, u.universityAffiliation, u.email, u.password, j.chiefEditorEmail " +
+                    "FROM users u " +
+                    "LEFT JOIN editors e ON e.email = u.email " +
+                    "LEFT JOIN journals j ON  j.issn = e.issn " +
+                    "WHERE j.issn='" + journalIssn + "'");
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                String title = res.getString("title");
+                String forenames = res.getString("forenames");
+                String surname = res.getString("surname");
+                String universityAffiliation = res.getString("universityAffiliation");
+                String email = res.getString("email");
+                String password = res.getString("password");
+                Boolean isChiefEditor = res.getString("chiefEditorEmail").equals(res.getString("email"));
+
+                if (!isChiefEditor) {
+                    results.add(new Editor(title, forenames, surname, universityAffiliation, email, password, isChiefEditor, journalIssn));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        Editor arrayResults[] = new Editor[results.size()];
+        return results.toArray(arrayResults);
+    }
+
     public static Journal[] getJournals() {
         Statement stmt = null;
         ArrayList<Journal> results = new ArrayList<Journal>();
