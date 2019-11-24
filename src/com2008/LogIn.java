@@ -19,10 +19,12 @@ public class LogIn {
     private JLabel passwordLabel;
     private JTextField Username;
     private JPasswordField Password;
-    private JButton signUpAsEditor;
-    private JButton signUpAsReviewer;
     private JButton logIn;
     private JButton back;
+
+    private static String username;
+    private static String password;
+    private static String url = "";
 
     private static JFrame frame = new JFrame("LogIn");
 
@@ -40,21 +42,7 @@ public class LogIn {
             public void actionPerformed(ActionEvent e) {}
         });
 
-        signUpAsEditor.addActionListener(new ActionListener() {
 
-            public void actionPerformed(ActionEvent e) {
-                new SignUp().showSignUp();
-                frame.dispose();
-            }
-        });
-
-        signUpAsReviewer.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                new SignUp().showSignUp();
-                frame.dispose();
-            }
-        });
 
 
     }

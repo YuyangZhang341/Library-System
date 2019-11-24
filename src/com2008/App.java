@@ -1,9 +1,12 @@
 package com2008;
 
+import com.javateam019.view.newlogin;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 
 public class App {
     private JPanel mainPanel;
@@ -30,7 +33,7 @@ public class App {
         logInButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                LogIn.showLogIn();
+                newlogin.showLogIn();
 
                 frame.dispose();
             }

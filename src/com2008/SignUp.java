@@ -12,10 +12,10 @@ public class SignUp {
     private JPanel lowPanel;
     private JTextField userNameField;
     private JTextField emialField;
-    private JTextField passwordField;
     private JButton submit;
     private JPanel mainPanel;
     private JButton buttonBack;
+    private JPasswordField passwordField;
 
     private static JFrame frame = new JFrame("SignUp");
 
