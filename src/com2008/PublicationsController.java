@@ -52,14 +52,15 @@ public class PublicationsController {
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT issn, name FROM journals");
+            ResultSet res = stmt.executeQuery("SELECT issn, name, chiefEditorEmail FROM journals");
 
             // Fetch each row from the result set
             while (res.next()) {
                 String issn = res.getString("issn");
                 String name = res.getString("name");
+                String chiefEditorEmail = res.getString("chiefEditorEmail");
 
-                results.add(new Journal(issn, name));
+                results.add(new Journal(issn, name, chiefEditorEmail));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -67,6 +68,27 @@ public class PublicationsController {
 
         Journal arrayResults[] = new Journal[results.size()];
         return results.toArray(arrayResults);
+    }
+
+    public static Journal getJournal(String issn) {
+        Statement stmt = null;
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+            ResultSet res = stmt.executeQuery("SELECT name, chiefEditorEmail FROM journals WHERE issn LIKE '" + issn + "'");
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                String name = res.getString("name");
+                String chiefEditorEmail = res.getString("chiefEditorEmail");
+
+                return new Journal(issn, name, chiefEditorEmail);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public static Volume[] getVolumes(String issn) {
@@ -124,7 +146,7 @@ public class PublicationsController {
             "FROM publishedArticles pa " +
             "LEFT JOIN submissions s ON pa.submissionID = s.submissionID " +
             "LEFT JOIN users u ON s.mainAuthorsEmail = u.email " +
-            "WHERE pa.issn='" + issn + "' AND pa.vol=" + vol + " AND pa.number=" + number);
+            "WHERE s.issn='" + issn + "' AND pa.vol=" + vol + " AND pa.number=" + number);
             // Fetch each row from the result set
 
             while (res.next()) {
@@ -175,9 +197,9 @@ public class PublicationsController {
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT j.name, pa.issn, pa.vol, pa.number, pa.startPage, pa.endPage, s.title, s.abstract FROM publishedArticles pa\n" +
+            ResultSet res = stmt.executeQuery("SELECT j.name, s.issn, pa.vol, pa.number, pa.startPage, pa.endPage, s.title, s.abstract FROM publishedArticles pa\n" +
                     "    LEFT JOIN submissions s on s.submissionID = pa.submissionID\n" +
-                    "    LEFT JOIN journals j on pa.issn = j.issn\n" +
+                    "    LEFT JOIN journals j on s.issn = j.issn\n" +
                     "    WHERE pa.submissionID = " + submissionId);
 
             // Fetch each row from the result set
@@ -264,5 +286,36 @@ public class PublicationsController {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static ConsideredSubmission[] getConsideredSubmissions(String journalIssn) {
+        Statement stmt = null;
+        ArrayList<ConsideredSubmission> results = new ArrayList<ConsideredSubmission>();
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+            ResultSet res = stmt.executeQuery("SELECT s.submissionID, s.title, s.abstract, s.pdf, s.mainAuthorsEmail, cs.decision\n" +
+                    "                    FROM submissions s\n" +
+                    "                    LEFT JOIN reviews r on s.submissionID = r.submissionID\n" +
+                    "                    LEFT JOIN consideredSubmissions cs ON s.submissionID = cs.submissionId\n" +
+                    "                    WHERE r.verdict != '' AND s.issn = '" + journalIssn + "' HAVING COUNT(r.verdict) >= 3");
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                int submissionID = res.getInt("submissionID");
+                String title = res.getString("title");
+                String abs = res.getString("abstract");
+                String pdf = res.getString("pdf");
+                String mainAuthorsEmail = res.getString("mainAuthorsEmail");
+                String decision = res.getString("decision");
+
+                results.add(new ConsideredSubmission(submissionID, title, abs, pdf, mainAuthorsEmail, decision));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        ConsideredSubmission[] arrayResults = new ConsideredSubmission[results.size()];
+        return results.toArray(arrayResults);
     }
 }
