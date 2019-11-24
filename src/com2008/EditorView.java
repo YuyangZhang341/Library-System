@@ -12,11 +12,11 @@ public class EditorView {
     private JPanel articlesPanel;
     private JPanel infoPanel;
     private JTable articlesTable;
-    private JScrollPane tableScrollPane;
     private JTextField titleTextField;
     private JTextField ISSNTextField;
     private JButton changeEditorButton;
     private JButton publishButton;
+    private JScrollPane contentScrollPane;
 
     private static JFrame frame = new JFrame("Article");
 
