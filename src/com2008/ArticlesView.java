@@ -12,6 +12,7 @@ public class ArticlesView {
     private JPanel articlesPanel;
     private JButton backButton;
     private JButton openButton;
+    private JButton homeButton;
 
     private int submissionID;
     private String issn;
@@ -29,6 +30,14 @@ public class ArticlesView {
         this.number = number;
 
         loadArticlesTable();
+
+        homeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                App.showMainApp();
+                frame.dispose();
+            }
+        });
 
         backButton.addActionListener(new ActionListener() {
             @Override
