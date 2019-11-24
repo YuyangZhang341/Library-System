@@ -14,14 +14,17 @@ public class EditorView {
     private JPanel articlesPanel;
     private JPanel infoPanel;
     private JTable articlesTable;
-    private JScrollPane tableScrollPane;
     private JTextField titleTextField;
     private JTextField ISSNTextField;
     private JButton changeEditorButton;
     private JButton publishButton;
+    private JScrollPane contentScrollPane;
+    private JPanel buttonsPanel;
+    private JButton retireButton;
 
-    private static JFrame frame = new JFrame("Article");
+    private static JFrame frame = new JFrame("Journal Dashboard");
 
+<<<<<<< HEAD
     public EditorView() {
         changeEditorButton.addActionListener(new ActionListener() {
             @Override
@@ -33,6 +36,14 @@ public class EditorView {
 
     public static void showEditorView() {
         frame.setContentPane(new EditorView().mainPanel);
+=======
+    public EditorView(Editor editor) {
+        buttonsPanel.remove(publishButton);
+    }
+
+    public static void showEditorView(String journalIssn, Boolean isChiefEditor) {
+        frame.setContentPane(new EditorView(journalIssn, isChiefEditor).mainPanel);
+>>>>>>> 6b4a340979eee884e0adfbdbd6377f91bbb54a42
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
 
@@ -43,6 +54,6 @@ public class EditorView {
     }
 
     public static void main(String[] args) {
-        showEditorView();
+        showEditorView("1234-4321", true);
     }
 }
