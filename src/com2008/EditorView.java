@@ -20,10 +20,22 @@ public class EditorView {
     private JPanel buttonsPanel;
     private JButton retireButton;
 
+    private String journalIssn;
+    private Boolean isChiefEditor;
+
     private static JFrame frame = new JFrame("Journal Dashboard");
 
-    public EditorView(Editor editor) {
-        buttonsPanel.remove(publishButton);
+    public EditorView(String journalIssn, Boolean isChiefEditor) {
+        this.journalIssn = journalIssn;
+        this.isChiefEditor = isChiefEditor;
+
+        // Change interface depending on who's viewing it
+        if (isChiefEditor) {
+            buttonsPanel.remove(retireButton);
+        } else {
+            buttonsPanel.remove(changeEditorButton);
+            buttonsPanel.remove(publishButton);
+        }
     }
 
     public static void showEditorView(String journalIssn, Boolean isChiefEditor) {
@@ -38,6 +50,6 @@ public class EditorView {
     }
 
     public static void main(String[] args) {
-        showEditorView("1234-4321", true);
+        showEditorView("1234-4321", false);
     }
 }
