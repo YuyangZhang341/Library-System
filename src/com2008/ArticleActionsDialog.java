@@ -70,7 +70,6 @@ public class ArticleActionsDialog extends JDialog {
         d.pack();
         d.setLocationRelativeTo(null);
         d.setVisible(true);
-        System.exit(0);
     }
 
     public static void main(String[] args) {
