@@ -22,28 +22,26 @@ public class EditorView {
     private JPanel buttonsPanel;
     private JButton retireButton;
 
+    private String journalIssn;
+    private Boolean isChiefEditor;
+
     private static JFrame frame = new JFrame("Journal Dashboard");
 
-<<<<<<< HEAD
-    public EditorView() {
+    public EditorView(String journalIssn, Boolean isChiefEditor) {
+        this.journalIssn = journalIssn;
+        this.isChiefEditor = isChiefEditor;
+
         changeEditorButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ChangeMainEditorDialog.showChangeMainEditorDialog();
+                System.out.println(journalIssn);
+                ChangeMainEditorDialog.showChangeMainEditorDialog(journalIssn);
             }
         });
     }
 
-    public static void showEditorView() {
-        frame.setContentPane(new EditorView().mainPanel);
-=======
-    public EditorView(Editor editor) {
-        buttonsPanel.remove(publishButton);
-    }
-
     public static void showEditorView(String journalIssn, Boolean isChiefEditor) {
         frame.setContentPane(new EditorView(journalIssn, isChiefEditor).mainPanel);
->>>>>>> 6b4a340979eee884e0adfbdbd6377f91bbb54a42
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
 

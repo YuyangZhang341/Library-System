@@ -1,17 +1,28 @@
 package com2008;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.*;
+import java.sql.*;
+import java.util.ArrayList;
 
 public class ChangeMainEditorDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
+    private JTable editorsTable;
 
-    public ChangeMainEditorDialog() {
+    private String journalIssn;
+
+    public ChangeMainEditorDialog(String journalIssn) {
+        this.journalIssn = journalIssn;
+
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
+
+        loadEditorsTable(journalIssn);
 
         buttonOK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -42,7 +53,7 @@ public class ChangeMainEditorDialog extends JDialog {
     }
 
     private void onOK() {
-        // add your code here
+        changeChiefEditor(journalIssn);
         dispose();
     }
 
@@ -51,18 +62,43 @@ public class ChangeMainEditorDialog extends JDialog {
         dispose();
     }
 
-    public static void showChangeMainEditorDialog() {
-        ChangeMainEditorDialog d = new ChangeMainEditorDialog();
-        d.pack();
-        d.setLocationRelativeTo(null);
-        d.setVisible(true);
-        System.exit(0);
+    private void loadEditorsTable(String journalIssn) {
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Title", "Forenames", "Surname", "Email"}, 0);
+        editorsTable.setModel(model);
+
+        for(Editor editor: PublicationsController.getEditors(journalIssn)) {
+            model.addRow(new Object[]{editor.getTitle(), editor.getForenames(), editor.getSurname(), editor.getEmail()});
+        }
     }
 
-    public static void main(String[] args) {
-        ChangeMainEditorDialog dialog = new ChangeMainEditorDialog();
-        dialog.pack();
-        dialog.setVisible(true);
-        System.exit(0);
+    public static void showChangeMainEditorDialog(String journalIssn) {
+        ChangeMainEditorDialog d = new ChangeMainEditorDialog(journalIssn);
+        d.pack();
+        d.setSize(400,300);
+        d.setLocationRelativeTo(null);
+        d.setVisible(true);
+    }
+
+    private void changeChiefEditor(String journalIssn) {
+        System.out.println(journalIssn);
+        Statement stmt = null;
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+            stmt.executeUpdate("UPDATE journals SET chiefEditorEmail = '" +
+                    editorsTable.getValueAt(editorsTable.getSelectedRow(), 3).toString() + "'" +
+                    " WHERE issn = '" + journalIssn + "'");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createUIComponents() {
+        editorsTable = new JTable(){
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            };
+        };
     }
 }
