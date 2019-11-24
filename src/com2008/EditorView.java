@@ -2,6 +2,8 @@ package com2008;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class EditorView {
     private JPanel mainPanel;
@@ -19,6 +21,15 @@ public class EditorView {
     private JButton publishButton;
 
     private static JFrame frame = new JFrame("Article");
+
+    public EditorView() {
+        changeEditorButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ChangeMainEditorDialog.showChangeMainEditorDialog();
+            }
+        });
+    }
 
     public static void showEditorView() {
         frame.setContentPane(new EditorView().mainPanel);
