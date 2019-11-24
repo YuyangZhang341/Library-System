@@ -127,7 +127,7 @@ public class EditorView {
 
             @Override
             public void keyPressed(KeyEvent e) {
-
+                ArticleActionsDialog.showArticleActionsDialog();
             }
 
             @Override
@@ -141,7 +141,7 @@ public class EditorView {
                 Point point = mouseEvent.getPoint();
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-
+                    ArticleActionsDialog.showArticleActionsDialog();
                 }
             }
         });
