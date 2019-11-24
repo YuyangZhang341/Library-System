@@ -17,11 +17,17 @@ public class EditorView {
     private JButton changeEditorButton;
     private JButton publishButton;
     private JScrollPane contentScrollPane;
+    private JPanel buttonsPanel;
+    private JButton retireButton;
 
-    private static JFrame frame = new JFrame("Article");
+    private static JFrame frame = new JFrame("Journal Dashboard");
 
-    public static void showEditorView() {
-        frame.setContentPane(new EditorView().mainPanel);
+    public EditorView(Editor editor) {
+        buttonsPanel.remove(publishButton);
+    }
+
+    public static void showEditorView(Editor editor) {
+        frame.setContentPane(new EditorView(editor).mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
 
