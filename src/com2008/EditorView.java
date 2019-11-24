@@ -26,8 +26,8 @@ public class EditorView {
         buttonsPanel.remove(publishButton);
     }
 
-    public static void showEditorView(Editor editor) {
-        frame.setContentPane(new EditorView(editor).mainPanel);
+    public static void showEditorView(String journalIssn, Boolean isChiefEditor) {
+        frame.setContentPane(new EditorView(journalIssn, isChiefEditor).mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
 
@@ -38,6 +38,6 @@ public class EditorView {
     }
 
     public static void main(String[] args) {
-        showEditorView();
+        showEditorView("1234-4321", true);
     }
 }
