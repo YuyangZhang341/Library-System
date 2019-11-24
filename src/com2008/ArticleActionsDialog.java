@@ -9,7 +9,11 @@ public class ArticleActionsDialog extends JDialog {
     private JButton acceptButton;
     private JButton delayButton;
 
-    public ArticleActionsDialog() {
+    private int submissionID;
+
+    public ArticleActionsDialog(int submissionID) {
+        this.submissionID = submissionID;
+
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(viewButton);
@@ -65,15 +69,11 @@ public class ArticleActionsDialog extends JDialog {
 
     }
 
-    public static void showArticleActionsDialog() {
-        ArticleActionsDialog d = new ArticleActionsDialog();
+    public static void showArticleActionsDialog(int submissionID) {
+        ArticleActionsDialog d = new ArticleActionsDialog(submissionID);
         d.pack();
         d.setLocationRelativeTo(null);
         d.setVisible(true);
         System.exit(0);
-    }
-
-    public static void main(String[] args) {
-        showArticleActionsDialog();
     }
 }
