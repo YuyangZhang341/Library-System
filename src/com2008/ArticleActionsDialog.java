@@ -1,6 +1,7 @@
 package com2008;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,9 +16,14 @@ public class ArticleActionsDialog extends JDialog {
     private JButton rejectButton;
 
     private int submissionId;
+    private String journalIssn;
+    private String userEmail;
+    static ArticleActionsDialog d;
 
-    public ArticleActionsDialog(int submissionId) {
+    public ArticleActionsDialog(int submissionId, String journalIssn, String userEmail) {
         this.submissionId = submissionId;
+        this.journalIssn = journalIssn;
+        this.userEmail = userEmail;
 
         setContentPane(contentPane);
         setModal(true);
@@ -70,7 +76,9 @@ public class ArticleActionsDialog extends JDialog {
     }
 
     private void viewArticle() {
-        ArticleView.showArticleView(submissionId);
+        ConsideredSubmissionView.showConsideredSubmissionsView(submissionId, journalIssn, userEmail);
+        dispose();
+        ((Window)d.getParent()).dispose();
     }
 
     private void makeDecision(String decision) {
@@ -80,14 +88,17 @@ public class ArticleActionsDialog extends JDialog {
             stmt = con.createStatement();
             stmt.executeUpdate("UPDATE consideredSubmissions SET decision = '" +
                     decision + "' WHERE submissionId = '" + submissionId + "'");
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        dispose();
+        ((Window)d.getParent()).dispose();
+        EditorView.showEditorView(journalIssn, userEmail);
     }
 
-    public static void showArticleActionsDialog(int submissionId) {
-        ArticleActionsDialog d = new ArticleActionsDialog(submissionId);
+    public static void showArticleActionsDialog(int submissionId, String journalIssn, String userEmail) {
+        d = new ArticleActionsDialog(submissionId, journalIssn, userEmail);
         d.pack();
         d.setLocationRelativeTo(null);
         d.setVisible(true);
