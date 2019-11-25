@@ -166,26 +166,31 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
-    public static void fetchArticleAuthors(JTable table, int submissionId) {
+    public static Author[] getArticleAuthors(int submissionId) {
         Statement stmt = null;
-        DefaultTableModel model = new DefaultTableModel(new String[]{"Title", "Forename", "Surname"}, 0);
-        table.setModel(model);
+        ArrayList<Author> results = new ArrayList<Author>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT u.title, u.forenames, u.surname FROM users u LEFT JOIN authors a on u.email = a.email WHERE submissionID = " + submissionId);
+            ResultSet res = stmt.executeQuery("SELECT u.email, u.title, u.forenames, u.surname, u.universityAffiliation, u.password FROM users u LEFT JOIN authors a on u.email = a.email WHERE submissionID = " + submissionId);
 
             // Fetch each row from the result set
             while (res.next()) {
+                String email = res.getString("email");
                 String title = res.getString("title");
                 String forenames = res.getString("forenames");
                 String surname = res.getString("surname");
+                String uniAffiliation = res.getString("universityAffiliation");
+                String password = res.getString("password");
 
-                model.addRow(new Object[]{title, forenames, surname});
+                results.add(new Author(email, title, forenames, surname, uniAffiliation, password));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        Author[] arrayResults = new Author[results.size()];
+        return results.toArray(arrayResults);
     }
 
     public static Map<String, String> getArticleInfo(int submissionId) {

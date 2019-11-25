@@ -1,6 +1,7 @@
 package com2008;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -45,6 +46,8 @@ public class ArticleView {
         pageRangeLabel.setText("Page range: " + articleInfo.get("startPage") + " - " + articleInfo.get("endPage"));
         articleTitleLabel.setText("Article title: " + articleInfo.get("title"));
         abstractTextArea.setText(articleInfo.get("abstract"));
+        loadAuthorsTable();
+
 
         backButton.addActionListener(new ActionListener() {
             @Override
@@ -73,13 +76,20 @@ public class ArticleView {
         frame.setVisible(true);
     }
 
+    private void loadAuthorsTable() {
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Title", "Forenames", "Surname", "University Affiliation"}, 0);
+        authorsTable.setModel(model);
+
+        for(Author author: PublicationsController.getArticleAuthors(submissionId)) {
+            model.addRow(new Object[]{author.getTitle(), author.getForenames(), author.getSurname(), author.getUniversityAffiliation()});
+        }
+    }
+
     private void createUIComponents() {
         authorsTable = new JTable(){
             public boolean isCellEditable(int row, int column) {
                 return false;
             };
         };
-
-        PublicationsController.fetchArticleAuthors(authorsTable, submissionId);
     }
 }

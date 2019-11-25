@@ -7,6 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class EditorView {
     private JPanel mainPanel;
@@ -102,11 +103,37 @@ public class EditorView {
     }
 
     private void loadConsideredSubmissionsTable() {
-        DefaultTableModel model = new DefaultTableModel(new String[]{"Decision", "Submission ID", "Title", "Abstract"}, 0);
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Decision", "Submission ID", "Title", "Abstract", "Authors' University Affiliations", "Conflicts"}, 0);
         submissionsTable.setModel(model);
 
         for(ConsideredSubmission cSubmission : PublicationsController.getConsideredSubmissions(journalIssn)) {
-            model.addRow(new Object[]{cSubmission.getDecision(), cSubmission.getSubmissionId(), cSubmission.getTitle(), cSubmission.getAbs()});
+            //ArrayLists to check if already added, String to display in the table
+            ArrayList<String> affiliations = new ArrayList<String>();
+            String affiliationsCell = "";
+            ArrayList<String> conflicts = new ArrayList<String>();
+            String conflictsCell = "";
+
+            for(Author author : PublicationsController.getArticleAuthors(cSubmission.getSubmissionId())) {
+                if(!affiliations.contains(author.getUniversityAffiliation())) {
+                    affiliations.add(author.getUniversityAffiliation());
+                    affiliationsCell += author.getUniversityAffiliation() + ", ";
+                }
+                for(Editor editor : PublicationsController.getEditors(journalIssn)) {
+                    if (author.getUniversityAffiliation().equals(editor.getUniversityAffiliation()) && !conflicts.contains(editor.toString())) {
+                        conflicts.add(editor.toString());
+                        conflictsCell += editor.toString() + ", ";
+                    }
+                }
+            }
+
+            // delete last commas
+            if(!affiliationsCell.equals(""))
+                affiliationsCell = affiliationsCell.substring(0, affiliationsCell.length()-2);
+
+            if(!conflictsCell.equals(""))
+                conflictsCell = conflictsCell.substring(0, conflictsCell.length()-2);
+
+            model.addRow(new Object[]{cSubmission.getDecision(), cSubmission.getSubmissionId(), cSubmission.getTitle(), cSubmission.getAbs(), affiliationsCell, conflictsCell});
         }
     }
 

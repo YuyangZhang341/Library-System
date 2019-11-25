@@ -17,6 +17,11 @@ abstract class Stakeholder {
         this.password = password;
     }
 
+    @Override
+    public String toString() {
+        return title + " " + forenames + " " + surname;
+    }
+
     public String getTitle() {
         return title;
     }
