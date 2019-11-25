@@ -12,6 +12,34 @@ public class PublicationsController {
         JOptionPane.showMessageDialog(null,"View the articles");
     }
 
+    public static String generateIssn() {
+        Random random = new Random();
+        String newIssn = String.format("%04d", random.nextInt(10000)) + "-" + String.format("%04d", random.nextInt(10000));
+        Boolean isUnique = true;
+
+        Statement stmt = null;
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+            ResultSet res = stmt.executeQuery("SELECT issn FROM journals");
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                String issn = res.getString("issn");
+
+                isUnique = issn != newIssn;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if (isUnique) {
+            return newIssn;
+        } else {
+            return generateIssn();
+        }
+    }
+
     public static Editor[] getEditors(String journalIssn) {
         Statement stmt = null;
         ArrayList<Editor> results = new ArrayList<Editor>();
@@ -287,6 +315,47 @@ public class PublicationsController {
             e.printStackTrace();
         }
     }
+
+    public static void createJournal(Journal journal, Editor[] editors) {
+        Statement stmt = null;
+
+        //TODO: check if editors already exist, if so don't replace passwords. Later on include hashing passwords.
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            con.setAutoCommit(false);
+            stmt = con.createStatement();
+
+            String issn = journal.getIssn();
+            String name = journal.getName();
+            String chiefEditorEmail = journal.getChiefEditorEmail();
+
+            int dbUpdate = stmt.executeUpdate("INSERT INTO journals (issn, name, chiefEditorEmail)" +
+                    "VALUES ('" + issn + "', '" + name + "', '" + chiefEditorEmail + "')");
+
+            // add author accounts
+            for (Editor editor : editors) {
+                // check if an account already exists
+                ResultSet res = stmt.executeQuery("SELECT COUNT(email) AS count FROM users WHERE email = '" + editor.getEmail() + "'");
+                int count = 0;
+                while (res.next()) {
+                    count = Integer.parseInt(res.getString("count"));
+                }
+
+                if (count < 1) {
+                    //TODO: make sure the password is hashed or whatever
+                    addUser(editor.getEmail(), editor.getTitle(), editor.getForenames(), editor.getSurname(), editor.getUniversityAffiliation(), editor.getPassword());
+                }
+
+                int editorsUpdate = stmt.executeUpdate("INSERT INTO editors (issn, email) VALUES ('" + issn + "', '" + editor.getEmail() + "')");
+            }
+
+            con.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     public static ConsideredSubmission[] getConsideredSubmissions(String journalIssn) {
         Statement stmt = null;

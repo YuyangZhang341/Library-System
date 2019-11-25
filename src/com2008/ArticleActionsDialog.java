@@ -2,17 +2,22 @@ package com2008;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class ArticleActionsDialog extends JDialog {
     private JPanel contentPane;
     private JButton viewButton;
     private JButton acceptButton;
     private JButton delayButton;
+    private JButton rejectButton;
 
-    private int submissionID;
+    private int submissionId;
 
-    public ArticleActionsDialog(int submissionID) {
-        this.submissionID = submissionID;
+    public ArticleActionsDialog(int submissionId) {
+        this.submissionId = submissionId;
 
         setContentPane(contentPane);
         setModal(true);
@@ -26,14 +31,21 @@ public class ArticleActionsDialog extends JDialog {
 
         acceptButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                acceptArticle();
+                makeDecision("accepted");
+            }
+        });
+
+        rejectButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                makeDecision("rejected");
             }
         });
 
         delayButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                delayArticle();
+                makeDecision("delayed");
             }
         });
 
@@ -58,19 +70,24 @@ public class ArticleActionsDialog extends JDialog {
     }
 
     private void viewArticle() {
-
+        ArticleView.showArticleView(submissionId);
     }
 
-    private void acceptArticle() {
+    private void makeDecision(String decision) {
+        Statement stmt = null;
 
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+            stmt.executeUpdate("UPDATE consideredSubmissions SET decision = '" +
+                    decision + "' WHERE submissionId = '" + submissionId + "'");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void delayArticle() {
-
-    }
-
-    public static void showArticleActionsDialog(int submissionID) {
-        ArticleActionsDialog d = new ArticleActionsDialog(submissionID);
+    public static void showArticleActionsDialog(int submissionId) {
+        ArticleActionsDialog d = new ArticleActionsDialog(submissionId);
         d.pack();
         d.setLocationRelativeTo(null);
         d.setVisible(true);

@@ -5,8 +5,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
-import java.util.Map;
 
 public class AddSubmissionView {
     private JPanel mainPanel;
@@ -22,7 +20,7 @@ public class AddSubmissionView {
     private JTextField forenamesField;
     private JLabel forenamesLabel;
     private JTextField surnameField;
-    private JTextField universityAffiliationFIeld;
+    private JTextField universityAffiliationField;
     private JLabel universityAffiliationLabel;
     private JLabel passwordLabel;
     private JPasswordField passwordField;
@@ -38,6 +36,7 @@ public class AddSubmissionView {
     private JLabel mainAuthorLabel;
     private JPanel scrollPanel;
     private JTextArea abstractTextArea;
+    private JLabel surnameLabel;
     private DefaultTableModel coauthorsTableModel = new DefaultTableModel(new String[]{"Email", "Title", "Forenames", "Surname", "University Affiliation", "Password"}, 0);
 
     private static JFrame frame = new JFrame("Add Submission");
@@ -52,7 +51,7 @@ public class AddSubmissionView {
             }
         });
 
-        submitButton.addActionListener(new ActionListener() {
+        pdfButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //TODO:: open the article's pdf
@@ -73,7 +72,7 @@ public class AddSubmissionView {
                 if (verifyFields()) {
                     Author authors[] = new Author[coauthorsTable.getRowCount() + 1];
                     authors[0] = new Author(emailField.getText(), titleField.getText(), forenamesField.getText(), surnameField.getText(),
-                                            universityAffiliationFIeld.getText(), passwordField.getPassword().toString());
+                                            universityAffiliationField.getText(), passwordField.getPassword().toString());
 
                     for(int i = 0; i < coauthorsTable.getRowCount(); i++) {
                         authors[i+1] = new Author(coauthorsTable.getValueAt(i, 0).toString(), coauthorsTable.getValueAt(i,1).toString(),
@@ -107,7 +106,7 @@ public class AddSubmissionView {
     }
 
     public boolean verifyFields() {
-        //TODO:: check emails, check if no empry rows ets.
+        //TODO:: check emails, check if no empty rows ets.
         return true;
     }
 

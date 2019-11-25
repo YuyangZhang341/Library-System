@@ -17,6 +17,7 @@ public class App {
     private JButton submitArticleButton;
     private JLabel imageLabelLeft;
     private JPanel leftPanel;
+    private JButton createJournalButton;
 
     private static JFrame frame = new JFrame("App");
 
@@ -45,6 +46,13 @@ public class App {
                 AddSubmissionView.showAddSubmissionView();
 
                 frame.dispose();
+            }
+        });
+
+        createJournalButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CreateJournalView.showCreateJournalView();
             }
         });
     }

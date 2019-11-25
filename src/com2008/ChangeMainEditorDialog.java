@@ -84,7 +84,6 @@ public class ChangeMainEditorDialog extends JDialog {
     }
 
     private void changeChiefEditor(String journalIssn) {
-        System.out.println(journalIssn);
         Statement stmt = null;
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
