@@ -24,14 +24,14 @@ public class RoleChoiceView {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                App.showMainApp();
             }
         });
 
         chooseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                chooseRole();
             }
         });
     }
@@ -70,6 +70,7 @@ public class RoleChoiceView {
             case "chief editor":
                 issn = rolesTable.getValueAt(rolesTable.getSelectedRow(), 1).toString();
                 EditorView.showEditorView(issn, email);
+                frame.dispose();
                 break;
             case "reviewer":
                 submissionId = Integer.parseInt(rolesTable.getValueAt(rolesTable.getSelectedRow(), 1).toString());
@@ -100,6 +101,6 @@ public class RoleChoiceView {
     }
 
     public static void main(String[] args) {
-        showRoleChoiceView("abc@abc.co.uk");
+        showRoleChoiceView("co@jest.kurde.123");
     }
 }
