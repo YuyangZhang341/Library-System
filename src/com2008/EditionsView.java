@@ -85,23 +85,7 @@ public class EditionsView {
             };
         };
 
-        // add listeners for enter press and for double click
-        editionsTable.setSurrendersFocusOnKeystroke(true); //make it work for the first press as well
-        editionsTable.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                showSelectedEdition();
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-            }
-        });
-
+        // add a listener for double click
         editionsTable.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent mouseEvent) {
                 JTable table =(JTable) mouseEvent.getSource();

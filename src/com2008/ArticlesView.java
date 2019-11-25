@@ -90,23 +90,7 @@ public class ArticlesView {
             };
         };
 
-        // add listeners for enter press and for double click
-        articlesTable.setSurrendersFocusOnKeystroke(true); //make it work for the first press as well
-        articlesTable.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                showSelectedArticle();
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-            }
-        });
-
+        // add a listener for double click
         articlesTable.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent mouseEvent) {
                 JTable table =(JTable) mouseEvent.getSource();

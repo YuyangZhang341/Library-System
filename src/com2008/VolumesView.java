@@ -83,23 +83,7 @@ public class VolumesView {
             };
         };
 
-        // add listeners for enter press and for double click
-        volumesTable.setSurrendersFocusOnKeystroke(true); //make it work for the first press as well
-        volumesTable.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                showSelectedVolume();
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-            }
-        });
-
+        // add a listener for double click
         volumesTable.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent mouseEvent) {
                 JTable table =(JTable) mouseEvent.getSource();
