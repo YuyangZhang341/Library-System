@@ -7,6 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class EditorView {
@@ -79,7 +80,7 @@ public class EditorView {
         retireButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                retire(userEmail);
             }
         });
 
@@ -137,6 +138,29 @@ public class EditorView {
         }
     }
 
+    private void retire(String userEmail) {
+        System.out.println(userEmail);
+        Statement stmt = null;
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+
+            int res = stmt.executeUpdate("DELETE FROM editors WHERE email = '" + userEmail + "'");
+            System.out.println(res);
+
+            if (PublicationsController.getRoles(userEmail).length == 0) {
+                res = stmt.executeUpdate("DELETE FROM users WHERE email = '" + userEmail + "'");
+                System.out.println(res);
+            }
+
+            App.showMainApp();
+            frame.dispose();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void createUIComponents() {
         // disable editing cells in the table
         submissionsTable = new JTable(){
@@ -160,6 +184,6 @@ public class EditorView {
     }
 
     public static void main(String[] args) {
-        showEditorView("1234-4321", "");
+        showEditorView("1234-4321", "co@jest.kurde.123");
     }
 }
