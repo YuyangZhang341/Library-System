@@ -26,11 +26,13 @@ public class EditorView {
     private JPanel buttonsPanel;
     private JButton retireButton;
     private JTextField chiefEditorTextField;
+    private JLabel counterLabel;
 
     private String journalIssn;
     private String userEmail;
     private Boolean isChiefEditor;
     private Journal journal;
+    private int counter = 0;
 
     private static JFrame frame = new JFrame("Journal Dashboard");
 
@@ -45,6 +47,7 @@ public class EditorView {
         nameTextField.setText(journal.getName());
         issnTextField.setText(journalIssn);
         chiefEditorTextField.setText(journal.getChiefEditorEmail());
+        counterLabel.setText(counter + "/8");
 
         // Change interface depending on who's viewing it
         if (isChiefEditor) {
@@ -132,6 +135,10 @@ public class EditorView {
 
             if(!conflictsCell.equals(""))
                 conflictsCell = conflictsCell.substring(0, conflictsCell.length()-2);
+
+            // increase the counter if the article was accepted
+            if(cSubmission.getDecision().equals("accepted"))
+                counter += 1;
 
             model.addRow(new Object[]{cSubmission.getDecision(), cSubmission.getSubmissionId(), cSubmission.getTitle(), cSubmission.getAbs(), affiliationsCell, conflictsCell});
         }
