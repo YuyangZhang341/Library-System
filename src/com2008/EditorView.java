@@ -153,7 +153,7 @@ public class EditorView {
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
                     int submissionId = Integer.parseInt(submissionsTable.getValueAt(submissionsTable.getSelectedRow(), 1).toString());
-                    ArticleActionsDialog.showArticleActionsDialog(submissionId);
+                    ArticleActionsDialog.showArticleActionsDialog(submissionId, journalIssn, userEmail);
                 }
             }
         });
