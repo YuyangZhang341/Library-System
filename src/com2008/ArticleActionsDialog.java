@@ -76,7 +76,9 @@ public class ArticleActionsDialog extends JDialog {
     }
 
     private void viewArticle() {
-        ArticleView.showArticleView(submissionId);
+        ConsideredSubmissionView.showConsideredSubmissionsView(submissionId, journalIssn, userEmail);
+        dispose();
+        ((Window)d.getParent()).dispose();
     }
 
     private void makeDecision(String decision) {
@@ -90,8 +92,8 @@ public class ArticleActionsDialog extends JDialog {
             e.printStackTrace();
         }
 
-        ((Window)d.getParent()).dispose();
         dispose();
+        ((Window)d.getParent()).dispose();
         EditorView.showEditorView(journalIssn, userEmail);
     }
 

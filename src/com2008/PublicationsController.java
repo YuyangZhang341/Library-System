@@ -221,6 +221,30 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
+    public static Submission getSubmissionInfo(int submissionId) {
+        Statement stmt = null;
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+            ResultSet res = stmt.executeQuery("SELECT * FROM submissions\n" +
+                    "    WHERE submissionID = " + submissionId);
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                String title = res.getString("title");
+                String abs = res.getString("abstract");
+                String pdfLink = res.getString("pdf");
+                String mainAuthorsEmail = res.getString("mainAuthorsEmail");
+
+                return new Submission(submissionId, title, abs, pdfLink, mainAuthorsEmail);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public static Map<String, String> getArticleInfo(int submissionId) {
         Map<String, String> results = new HashMap<String, String>();
 
@@ -447,6 +471,35 @@ public class PublicationsController {
         }
 
         Role[] arrayResults = new Role[results.size()];
+        return results.toArray(arrayResults);
+    }
+
+    public static Verdict[] getVerdicts(int submissionId) {
+        Statement stmt = null;
+        ArrayList<Verdict> results = new ArrayList<Verdict>();
+
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+
+            // Look for author roles
+            ResultSet res = stmt.executeQuery("SELECT * FROM reviews a\n" +
+                    "    WHERE submissionID = " + submissionId);
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                int reviewerId = res.getInt("reviewerID");
+                String summary = res.getString("summary");
+                String typographicalErrors = res.getString("typographicalErrors");
+                String verdict = res.getString("verdict");
+
+                results.add(new Verdict(submissionId, reviewerId, summary, typographicalErrors, verdict));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        Verdict[] arrayResults = new Verdict[results.size()];
         return results.toArray(arrayResults);
     }
 }
