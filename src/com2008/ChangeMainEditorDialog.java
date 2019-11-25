@@ -14,11 +14,13 @@ public class ChangeMainEditorDialog extends JDialog {
     private JTable editorsTable;
 
     private String journalIssn;
+    private String userEmail;
 
     static ChangeMainEditorDialog d;
 
-    public ChangeMainEditorDialog(String journalIssn) {
+    public ChangeMainEditorDialog(String journalIssn, String userEmail) {
         this.journalIssn = journalIssn;
+        this.userEmail = userEmail;
 
         setContentPane(contentPane);
         setModal(true);
@@ -58,7 +60,7 @@ public class ChangeMainEditorDialog extends JDialog {
         changeChiefEditor(journalIssn);
         dispose();
         ((Window)d.getParent()).dispose();
-        EditorView.showEditorView(journalIssn, false);
+        EditorView.showEditorView(journalIssn, userEmail);
     }
 
     private void onCancel() {
@@ -71,12 +73,14 @@ public class ChangeMainEditorDialog extends JDialog {
         editorsTable.setModel(model);
 
         for(Editor editor: PublicationsController.getEditors(journalIssn)) {
-            model.addRow(new Object[]{editor.getTitle(), editor.getForenames(), editor.getSurname(), editor.getEmail()});
+            if(!userEmail.equals(editor.getEmail())) {
+                model.addRow(new Object[]{editor.getTitle(), editor.getForenames(), editor.getSurname(), editor.getEmail()});
+            }
         }
     }
 
-    public static void showChangeMainEditorDialog(String journalIssn) {
-        d = new ChangeMainEditorDialog(journalIssn);
+    public static void showChangeMainEditorDialog(String journalIssn, String userEmail) {
+        d = new ChangeMainEditorDialog(journalIssn, userEmail);
         d.pack();
         d.setSize(400,300);
         d.setLocationRelativeTo(null);

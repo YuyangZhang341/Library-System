@@ -3,8 +3,6 @@ package com2008;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
@@ -29,15 +27,17 @@ public class EditorView {
     private JTextField chiefEditorTextField;
 
     private String journalIssn;
+    private String userEmail;
     private Boolean isChiefEditor;
     private Journal journal;
 
     private static JFrame frame = new JFrame("Journal Dashboard");
 
-    public EditorView(String journalIssn, Boolean isChiefEditor) {
+    public EditorView(String journalIssn, String userEmail) {
         this.journalIssn = journalIssn;
-        this.isChiefEditor = isChiefEditor;
+        this.userEmail = userEmail;
         this.journal = PublicationsController.getJournal(journalIssn);
+        this.isChiefEditor = userEmail.equals(journal.getChiefEditorEmail());
 
         loadConsideredSubmissionsTable();
 
@@ -71,7 +71,7 @@ public class EditorView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 System.out.println(journalIssn);
-                ChangeMainEditorDialog.showChangeMainEditorDialog(journalIssn);
+                ChangeMainEditorDialog.showChangeMainEditorDialog(journalIssn, userEmail);
             }
         });
 
@@ -90,8 +90,8 @@ public class EditorView {
         });
     }
 
-    public static void showEditorView(String journalIssn, Boolean isChiefEditor) {
-        frame.setContentPane(new EditorView(journalIssn, isChiefEditor).mainPanel);
+    public static void showEditorView(String journalIssn, String userEmail) {
+        frame.setContentPane(new EditorView(journalIssn, userEmail).mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
 
@@ -118,23 +118,7 @@ public class EditorView {
             };
         };
 
-        // add listeners for enter press and for double click
-        submissionsTable.setSurrendersFocusOnKeystroke(true); //make it work for the first press as well
-        submissionsTable.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                ArticleActionsDialog.showArticleActionsDialog();
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-            }
-        });
-
+        // add a listener for double click
         submissionsTable.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent mouseEvent) {
                 JTable table =(JTable) mouseEvent.getSource();
@@ -148,6 +132,6 @@ public class EditorView {
     }
 
     public static void main(String[] args) {
-        showEditorView("1234-4321", true);
+        showEditorView("1234-4321", "");
     }
 }

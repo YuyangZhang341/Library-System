@@ -34,9 +34,7 @@ public class PublicationsController {
                 String password = res.getString("password");
                 Boolean isChiefEditor = res.getString("chiefEditorEmail").equals(res.getString("email"));
 
-                if (!isChiefEditor) {
-                    results.add(new Editor(title, forenames, surname, universityAffiliation, email, password, isChiefEditor, journalIssn));
-                }
+                results.add(new Editor(title, forenames, surname, universityAffiliation, email, password, isChiefEditor, journalIssn));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -316,6 +314,65 @@ public class PublicationsController {
         }
 
         ConsideredSubmission[] arrayResults = new ConsideredSubmission[results.size()];
+        return results.toArray(arrayResults);
+    }
+
+    public static Role[] getRoles(String email) {
+        Statement stmt = null;
+        ArrayList<Role> results = new ArrayList<Role>();
+
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+
+            // Look for author roles
+            ResultSet res = stmt.executeQuery("SELECT a.submissionID, s.title FROM authors a\n" +
+                    "    LEFT JOIN submissions s on a.submissionID = s.submissionID\n" +
+                    "    WHERE a.email = '" + email + "'");
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                String submissionId = res.getString("submissionID");
+                String nameOrTitle = res.getString("title");
+
+                results.add(new Role(email, "author", submissionId, nameOrTitle));
+            }
+
+            // Look for editor roles
+            res = stmt.executeQuery("SELECT e.issn, j.name, j.chiefEditorEmail FROM editors e\n" +
+                    "    LEFT JOIN journals j on j.issn = e.issn\n" +
+                    "    WHERE e.email = '" + email + "'");
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                String issn = res.getString("issn");
+                String nameOrTitle = res.getString("name");
+                String chiefEditorEmail = res.getString("chiefEditorEmail");
+
+                if(chiefEditorEmail.equals(email)) {
+                    results.add(new Role(email, "chief editor", issn, nameOrTitle));
+                } else {
+                    results.add(new Role(email, "editor", issn, nameOrTitle));
+                }
+            }
+
+            // Look for reviewer roles
+            res = stmt.executeQuery("SELECT r.submissionID, s.title FROM reviewers r\n" +
+                    "    LEFT JOIN submissions s on r.submissionID = s.submissionID\n" +
+                    "    WHERE r.email = '" + email + "'");
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                String submissionId = res.getString("submissionID");
+                String nameOrTitle = res.getString("title");
+
+                results.add(new Role(email, "reviewer", submissionId, nameOrTitle));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        Role[] arrayResults = new Role[results.size()];
         return results.toArray(arrayResults);
     }
 }
