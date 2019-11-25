@@ -125,7 +125,8 @@ public class EditorView {
                 Point point = mouseEvent.getPoint();
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    ArticleActionsDialog.showArticleActionsDialog();
+                    int submissionId = Integer.parseInt(submissionsTable.getValueAt(submissionsTable.getSelectedRow(), 1).toString());
+                    ArticleActionsDialog.showArticleActionsDialog(submissionId);
                 }
             }
         });
