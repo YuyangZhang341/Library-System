@@ -502,4 +502,34 @@ public class PublicationsController {
         Verdict[] arrayResults = new Verdict[results.size()];
         return results.toArray(arrayResults);
     }
+
+    private static int getVolumeNumber(String issn) {
+        Statement stmt = null;
+
+        Volume[] volumes = getVolumes(issn);
+        Volume lastVolume = volumes[volumes.length-1];
+
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
+        if (lastVolume.getYear() == currentYear) {
+            return lastVolume.getVol();
+        } else {
+            try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+                stmt = con.createStatement();
+
+                int res = stmt.executeUpdate("INSERT INTO volumes (vol,year,issn) " +
+                        "VALUES (" + (lastVolume.getVol()+1) + ", " + (lastVolume.getYear()+1) + ", '" + lastVolume.getIssn() + "')");
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            return lastVolume.getVol()+1;
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(getVolumeNumber("0595-5898"));
+    }
+
 }

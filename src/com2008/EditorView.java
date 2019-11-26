@@ -191,6 +191,6 @@ public class EditorView {
     }
 
     public static void main(String[] args) {
-        showEditorView("1234-4321", "co@jest.kurde.123");
+        showEditorView("1234-4321", "abc@abc.co.uk");
     }
 }
