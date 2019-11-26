@@ -478,7 +478,6 @@ public class PublicationsController {
         Statement stmt = null;
         ArrayList<Verdict> results = new ArrayList<Verdict>();
 
-
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
 
@@ -501,5 +500,56 @@ public class PublicationsController {
 
         Verdict[] arrayResults = new Verdict[results.size()];
         return results.toArray(arrayResults);
+    }
+
+    private static int getVolumeNumber(String issn) {
+        return 1;
+    }
+
+    public static void publishEdition(String issn, Submission[] submissions) {
+        Statement stmt = null;
+
+        int targetVolume = getVolumeNumber(issn);
+
+        // get previous editions
+        Edition previousEditions[] = getEditions(issn, targetVolume);
+
+        // get next edition's number
+        int newEditionNumber = previousEditions.length + 1;
+
+        // get last edition's last page number
+        int previousLastPage = 0;
+        if(previousEditions.length > 0) {
+            for(Article article : getArticles(issn, targetVolume, previousEditions.length)) {
+                if(article.getEndPage() > previousLastPage) {
+                    previousLastPage = article.getEndPage();
+                }
+            }
+        }
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+
+            // Add the new edition
+            int dbUpdate = stmt.executeUpdate("INSERT INTO editions (number, issn, vol) " +
+                    "VALUES (" + newEditionNumber + ", '" + issn + "', " + targetVolume + ")");
+
+            // Add submissions to submitArticles with appropriate issn, vol and edition numbers
+            for(Submission submission : submissions) {
+                //work out start page and end page
+                int startPage = previousLastPage + 1;
+                //TODO: change endpage according to pdf length
+                int endPage = startPage + 1;
+                previousLastPage = endPage;
+
+                dbUpdate = stmt.executeUpdate("INSERT INTO publishedArticles (submissionID, vol, number, startPage, endPage) " +
+                        "VALUES (" + submission.getSubmissionId() + ", " + targetVolume + ", " + newEditionNumber + ", " + startPage + ", " + endPage + ")");
+
+                // Delete the submission from consideredSubmissions table
+                dbUpdate = stmt.executeUpdate("DELETE FROM consideredSubmissions WHERE submissionID = " + submission.getSubmissionId());
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
