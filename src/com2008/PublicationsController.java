@@ -404,6 +404,7 @@ public class PublicationsController {
                 String pdf = res.getString("pdf");
                 String mainAuthorsEmail = res.getString("mainAuthorsEmail");
                 String decision = res.getString("decision");
+                if(decision == null) decision = "";
 
                 results.add(new ConsideredSubmission(submissionID, title, abs, pdf, mainAuthorsEmail, decision));
             }
@@ -478,7 +479,6 @@ public class PublicationsController {
         Statement stmt = null;
         ArrayList<Verdict> results = new ArrayList<Verdict>();
 
-
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
 
@@ -503,54 +503,101 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
+    public static void addVolume(String issn, int vol, int year) {
+        Statement stmt = null;
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+
+            int res = stmt.executeUpdate("INSERT INTO volumes (vol,year,issn) " +
+                    "VALUES (" + vol + ", " + year + ", '" + issn + "')");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static int getVolumeNumber(String issn) {
         Statement stmt = null;
 
         Volume[] volumes = getVolumes(issn);
-        Volume lastVolume = volumes[volumes.length-1];
-
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
+        if(volumes.length == 0) {
+            addVolume(issn, 1, currentYear);
+            return 1;
+        }
+
+        Volume lastVolume = volumes[volumes.length-1];
 
         if (lastVolume.getYear() == currentYear) {
             return lastVolume.getVol();
         } else {
-            try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-                stmt = con.createStatement();
-
-                int res = stmt.executeUpdate("INSERT INTO volumes (vol,year,issn) " +
-                        "VALUES (" + (lastVolume.getVol()+1) + ", " + (lastVolume.getYear()+1) + ", '" + lastVolume.getIssn() + "')");
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
+            addVolume(issn, lastVolume.getVol()+1, lastVolume.getYear()+1);
             return lastVolume.getVol()+1;
         }
     }
 
-// TODO to not delete!
-//    public static int delayedToAccepted(String issn) {
-//        Statement stmt = null;
-//        int res = 0;
-//
-//        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-//            stmt = con.createStatement();
-//
-//            // Change 8 delayed articles to acceptedx
-//            res = stmt.executeUpdate("UPDATE consideredSubmissions c\n" +
-//                    "    LEFT JOIN submissions s ON c.submissionID = s.submissionID\n" +
-//                    "    SET c.decision = 'accepted'\n" +
-//                    "    WHERE c.decision = 'delayed' AND s.issn = '1234-4321'");
-//
-//        }
-//        catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//        return res;
-//    }
+    public static void publishEdition(String issn) {
+        Statement stmt = null;
+        Statement stmt2 = null;
 
-    public static void main(String[] args) {
-        System.out.println();
+        int targetVolume = getVolumeNumber(issn);
+
+        // get previous editions
+        Edition previousEditions[] = getEditions(issn, targetVolume);
+
+        // get next edition's number
+        int newEditionNumber = previousEditions.length + 1;
+
+        // get last edition's last page number
+        int previousLastPage = 0;
+        if(previousEditions.length > 0) {
+            for(Article article : getArticles(issn, targetVolume, previousEditions.length)) {
+                if(article.getEndPage() > previousLastPage) {
+                    previousLastPage = article.getEndPage();
+                }
+            }
+        }
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+            stmt2 = con.createStatement();
+
+            // Add the new edition
+            int dbUpdate = stmt.executeUpdate("INSERT INTO editions (number, issn, vol) " +
+                    "VALUES (" + newEditionNumber + ", '" + issn + "', " + targetVolume + ")");
+
+            // Get accepted submission for that issn
+            ResultSet res = stmt.executeQuery("SELECT s.submissionID, s.title, s.abstract, s.pdf, s.mainAuthorsEmail FROM submissions s\n" +
+                    "    LEFT JOIN consideredSubmissions cs on s.submissionID = cs.submissionID\n" +
+                    "    WHERE s.issn = '" + issn + "' AND cs.decision = 'accepted'");
+
+            // Add submissions to submitArticles with appropriate issn, vol and edition numbers
+            while (res.next()) {
+                int submissionId = res.getInt("submissionID");
+                String title = res.getString("title");
+                String abs = res.getString("abstract");
+                String pdf = res.getString("pdf");
+                String mainAuthorsEmail = res.getString("mainAuthorsEmail");
+
+                //work out start page and end page
+                int startPage = previousLastPage + 1;
+                //TODO: change endpage according to pdf length
+                int endPage = startPage + 1;
+                previousLastPage = endPage;
+
+                dbUpdate = stmt2.executeUpdate("INSERT INTO publishedArticles (submissionID, vol, number, startPage, endPage) " +
+                        "VALUES (" + submissionId + ", " + targetVolume + ", " + newEditionNumber + ", " + startPage + ", " + endPage + ")");
+
+                // Delete the submission from consideredSubmissions table
+                dbUpdate = stmt2.executeUpdate("DELETE FROM consideredSubmissions WHERE submissionID = " + submissionId);
+
+                // Delete the reviews for the submission
+                dbUpdate = stmt2.executeUpdate("DELETE FROM criticisms WHERE submissionID = " + submissionId);
+                dbUpdate = stmt2.executeUpdate("DELETE FROM reviews WHERE submissionID = " + submissionId);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
-
 }

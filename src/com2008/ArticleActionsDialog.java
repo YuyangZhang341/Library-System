@@ -86,8 +86,8 @@ public class ArticleActionsDialog extends JDialog {
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            stmt.executeUpdate("UPDATE consideredSubmissions SET decision = '" +
-                    decision + "' WHERE submissionId = '" + submissionId + "'");
+            stmt.executeUpdate("INSERT INTO consideredSubmissions (submissionID, decision) VALUES(" + submissionId + ", '" + decision + "')\n" +
+                    "    ON DUPLICATE KEY UPDATE submissionID = " + submissionId + ", decision='" + decision + "'");
         } catch (SQLException e) {
             e.printStackTrace();
         }

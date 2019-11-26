@@ -5,6 +5,7 @@ import com.javateam019.model.User;
 import com.javateam019.util.DbUtil;
 import com.javateam019.util.StringUtil;
 import com2008.App;
+import com2008.RoleChoiceView;
 
 
 import javax.swing.*;
@@ -65,9 +66,8 @@ public class newlogin {
             con = DbUtil.getCon();
             User recentUser =userDao.login(con, user);
             if(recentUser!=null){
+                RoleChoiceView.showRoleChoiceView(userName);
                 frame.dispose();
-                MainFrame.showMainFrame();
-
             }else{
                 JOptionPane.showMessageDialog(null,"user name or password is wrong");
             }
