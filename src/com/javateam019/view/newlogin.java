@@ -4,8 +4,7 @@ import com.javateam019.dao.UserDao;
 import com.javateam019.model.User;
 import com.javateam019.util.DbUtil;
 import com.javateam019.util.StringUtil;
-import com2008.App;
-import com2008.RoleChoiceView;
+import com2008.*;
 
 
 import javax.swing.*;
@@ -66,7 +65,33 @@ public class newlogin {
             con = DbUtil.getCon();
             User recentUser =userDao.login(con, user);
             if(recentUser!=null){
-                RoleChoiceView.showRoleChoiceView(userName);
+                // Check which roles the user is registered for
+                Role roles[] = PublicationsController.getRoles(userName);
+
+                // If there's only one role, go straight to the appropriate view. Else, show the role choice view.
+                if(roles.length == 1) {
+                    int submissionId;
+                    String issn;
+
+                    switch(roles[0].getRole()) {
+                        case "author":
+                            submissionId = Integer.parseInt(roles[0].getIssnOrSubmissionId());
+                            //TODO: Go to author view.
+                            break;
+                        case "editor":
+                        case "chief editor":
+                            issn = roles[0].getIssnOrSubmissionId();
+                            EditorView.showEditorView(issn, userName);
+                            break;
+                        case "reviewer":
+                            submissionId = Integer.parseInt(roles[0].getIssnOrSubmissionId());
+                            //TODO: Go to reviewer view.
+                            break;
+                    }
+                } else {
+                    RoleChoiceView.showRoleChoiceView(userName);
+                }
+
                 frame.dispose();
             }else{
                 JOptionPane.showMessageDialog(null,"user name or password is wrong");
