@@ -528,8 +528,29 @@ public class PublicationsController {
         }
     }
 
+// TODO to not delete!
+//    public static int delayedToAccepted(String issn) {
+//        Statement stmt = null;
+//        int res = 0;
+//
+//        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+//            stmt = con.createStatement();
+//
+//            // Change 8 delayed articles to acceptedx
+//            res = stmt.executeUpdate("UPDATE consideredSubmissions c\n" +
+//                    "    LEFT JOIN submissions s ON c.submissionID = s.submissionID\n" +
+//                    "    SET c.decision = 'accepted'\n" +
+//                    "    WHERE c.decision = 'delayed' AND s.issn = '1234-4321'");
+//
+//        }
+//        catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return res;
+//    }
+
     public static void main(String[] args) {
-        System.out.println(getVolumeNumber("0595-5898"));
+        System.out.println();
     }
 
 }
