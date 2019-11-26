@@ -16,7 +16,7 @@ public class ArticleView {
     private JPanel VolNoPageRangePanel;
     private JLabel journalNameLabel;
     private JLabel issnLabel;
-    private JLabel volNoLabel;
+    private JLabel volLabel;
     private JLabel pageRangeLabel;
     private JPanel abstractPanel;
     private JScrollPane contentScrollPane;
@@ -28,9 +28,11 @@ public class ArticleView {
     private JTable authorsTable;
     private JTextField journalNameField;
     private JTextField issnField;
-    private JTextField volNoField;
+    private JTextField volField;
     private JTextField pageRangeField;
     private JTextField articleTitleField;
+    private JLabel noLabel;
+    private JTextField noField;
 
     private int submissionId;
 
@@ -47,7 +49,8 @@ public class ArticleView {
 
         journalNameField.setText(articleInfo.get("name"));
         issnField.setText(issn);
-        volNoField.setText(vol + ", " + no);
+        volField.setText(articleInfo.get("vol"));
+        noField.setText(articleInfo.get("number"));
         pageRangeField.setText(articleInfo.get("startPage") + " - " + articleInfo.get("endPage"));
         articleTitleField.setText(articleInfo.get("title"));
         abstractTextArea.setText(articleInfo.get("abstract"));
