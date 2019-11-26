@@ -171,6 +171,7 @@ public class EditorView {
 
     private void publishButtonPressed() {
         PublicationsController.publishEdition(journalIssn);
+        loadConsideredSubmissionsTable();
     }
 
     private void createUIComponents() {

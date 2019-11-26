@@ -404,6 +404,7 @@ public class PublicationsController {
                 String pdf = res.getString("pdf");
                 String mainAuthorsEmail = res.getString("mainAuthorsEmail");
                 String decision = res.getString("decision");
+                if(decision == null) decision = "";
 
                 results.add(new ConsideredSubmission(submissionID, title, abs, pdf, mainAuthorsEmail, decision));
             }
@@ -538,6 +539,7 @@ public class PublicationsController {
 
     public static void publishEdition(String issn) {
         Statement stmt = null;
+        Statement stmt2 = null;
 
         int targetVolume = getVolumeNumber(issn);
 
@@ -559,6 +561,7 @@ public class PublicationsController {
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
+            stmt2 = con.createStatement();
 
             // Add the new edition
             int dbUpdate = stmt.executeUpdate("INSERT INTO editions (number, issn, vol) " +
@@ -583,11 +586,15 @@ public class PublicationsController {
                 int endPage = startPage + 1;
                 previousLastPage = endPage;
 
-                dbUpdate = stmt.executeUpdate("INSERT INTO publishedArticles (submissionID, vol, number, startPage, endPage) " +
+                dbUpdate = stmt2.executeUpdate("INSERT INTO publishedArticles (submissionID, vol, number, startPage, endPage) " +
                         "VALUES (" + submissionId + ", " + targetVolume + ", " + newEditionNumber + ", " + startPage + ", " + endPage + ")");
 
                 // Delete the submission from consideredSubmissions table
-                dbUpdate = stmt.executeUpdate("DELETE FROM consideredSubmissions WHERE submissionID = " + submissionId);
+                dbUpdate = stmt2.executeUpdate("DELETE FROM consideredSubmissions WHERE submissionID = " + submissionId);
+
+                // Delete the reviews for the submission
+                dbUpdate = stmt2.executeUpdate("DELETE FROM criticisms WHERE submissionID = " + submissionId);
+                dbUpdate = stmt2.executeUpdate("DELETE FROM reviews WHERE submissionID = " + submissionId);
             }
         } catch (SQLException e) {
             e.printStackTrace();
