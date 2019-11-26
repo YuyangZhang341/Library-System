@@ -37,6 +37,7 @@ public class AddSubmissionView {
     private JPanel scrollPanel;
     private JTextArea abstractTextArea;
     private JLabel surnameLabel;
+    private JTextField targetIssnTextField;
     private DefaultTableModel coauthorsTableModel = new DefaultTableModel(new String[]{"Email", "Title", "Forenames", "Surname", "University Affiliation", "Password"}, 0);
 
     private static JFrame frame = new JFrame("Add Submission");
@@ -80,7 +81,7 @@ public class AddSubmissionView {
                                                   coauthorsTable.getValueAt(i, 4).toString(), coauthorsTable.getValueAt(i, 5).toString());
                     }
 
-                    Submission submission = new Submission(-1, articleTitleField.getText(), abstractTextArea.getText(), null, emailField.getText());
+                    Submission submission = new Submission(-1, articleTitleField.getText(), abstractTextArea.getText(), null, emailField.getText(), targetIssnTextField.getText());
 
                     PublicationsController.addSubmission(submission, authors);
 

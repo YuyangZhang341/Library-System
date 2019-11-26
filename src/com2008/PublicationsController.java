@@ -235,8 +235,9 @@ public class PublicationsController {
                 String abs = res.getString("abstract");
                 String pdfLink = res.getString("pdf");
                 String mainAuthorsEmail = res.getString("mainAuthorsEmail");
+                String issn = res.getString("issn");
 
-                return new Submission(submissionId, title, abs, pdfLink, mainAuthorsEmail);
+                return new Submission(submissionId, title, abs, pdfLink, mainAuthorsEmail, issn);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -307,8 +308,9 @@ public class PublicationsController {
 
             int submissionId = submission.getSubmissionId();
 
-            int dbUpdate = stmt.executeUpdate("INSERT INTO submissions (title, abstract, pdf, mainAuthorsEmail)" +
-                    "VALUES ('" + submission.getTitle() + "', '" + submission.getAbs() + "', '" + submission.getPdfLink() + "', '" + submission.getMainAuthorsEmail()+ "')");
+            int dbUpdate = stmt.executeUpdate("INSERT INTO submissions (title, abstract, pdf, mainAuthorsEmail, issn)" +
+                    "VALUES ('" + submission.getTitle() + "', '" + submission.getAbs() + "', '" + submission.getPdfLink()+ "', '"
+                    + submission.getMainAuthorsEmail()+ "', '" + submission.getIssn() + "')");
 
             // check the submission id assigned
             ResultSet submissionRes = stmt.executeQuery("SELECT submissionID FROM submissions\n" +
@@ -390,11 +392,13 @@ public class PublicationsController {
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT s.submissionID, s.title, s.abstract, s.pdf, s.mainAuthorsEmail, cs.decision\n" +
+            ResultSet res = stmt.executeQuery("SELECT s.submissionID, s.title, s.abstract, s.pdf, s.mainAuthorsEmail, cs.decision, COUNT(r.verdict) as verdicts\n" +
                     "                    FROM submissions s\n" +
                     "                    LEFT JOIN reviews r on s.submissionID = r.submissionID\n" +
                     "                    LEFT JOIN consideredSubmissions cs ON s.submissionID = cs.submissionId\n" +
-                    "                    WHERE r.verdict != '' AND s.issn = '" + journalIssn + "' HAVING COUNT(r.verdict) >= 3");
+                    "                    WHERE r.verdict != '' AND s.issn = '" + journalIssn + "'\n" +
+                    "                    GROUP BY s.submissionID\n"+
+                    "                    HAVING verdicts>=3");
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -406,7 +410,7 @@ public class PublicationsController {
                 String decision = res.getString("decision");
                 if(decision == null) decision = "";
 
-                results.add(new ConsideredSubmission(submissionID, title, abs, pdf, mainAuthorsEmail, decision));
+                results.add(new ConsideredSubmission(submissionID, title, abs, pdf, mainAuthorsEmail, decision, journalIssn));
             }
         } catch (SQLException e) {
             e.printStackTrace();
