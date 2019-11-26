@@ -26,6 +26,11 @@ public class ArticleView {
     private JButton backButton;
     private JTextArea abstractTextArea;
     private JTable authorsTable;
+    private JTextField journalNameField;
+    private JTextField issnField;
+    private JTextField volNoField;
+    private JTextField pageRangeField;
+    private JTextField articleTitleField;
 
     private int submissionId;
 
@@ -40,11 +45,11 @@ public class ArticleView {
         int vol = Integer.parseInt(articleInfo.get("vol"));
         int no = Integer.parseInt(articleInfo.get("number"));
 
-        journalNameLabel.setText("Journal: " + articleInfo.get("name"));
-        issnLabel.setText("ISSN: " + issn);
-        volNoLabel.setText("vol. " + vol + ", no. " + no);
-        pageRangeLabel.setText("Page range: " + articleInfo.get("startPage") + " - " + articleInfo.get("endPage"));
-        articleTitleLabel.setText("Article title: " + articleInfo.get("title"));
+        journalNameField.setText(articleInfo.get("name"));
+        issnField.setText(issn);
+        volNoField.setText(vol + ", " + no);
+        pageRangeField.setText(articleInfo.get("startPage") + " - " + articleInfo.get("endPage"));
+        articleTitleField.setText(articleInfo.get("title"));
         abstractTextArea.setText(articleInfo.get("abstract"));
         loadAuthorsTable();
 

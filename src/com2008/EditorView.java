@@ -51,9 +51,7 @@ public class EditorView {
         counterLabel.setText(counter + "/8");
 
         // Change interface depending on who's viewing it
-        if (isChiefEditor) {
-            buttonsPanel.remove(retireButton);
-        } else {
+        if (!isChiefEditor) {
             buttonsPanel.remove(changeEditorButton);
             buttonsPanel.remove(publishButton);
         }
@@ -76,7 +74,6 @@ public class EditorView {
         changeEditorButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println(journalIssn);
                 ChangeMainEditorDialog.showChangeMainEditorDialog(journalIssn, userEmail);
             }
         });
@@ -84,6 +81,9 @@ public class EditorView {
         retireButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (isChiefEditor) {
+                    ChangeMainEditorDialog.showChangeMainEditorDialog(journalIssn, userEmail);
+                }
                 retireButtonPressed(userEmail);
             }
         });
@@ -189,8 +189,13 @@ public class EditorView {
                 Point point = mouseEvent.getPoint();
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    int submissionId = Integer.parseInt(submissionsTable.getValueAt(submissionsTable.getSelectedRow(), 1).toString());
-                    ArticleActionsDialog.showArticleActionsDialog(submissionId, journalIssn, userEmail);
+                    String affiliationConflict = submissionsTable.getValueAt(submissionsTable.getSelectedRow(), 5).toString();
+                    if(affiliationConflict.length() != 0) {
+                        JOptionPane.showMessageDialog(null,"Conflict of interest detected.\n" + affiliationConflict);
+                    } else {
+                        int submissionId = Integer.parseInt(submissionsTable.getValueAt(submissionsTable.getSelectedRow(), 1).toString());
+                        ArticleActionsDialog.showArticleActionsDialog(submissionId, journalIssn, userEmail);
+                    }
                 }
             }
         });
