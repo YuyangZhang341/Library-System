@@ -410,7 +410,7 @@ public class PublicationsController {
                 String decision = res.getString("decision");
                 if(decision == null) decision = "";
 
-                results.add(new ConsideredSubmission(submissionID, title, abs, pdf, mainAuthorsEmail, decision, journalIssn));
+                results.add(new ConsideredSubmission(submissionID, title, abs, pdf, mainAuthorsEmail, journalIssn, decision));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -423,8 +423,7 @@ public class PublicationsController {
     public static Role[] getRoles(String email) {
         Statement stmt = null;
         ArrayList<Role> results = new ArrayList<Role>();
-
-
+        
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
 

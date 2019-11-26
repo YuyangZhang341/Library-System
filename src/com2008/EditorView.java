@@ -48,7 +48,6 @@ public class EditorView {
         nameTextField.setText(journal.getName());
         issnTextField.setText(journalIssn);
         chiefEditorTextField.setText(journal.getChiefEditorEmail());
-        counterLabel.setText(counter + "/8");
 
         // Change interface depending on who's viewing it
         if (!isChiefEditor) {
@@ -144,6 +143,8 @@ public class EditorView {
 
             model.addRow(new Object[]{cSubmission.getDecision(), cSubmission.getSubmissionId(), cSubmission.getTitle(), cSubmission.getAbs(), affiliationsCell, conflictsCell});
         }
+
+        counterLabel.setText(counter + "/8");
     }
 
     private void retireButtonPressed(String userEmail) {
