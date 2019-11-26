@@ -61,7 +61,8 @@ public class EditorView {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                App.showMainApp();
+                frame.dispose();
             }
         });
 
@@ -83,14 +84,14 @@ public class EditorView {
         retireButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                retire(userEmail);
+                retireButtonPressed(userEmail);
             }
         });
 
         publishButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                publishButtonPressed();
             }
         });
     }
@@ -145,7 +146,7 @@ public class EditorView {
         }
     }
 
-    private void retire(String userEmail) {
+    private void retireButtonPressed(String userEmail) {
         System.out.println(userEmail);
         Statement stmt = null;
 
@@ -166,6 +167,10 @@ public class EditorView {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private void publishButtonPressed() {
+        PublicationsController.publishEdition(journalIssn);
     }
 
     private void createUIComponents() {
