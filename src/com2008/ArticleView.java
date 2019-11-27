@@ -41,21 +41,21 @@ public class ArticleView {
     public ArticleView(int submissionId) {
         this.submissionId = submissionId;
 
-        Map<String, String> articleInfo = PublicationsController.getArticleInfo(submissionId);
+        Article article = PublicationsController.getArticle(submissionId);
+        String issn = article.getIssn();
+        Journal journal = PublicationsController.getJournal(issn);
 
-        String issn = articleInfo.get("issn");
-        int vol = Integer.parseInt(articleInfo.get("vol"));
-        int no = Integer.parseInt(articleInfo.get("number"));
+        int vol = article.getVol();
+        int no = article.getNumber();
 
-        journalNameField.setText(articleInfo.get("name"));
+        journalNameField.setText(journal.getName());
         issnField.setText(issn);
-        volField.setText(articleInfo.get("vol"));
-        noField.setText(articleInfo.get("number"));
-        pageRangeField.setText(articleInfo.get("startPage") + " - " + articleInfo.get("endPage"));
-        articleTitleField.setText(articleInfo.get("title"));
-        abstractTextArea.setText(articleInfo.get("abstract"));
+        volField.setText("" + vol);
+        noField.setText("" + no);
+        pageRangeField.setText(article.getStartPage() + " - " + article.getEndPage());
+        articleTitleField.setText(article.getTitle());
+        abstractTextArea.setText(article.getAbs());
         loadAuthorsTable();
-
 
         backButton.addActionListener(new ActionListener() {
             @Override
@@ -68,7 +68,20 @@ public class ArticleView {
         openButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO:: open the article's pdf
+                // open the submission's pdf
+                try {
+                    if(article.getPdf().exists()) {
+                        if(Desktop.isDesktopSupported()) {
+                            Desktop.getDesktop().open(article.getPdf());
+                        } else {
+                            System.out.println("Awt Desktop not supported.");
+                        }
+                    } else {
+                        System.out.println("File doesn't exist.");
+                    }
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         });
     }

@@ -4,6 +4,7 @@ import com.mysql.cj.protocol.Resultset;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.io.*;
 import java.sql.*;
 import java.util.*;
 
@@ -179,12 +180,11 @@ public class PublicationsController {
                 int submissionID = res.getInt("submissionID");
                 String title = res.getString("title");
                 String abs = res.getString("abstract");
-                String pdf = res.getString("pdf");
                 String mainAuthorsEmail = res.getString("mainAuthorsEmail");
                 int startPage = res.getInt("startPage");
                 int endPage = res.getInt("endPage");
 
-                results.add(new Article(submissionID, title, abs, pdf, mainAuthorsEmail, issn, vol, number, startPage, endPage));
+                results.add(new Article(submissionID, title, abs, null, mainAuthorsEmail, issn, vol, number, startPage, endPage));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -221,7 +221,7 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
-    public static Submission getSubmissionInfo(int submissionId) {
+    public static Submission getSubmission(int submissionId) {
         Statement stmt = null;
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
@@ -229,60 +229,68 @@ public class PublicationsController {
             ResultSet res = stmt.executeQuery("SELECT * FROM submissions\n" +
                     "    WHERE submissionID = " + submissionId);
 
+            File file = new File("submission.pdf");
+            FileOutputStream output = new FileOutputStream(file);
+
             // Fetch each row from the result set
             while (res.next()) {
                 String title = res.getString("title");
                 String abs = res.getString("abstract");
-                String pdfLink = res.getString("pdf");
+                InputStream input = res.getBinaryStream("pdf");
                 String mainAuthorsEmail = res.getString("mainAuthorsEmail");
                 String issn = res.getString("issn");
 
-                return new Submission(submissionId, title, abs, pdfLink, mainAuthorsEmail, issn);
+                byte[] buffer = new byte[1024];
+                while(input.read(buffer) > 0) {
+                    output.write(buffer);
+                }
+
+                return new Submission(submissionId, title, abs, file, mainAuthorsEmail, issn);
             }
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
 
         return null;
     }
 
-    public static Map<String, String> getArticleInfo(int submissionId) {
-        Map<String, String> results = new HashMap<String, String>();
-
+    public static Article getArticle(int submissionId) {
         Statement stmt = null;
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT j.name, s.issn, pa.vol, pa.number, pa.startPage, pa.endPage, s.title, s.abstract FROM publishedArticles pa\n" +
+            ResultSet res = stmt.executeQuery("SELECT s.issn, pa.vol, pa.number, pa.startPage, pa.endPage, rs.title, rs.abstract, rs.pdf, s.mainAuthorsEmail FROM publishedArticles pa\n" +
                     "    LEFT JOIN submissions s on s.submissionID = pa.submissionID\n" +
-                    "    LEFT JOIN journals j on s.issn = j.issn\n" +
+                    "    LEFT JOIN revisedSubmissions rs on s.submissionID = rs.submissionID" +
                     "    WHERE pa.submissionID = " + submissionId);
+
+            File file = new File("article.pdf");
+            FileOutputStream output = new FileOutputStream(file);
 
             // Fetch each row from the result set
             while (res.next()) {
-                String name = res.getString("name");
                 String issn = res.getString("issn");
-                String vol = res.getString("vol");
-                String number = res.getString("number");
+                int vol = res.getInt("vol");
+                int number = res.getInt("number");
+                InputStream input = res.getBinaryStream("pdf");
                 String title = res.getString("title");
                 String abs = res.getString("abstract");
-                String startPage = res.getString("startPage");
-                String endPage = res.getString("endPage");
+                int startPage = res.getInt("startPage");
+                int endPage = res.getInt("endPage");
+                String mainAuthorsEmail = res.getString("mainAuthorsEmail");
 
-                results.put("name", name);
-                results.put("issn", issn);
-                results.put("vol", vol);
-                results.put("number", number);
-                results.put("title", title);
-                results.put("abstract", abs);
-                results.put("startPage", startPage);
-                results.put("endPage", endPage);
+                byte[] buffer = new byte[1024];
+                while(input.read(buffer) > 0) {
+                    output.write(buffer);
+                }
+
+                return new Article(submissionId, title, abs, file, mainAuthorsEmail, issn, vol, number, startPage, endPage);
             }
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
 
-        return results;
+        return null;
     }
 
     public static void addUser(String email, String title, String forenames, String surname, String uniAffiliation, String password) {
@@ -308,9 +316,16 @@ public class PublicationsController {
 
             int submissionId = submission.getSubmissionId();
 
-            int dbUpdate = stmt.executeUpdate("INSERT INTO submissions (title, abstract, pdf, mainAuthorsEmail, issn)" +
-                    "VALUES ('" + submission.getTitle() + "', '" + submission.getAbs() + "', '" + submission.getPdfLink()+ "', '"
-                    + submission.getMainAuthorsEmail()+ "', '" + submission.getIssn() + "')");
+            PreparedStatement pstmt = con.prepareStatement(
+                    "INSERT INTO submissions (title, abstract, pdf, mainAuthorsEmail, issn) VALUES (?, ?, ?, ?, ?)"
+            );
+            pstmt.setString(1, submission.getTitle());
+            pstmt.setString(2, submission.getAbs());
+            pstmt.setBinaryStream(3, new FileInputStream(submission.getPdf()));
+            pstmt.setString(4, submission.getMainAuthorsEmail());
+            pstmt.setString(5, submission.getIssn());
+
+            pstmt.executeUpdate();
 
             // check the submission id assigned
             ResultSet submissionRes = stmt.executeQuery("SELECT submissionID FROM submissions\n" +
@@ -340,7 +355,7 @@ public class PublicationsController {
             }
 
             con.commit();
-        } catch (SQLException e) {
+        } catch (SQLException | FileNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -405,12 +420,11 @@ public class PublicationsController {
                 int submissionID = res.getInt("submissionID");
                 String title = res.getString("title");
                 String abs = res.getString("abstract");
-                String pdf = res.getString("pdf");
                 String mainAuthorsEmail = res.getString("mainAuthorsEmail");
                 String decision = res.getString("decision");
                 if(decision == null) decision = "";
 
-                results.add(new ConsideredSubmission(submissionID, title, abs, pdf, mainAuthorsEmail, journalIssn, decision));
+                results.add(new ConsideredSubmission(submissionID, title, abs, null, mainAuthorsEmail, journalIssn, decision));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -494,7 +508,7 @@ public class PublicationsController {
                 int reviewerId = res.getInt("reviewerID");
                 String summary = res.getString("summary");
                 String typographicalErrors = res.getString("typographicalErrors");
-                String verdict = res.getString("verdict");
+                String verdict = res.getString("finalVerdict");
 
                 results.add(new Verdict(submissionId, reviewerId, summary, typographicalErrors, verdict));
             }
@@ -596,7 +610,7 @@ public class PublicationsController {
                 dbUpdate = stmt2.executeUpdate("DELETE FROM consideredSubmissions WHERE submissionID = " + submissionId);
 
                 // Delete the reviews for the submission
-                dbUpdate = stmt2.executeUpdate("DELETE FROM criticisms WHERE submissionID = " + submissionId);
+                dbUpdate = stmt2.executeUpdate("DELETE FROM criticisms1 WHERE submissionID = " + submissionId);
                 dbUpdate = stmt2.executeUpdate("DELETE FROM reviews WHERE submissionID = " + submissionId);
             }
         } catch (SQLException e) {

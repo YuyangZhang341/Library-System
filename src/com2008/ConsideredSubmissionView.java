@@ -5,7 +5,6 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Map;
 
 public class ConsideredSubmissionView {
     private JPanel mainPanel;
@@ -37,11 +36,11 @@ public class ConsideredSubmissionView {
         this.journalIssn = journalIssn;
         this.userEmail = userEmail;
 
-        Submission submissionInfo = PublicationsController.getSubmissionInfo(submissionId);
+        Submission submission = PublicationsController.getSubmission(submissionId);
         Verdict verdicts[] = PublicationsController.getVerdicts(submissionId);
 
-        articleTitleLabel.setText("Article title: " + submissionInfo.getTitle());
-        abstractTextArea.setText(submissionInfo.getAbs());
+        articleTitleLabel.setText("Article title: " + submission.getTitle());
+        abstractTextArea.setText(submission.getAbs());
         if(verdicts.length == 3) {
             verdictTextField1.setText(verdicts[0].getVerdict());
             verdictTextField2.setText(verdicts[1].getVerdict());
@@ -60,7 +59,20 @@ public class ConsideredSubmissionView {
         openButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO:: open the article's pdf
+                // open the submission's pdf
+                try {
+                    if(submission.getPdf().exists()) {
+                        if(Desktop.isDesktopSupported()) {
+                            Desktop.getDesktop().open(submission.getPdf());
+                        } else {
+                            System.out.println("Awt Desktop not supported.");
+                        }
+                    } else {
+                        System.out.println("File doesn't exist.");
+                    }
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         });
     }
