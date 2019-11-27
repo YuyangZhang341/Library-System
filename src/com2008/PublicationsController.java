@@ -392,11 +392,11 @@ public class PublicationsController {
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT s.submissionID, s.title, s.abstract, s.pdf, s.mainAuthorsEmail, cs.decision, COUNT(r.verdict) as verdicts\n" +
+            ResultSet res = stmt.executeQuery("SELECT s.submissionID, s.title, s.abstract, s.pdf, s.mainAuthorsEmail, cs.decision, COUNT(r.finalVerdict) as verdicts\n" +
                     "                    FROM submissions s\n" +
                     "                    LEFT JOIN reviews r on s.submissionID = r.submissionID\n" +
                     "                    LEFT JOIN consideredSubmissions cs ON s.submissionID = cs.submissionId\n" +
-                    "                    WHERE r.verdict != '' AND s.issn = '" + journalIssn + "'\n" +
+                    "                    WHERE r.finalVerdict != '' AND s.issn = '" + journalIssn + "'\n" +
                     "                    GROUP BY s.submissionID\n"+
                     "                    HAVING verdicts>=3");
 
