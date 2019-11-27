@@ -1,18 +1,20 @@
 package com2008;
 
+import java.io.File;
+
 public class Submission {
     private int submissionId;
     private String title;
     private String abs;
-    private String pdfLink;
+    private File pdf;
     private String mainAuthorsEmail;
     private String issn;
 
-    public Submission(int submissionId, String title, String abs, String pdfLink, String mainAuthorsEmail, String issn) {
+    public Submission(int submissionId, String title, String abs, File pdf, String mainAuthorsEmail, String issn) {
         this.submissionId = submissionId;
         this.title = title;
         this.abs = abs;
-        this.pdfLink = pdfLink;
+        this.pdf = pdf;
         this.mainAuthorsEmail = mainAuthorsEmail;
         this.issn = issn;
     }
@@ -29,8 +31,8 @@ public class Submission {
         return abs;
     }
 
-    public String getPdfLink() {
-        return pdfLink;
+    public File getPdf() {
+        return pdf;
     }
 
     public String getMainAuthorsEmail() {
@@ -53,8 +55,8 @@ public class Submission {
         this.abs = abs;
     }
 
-    public void setPdfLink(String pdfLink) {
-        this.pdfLink = pdfLink;
+    public void setPdf(File pdf) {
+        this.pdf = pdf;
     }
 
     public void setMainAuthorsEmail(String mainAuthorsEmail) {

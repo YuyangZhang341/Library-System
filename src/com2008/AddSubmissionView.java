@@ -1,10 +1,12 @@
 package com2008;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 public class AddSubmissionView {
     private JPanel mainPanel;
@@ -41,7 +43,7 @@ public class AddSubmissionView {
     private DefaultTableModel coauthorsTableModel = new DefaultTableModel(new String[]{"Email", "Title", "Forenames", "Surname", "University Affiliation", "Password"}, 0);
 
     private static JFrame frame = new JFrame("Add Submission");
-
+    private File pdfFile;
 
     public AddSubmissionView() {
         backButton.addActionListener(new ActionListener() {
@@ -55,7 +57,14 @@ public class AddSubmissionView {
         pdfButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO:: open the article's pdf
+                JFileChooser chooser = new JFileChooser();
+                FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                        "PDF files", "pdf");
+                chooser.setFileFilter(filter);
+                int returnVal = chooser.showOpenDialog(frame);
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
+                    pdfFile = chooser.getSelectedFile();
+                }
             }
         });
 
@@ -81,7 +90,7 @@ public class AddSubmissionView {
                                                   coauthorsTable.getValueAt(i, 4).toString(), coauthorsTable.getValueAt(i, 5).toString());
                     }
 
-                    Submission submission = new Submission(-1, articleTitleField.getText(), abstractTextArea.getText(), null, emailField.getText(), targetIssnTextField.getText());
+                    Submission submission = new Submission(-1, articleTitleField.getText(), abstractTextArea.getText(), pdfFile, emailField.getText(), targetIssnTextField.getText());
 
                     PublicationsController.addSubmission(submission, authors);
 
