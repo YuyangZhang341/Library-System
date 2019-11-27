@@ -33,6 +33,7 @@ public class ArticleView {
     private JTextField articleTitleField;
     private JLabel noLabel;
     private JTextField noField;
+    private JButton homeButton;
 
     private int submissionId;
 
@@ -82,6 +83,14 @@ public class ArticleView {
                 } catch(Exception ex) {
                     ex.printStackTrace();
                 }
+            }
+        });
+
+        homeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                App.showMainApp();
+                frame.dispose();
             }
         });
     }
