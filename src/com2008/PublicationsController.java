@@ -1,9 +1,6 @@
 package com2008;
 
-import com.mysql.cj.protocol.Resultset;
-
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.io.*;
 import java.sql.*;
 import java.util.*;
@@ -254,6 +251,37 @@ public class PublicationsController {
         return null;
     }
 
+    public static RevisedSubmission getRevisedSubmission(int submissionId) {
+        Statement stmt = null;
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+            ResultSet res = stmt.executeQuery("SELECT * FROM revisedSubmissions\n" +
+                    "    WHERE submissionID = " + submissionId);
+
+            File file = new File("submission.pdf");
+            FileOutputStream output = new FileOutputStream(file);
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                String title = res.getString("title");
+                String abs = res.getString("abstract");
+                InputStream input = res.getBinaryStream("pdf");
+
+                byte[] buffer = new byte[1024];
+                while(input.read(buffer) > 0) {
+                    output.write(buffer);
+                }
+
+                return new RevisedSubmission(submissionId, title, abs, file);
+            }
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public static Article getArticle(int submissionId) {
         Statement stmt = null;
 
@@ -437,7 +465,7 @@ public class PublicationsController {
     public static Role[] getRoles(String email) {
         Statement stmt = null;
         ArrayList<Role> results = new ArrayList<Role>();
-        
+
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
 
@@ -547,7 +575,34 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
+    public static Review[] getReviews(int submissionId) {
+        Statement stmt = null;
+        ArrayList<Review> results = new ArrayList<Review>();
 
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+
+            // Look for author roles
+            ResultSet res = stmt.executeQuery("SELECT * FROM reviews\n" +
+                    "    WHERE submissionID = " + submissionId);
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                int reviewerId = res.getInt("reviewerID");
+                String summary = res.getString("summary");
+                String typographicalErrors = res.getString("typographicalErrors");
+                String initialVerdict = res.getString("initialVerdict");
+                String finalVerdict = res.getString("finalVerdict");
+
+                results.add(new Review(reviewerId, summary, typographicalErrors, initialVerdict, submissionId, finalVerdict));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        Review[] arrayResults = new Review[results.size()];
+        return results.toArray(arrayResults);
+    }
 
     public static void addVolume(String issn, int vol, int year) {
         Statement stmt = null;

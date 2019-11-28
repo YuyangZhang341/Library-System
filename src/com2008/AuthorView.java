@@ -3,6 +3,8 @@ package com2008;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class AuthorView {
     private JPanel mainPanel;
@@ -28,8 +30,8 @@ public class AuthorView {
     private JPanel verdictsPanel;
     private JScrollPane criticismsScrollPane;
     private JTable criticismsTable;
-    private JTextArea textArea1;
-    private JTextArea textArea2;
+    private JTextArea summaryArea;
+    private JTextArea errorsArea;
     private JTextField initialVerdictField;
     private JTextField finalVerdictField;
     private JLabel initialVerdictLabel;
@@ -58,22 +60,166 @@ public class AuthorView {
     private JLabel finalVerdictLabel3;
     private JScrollPane criticismsScrollPane3;
     private JTable criticismsTable3;
+    private JButton pdfButton;
+    private JButton pdfButton2;
+    private JButton logoutButton;
+    private JButton reviseButton;
     private DefaultTableModel criticismsTableModel = new DefaultTableModel(new String[]{"Criticism"}, 0);
     private DefaultTableModel criticismsTable2Model = new DefaultTableModel(new String[]{"Criticism"}, 0);
     private DefaultTableModel criticismsTable3Model = new DefaultTableModel(new String[]{"Criticism"}, 0);
 
     private int submissionId;
+    private String userEmail;
+
 
     private static JFrame frame = new JFrame("Submission View");
 
-    public AuthorView(int submissionId) {
+    public AuthorView(int submissionId, String userEmail) {
         this.submissionId = submissionId;
+        this.userEmail = userEmail;
+
+        Submission submission = PublicationsController.getSubmission(submissionId);
+        String title = submission.getTitle();
+        Author[] authors = PublicationsController.getArticleAuthors(submissionId);
+        String abs = submission.getAbs();
+
+        titleField.setText(title);
+        String authorsFieldText = "";
+        for (Author a : authors) {
+            authorsFieldText += a.getForenames() + " " + a.getSurname() + " ";
+        }
+        authorsField.setText(authorsFieldText);
+        abstractArea.setText(abs);
+
+        RevisedSubmission revisedSubmission = null;//PublicationsController.getRevisedSubmission(submissionId);
+
+        if (revisedSubmission!=null) {
+            String revisedTitle = revisedSubmission.getTitle();
+            String revisedAbs = submission.getAbs();
+
+
+            titleField2.setText(revisedTitle);
+            authorsField2.setText(authorsFieldText);
+            abstractArea2.setText(revisedAbs);
+
+        } else {
+            submissionPane.remove(revisedSubmissionPanel);
+        }
+
+        Review[] reviews = PublicationsController.getReviews(submissionId);
+
+        if (reviews.length==0) {
+            reviewPane.remove(review1Panel);
+            reviewPane.remove(review2Panel);
+            reviewPane.remove(review3Panel);
+
+
+        } else if (reviews.length==1) {
+            reviewPane.remove(review2Panel);
+            reviewPane.remove(review3Panel);
+
+            summaryArea.setText(reviews[0].getSummary());
+            errorsArea.setText(reviews[0].getTypographicalErrors());
+            initialVerdictField.setText(reviews[0].getInitialVerdict());
+            finalVerdictField.setText(reviews[0].getFinalVerdict());
+
+        } else if (reviews.length==2) {
+            reviewPane.remove(review3Panel);
+
+            summaryArea.setText(reviews[0].getSummary());
+            errorsArea.setText(reviews[0].getTypographicalErrors());
+            initialVerdictField.setText(reviews[0].getInitialVerdict());
+            finalVerdictField.setText(reviews[0].getFinalVerdict());
+
+            summaryArea2.setText(reviews[1].getSummary());
+            errorsArea2.setText(reviews[1].getTypographicalErrors());
+            initialVerdictField2.setText(reviews[1].getInitialVerdict());
+            finalVerdictField2.setText(reviews[1].getFinalVerdict());
+
+        } else if (reviews.length==3) {
+            summaryArea.setText(reviews[0].getSummary());
+            errorsArea.setText(reviews[0].getTypographicalErrors());
+            initialVerdictField.setText(reviews[0].getInitialVerdict());
+            finalVerdictField.setText(reviews[0].getFinalVerdict());
+
+            summaryArea2.setText(reviews[1].getSummary());
+            errorsArea2.setText(reviews[1].getTypographicalErrors());
+            initialVerdictField2.setText(reviews[1].getInitialVerdict());
+            finalVerdictField2.setText(reviews[1].getFinalVerdict());
+
+            summaryArea3.setText(reviews[2].getSummary());
+            errorsArea3.setText(reviews[2].getTypographicalErrors());
+            initialVerdictField3.setText(reviews[2].getInitialVerdict());
+            finalVerdictField3.setText(reviews[2].getFinalVerdict());
+        }
+
+
+        //if no revisedSubmission, the user is the main author and the number of reviews = 3 -> make it possible to submitRevised version
+        Article article = PublicationsController.getArticle(submissionId);
+        String mainAuthorsEmail = article.getMainAuthorsEmail();
+
+        if (revisedSubmission==null && mainAuthorsEmail.equals(userEmail) && reviews.length==3) {
+            reviseButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                }
+            });
+        } else {
+            mainPanel.remove(reviseButton);
+        }
 
         loadCriticismsTable(submissionId);
+
+        pdfButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if(submission.getPdf().exists()) {
+                        if(Desktop.isDesktopSupported()) {
+                            Desktop.getDesktop().open(submission.getPdf());
+                        } else {
+                            System.out.println("Awt Desktop not supported.");
+                        }
+                    } else {
+                        System.out.println("File doesn't exist.");
+                    }
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        pdfButton2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if(revisedSubmission.getPdf().exists()) {
+                        if(Desktop.isDesktopSupported()) {
+                            Desktop.getDesktop().open(revisedSubmission.getPdf());
+                        } else {
+                            System.out.println("Awt Desktop not supported.");
+                        }
+                    } else {
+                        System.out.println("File doesn't exist.");
+                    }
+                } catch(Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        logoutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                App.showMainApp();
+                frame.dispose();
+            }
+        });
     }
 
-    public static void showAuthorView(int submissionId) {
-        frame.setContentPane(new AuthorView(submissionId).mainPanel);
+    public static void showAuthorView(int submissionId, String userEmail) {
+        frame.setContentPane(new AuthorView(submissionId, userEmail).mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
 
@@ -120,6 +266,6 @@ public class AuthorView {
     }
 
     public static void main(String[] args) {
-        showAuthorView(1);
+        showAuthorView(1, "author1@sheffield.ac.uk");
     }
 }
