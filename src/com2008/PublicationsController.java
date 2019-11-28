@@ -256,7 +256,7 @@ public class PublicationsController {
             ResultSet res = stmt.executeQuery("SELECT * FROM revisedSubmissions\n" +
                     "    WHERE submissionID = " + submissionId);
 
-            File file = new File("submission.pdf");
+            File file = new File("src/pdf/revisedSubmission.pdf");
             FileOutputStream output = new FileOutputStream(file);
 
             // Fetch each row from the result set
@@ -697,6 +697,26 @@ public class PublicationsController {
                 dbUpdate = stmt2.executeUpdate("DELETE FROM reviews WHERE submissionID = " + submissionId);
             }
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addRevisedSubmission(RevisedSubmission revisedSubmission) {
+        Statement stmt = null;
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+
+            PreparedStatement pstmt = con.prepareStatement(
+                    "INSERT INTO revisedSubmissions (submissionID, title, abstract, pdf) VALUES (?, ?, ?, ?)"
+            );
+            pstmt.setInt(1, revisedSubmission.getSubmissionId());
+            pstmt.setString(2, revisedSubmission.getTitle());
+            pstmt.setString(3, revisedSubmission.getAbs());
+            pstmt.setBinaryStream(4, new FileInputStream(revisedSubmission.getPdf()));
+
+            pstmt.executeUpdate();
+        } catch (SQLException | FileNotFoundException e) {
             e.printStackTrace();
         }
     }

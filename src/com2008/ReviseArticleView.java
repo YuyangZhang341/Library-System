@@ -25,10 +25,12 @@ public class ReviseArticleView {
     private static JFrame frame = new JFrame("Add Submission");
     private File pdfFile = null;
     private int submissionId;
+    private String userEmail;
     private Submission submission;
 
-    public ReviseArticleView(int submissionId) {
+    public ReviseArticleView(int submissionId, String userEmail) {
         this.submissionId = submissionId;
+        this.userEmail = userEmail;
         this.submission = PublicationsController.getSubmission(submissionId);
 
         articleTitleField.setText(submission.getTitle());
@@ -37,7 +39,7 @@ public class ReviseArticleView {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //
+                AuthorView.showAuthorView(submissionId, userEmail);
                 frame.dispose();
             }
         });
@@ -65,10 +67,8 @@ public class ReviseArticleView {
                     // add revised article
                     // if new pdf not chosen, add the old one.
                     File pdfToAdd = (pdfFile == null? submission.getPdf() : pdfFile);
-                    // IF PDF FILE = NULL, ADD WITH THE OLD ONE?? OR JUST CHECK IN VERIFY FIELDS IF NOT NULL
-//                    Submission submission = new Submission(-1, articleTitleField.getText(), abstractTextArea.getText(), pdfFile, emailField.getText(), targetIssnTextField.getText());
-
-//                    PublicationsController.addSubmission(submission, authors);
+                    RevisedSubmission revisedSubmission = new RevisedSubmission(submissionId, articleTitleField.getText(), abstractTextArea.getText(), pdfToAdd);
+                    PublicationsController.addRevisedSubmission(revisedSubmission);
 
                     JOptionPane.showMessageDialog(null,"Submitted.");
                     App.showMainApp();
@@ -80,8 +80,8 @@ public class ReviseArticleView {
         });
     }
 
-    public static void showReviseArticleView(int submissionId) {
-        frame.setContentPane(new ReviseArticleView(16).mainPanel);
+    public static void showReviseArticleView(int submissionId, String userEmail) {
+        frame.setContentPane(new ReviseArticleView(submissionId, userEmail).mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
 
@@ -94,9 +94,5 @@ public class ReviseArticleView {
     public boolean verifyFields() {
         //TODO:: check emails, check if no empty rows ets.
         return true;
-    }
-
-    public static void main(String[] args) {
-        showReviseArticleView(16);
     }
 }

@@ -82,7 +82,7 @@ public class AddSubmissionView {
                 if (verifyFields()) {
                     Author authors[] = new Author[coauthorsTable.getRowCount() + 1];
                     authors[0] = new Author(emailField.getText(), titleField.getText(), forenamesField.getText(), surnameField.getText(),
-                                            universityAffiliationField.getText(), passwordField.getPassword().toString());
+                                            universityAffiliationField.getText(), String.valueOf(passwordField.getPassword()));
 
                     for(int i = 0; i < coauthorsTable.getRowCount(); i++) {
                         authors[i+1] = new Author(coauthorsTable.getValueAt(i, 0).toString(), coauthorsTable.getValueAt(i,1).toString(),

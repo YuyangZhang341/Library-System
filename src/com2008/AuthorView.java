@@ -91,12 +91,11 @@ public class AuthorView {
         authorsField.setText(authorsFieldText);
         abstractArea.setText(abs);
 
-        RevisedSubmission revisedSubmission = null;//PublicationsController.getRevisedSubmission(submissionId);
+        RevisedSubmission revisedSubmission = PublicationsController.getRevisedSubmission(submissionId);
 
         if (revisedSubmission!=null) {
             String revisedTitle = revisedSubmission.getTitle();
-            String revisedAbs = submission.getAbs();
-
+            String revisedAbs = revisedSubmission.getAbs();
 
             titleField2.setText(revisedTitle);
             authorsField2.setText(authorsFieldText);
@@ -153,16 +152,14 @@ public class AuthorView {
             finalVerdictField3.setText(reviews[2].getFinalVerdict());
         }
 
-
         //if no revisedSubmission, the user is the main author and the number of reviews = 3 -> make it possible to submitRevised version
-        Article article = PublicationsController.getArticle(submissionId);
-        String mainAuthorsEmail = article.getMainAuthorsEmail();
+        String mainAuthorsEmail = submission.getMainAuthorsEmail();
 
         if (revisedSubmission==null && mainAuthorsEmail.equals(userEmail) && reviews.length==3) {
             reviseButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-
+                    ReviseArticleView.showReviseArticleView(submissionId, userEmail);
                 }
             });
         } else {
