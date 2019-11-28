@@ -518,6 +518,35 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
+    public static Criticism[] getCriticisms(int submissionId, int reviewerId) {
+        Statement stmt = null;
+        ArrayList<Criticism> results = new ArrayList<Criticism>();
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+
+            // Look for author roles
+            ResultSet res = stmt.executeQuery("SELECT * FROM criticisms\n" +
+                    "    WHERE submissionID = " + submissionId + " AND reviewerID = " + reviewerId);
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                int submissionID = res.getInt("submissionID");
+                int reviewerID = res.getInt("reviewerID");
+                String criticism = res.getString("criticism");
+
+                results.add(new Criticism(submissionID, reviewerID, criticism));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        Criticism[] arrayResults = new Criticism[results.size()];
+        return results.toArray(arrayResults);
+    }
+
+
+
     public static void addVolume(String issn, int vol, int year) {
         Statement stmt = null;
 
