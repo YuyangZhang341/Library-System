@@ -226,7 +226,7 @@ public class PublicationsController {
             ResultSet res = stmt.executeQuery("SELECT * FROM submissions\n" +
                     "    WHERE submissionID = " + submissionId);
 
-            File file = new File("pdf/submission.pdf");
+            File file = new File("src/pdf/submission.pdf");
             FileOutputStream output = new FileOutputStream(file);
 
             // Fetch each row from the result set
@@ -261,7 +261,7 @@ public class PublicationsController {
                     "    LEFT JOIN revisedSubmissions rs on s.submissionID = rs.submissionID" +
                     "    WHERE pa.submissionID = " + submissionId);
 
-            File file = new File("pdf/article.pdf");
+            File file = new File("src/pdf/article.pdf");
             FileOutputStream output = new FileOutputStream(file);
 
             // Fetch each row from the result set

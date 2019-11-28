@@ -11,4 +11,4 @@
 /mysql-connector-java-8.0.18/src/test/test.iml
 /mysql-connector-java-8.0.18/src/main/user-api/user-api.iml
 /mysql-connector-java-8.0.18/src/main/user-impl/user-impl.iml
-/pdf
+*.pdf
