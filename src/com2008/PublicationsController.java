@@ -6,10 +6,6 @@ import java.sql.*;
 import java.util.*;
 
 public class PublicationsController {
-    public static void main() {
-        JOptionPane.showMessageDialog(null,"View the articles");
-    }
-
     public static String generateIssn() {
         Random random = new Random();
         String newIssn = String.format("%04d", random.nextInt(10000)) + "-" + String.format("%04d", random.nextInt(10000));
@@ -166,9 +162,10 @@ public class PublicationsController {
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT s.submissionID, s.title, s.abstract, s.pdf, pa.startPage, pa.endPage, s.mainAuthorsEmail " +
+            ResultSet res = stmt.executeQuery("SELECT s.submissionID, rs.title, rs.abstract, pa.startPage, pa.endPage, s.mainAuthorsEmail " +
             "FROM publishedArticles pa " +
             "LEFT JOIN submissions s ON pa.submissionID = s.submissionID " +
+            "LEFT JOIN revisedSubmissions rs ON pa.submissionID = rs.submissionID " +
             "LEFT JOIN users u ON s.mainAuthorsEmail = u.email " +
             "WHERE s.issn='" + issn + "' AND pa.vol=" + vol + " AND pa.number=" + number);
             // Fetch each row from the result set
@@ -226,7 +223,7 @@ public class PublicationsController {
             ResultSet res = stmt.executeQuery("SELECT * FROM submissions\n" +
                     "    WHERE submissionID = " + submissionId);
 
-            File file = new File("submission.pdf");
+            File file = new File("pdf/submission.pdf");
             FileOutputStream output = new FileOutputStream(file);
 
             // Fetch each row from the result set
@@ -292,7 +289,7 @@ public class PublicationsController {
                     "    LEFT JOIN revisedSubmissions rs on s.submissionID = rs.submissionID" +
                     "    WHERE pa.submissionID = " + submissionId);
 
-            File file = new File("article.pdf");
+            File file = new File("pdf/article.pdf");
             FileOutputStream output = new FileOutputStream(file);
 
             // Fetch each row from the result set
@@ -435,8 +432,9 @@ public class PublicationsController {
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT s.submissionID, s.title, s.abstract, s.pdf, s.mainAuthorsEmail, cs.decision, COUNT(r.finalVerdict) as verdicts\n" +
-                    "                    FROM submissions s\n" +
+            ResultSet res = stmt.executeQuery("SELECT rs.submissionID, rs.title, rs.abstract, s.mainAuthorsEmail, cs.decision, COUNT(r.finalVerdict) as verdicts\n" +
+                    "                    FROM revisedSubmissions rs\n" +
+                    "                    LEFT JOIN submissions s\n" +
                     "                    LEFT JOIN reviews r on s.submissionID = r.submissionID\n" +
                     "                    LEFT JOIN consideredSubmissions cs ON s.submissionID = cs.submissionId\n" +
                     "                    WHERE r.finalVerdict != '' AND s.issn = '" + journalIssn + "'\n" +
@@ -669,7 +667,8 @@ public class PublicationsController {
                     "VALUES (" + newEditionNumber + ", '" + issn + "', " + targetVolume + ")");
 
             // Get accepted submission for that issn
-            ResultSet res = stmt.executeQuery("SELECT s.submissionID, s.title, s.abstract, s.pdf, s.mainAuthorsEmail FROM submissions s\n" +
+            ResultSet res = stmt.executeQuery("SELECT s.submissionID, rs.title, rs.abstract, rs.pdf, s.mainAuthorsEmail FROM submissions s\n" +
+                    "    LEFT JOIN revisedSubmissions rs on s.submissionID = rs.submissionID" +
                     "    LEFT JOIN consideredSubmissions cs on s.submissionID = cs.submissionID\n" +
                     "    WHERE s.issn = '" + issn + "' AND cs.decision = 'accepted'");
 
