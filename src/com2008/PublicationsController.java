@@ -559,11 +559,42 @@ public class PublicationsController {
 
             // Fetch each row from the result set
             while (res.next()) {
+                int criticismID = res.getInt("criticismID");
                 int submissionID = res.getInt("submissionID");
                 int reviewerID = res.getInt("reviewerID");
                 String criticism = res.getString("criticism");
+                String response = res.getString("response");
 
-                results.add(new Criticism(submissionID, reviewerID, criticism));
+                results.add(new Criticism(criticismID, submissionID, reviewerID, criticism, response));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        Criticism[] arrayResults = new Criticism[results.size()];
+        return results.toArray(arrayResults);
+    }
+
+    public static Criticism[] getAllCriticisms(int submissionId) {
+        Statement stmt = null;
+        ArrayList<Criticism> results = new ArrayList<Criticism>();
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+
+            // Look for author roles
+            ResultSet res = stmt.executeQuery("SELECT * FROM criticisms\n" +
+                    "    WHERE submissionID = " + submissionId);
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                int criticismID = res.getInt("criticismID");
+                int submissionID = res.getInt("submissionID");
+                int reviewerID = res.getInt("reviewerID");
+                String criticism = res.getString("criticism");
+                String response = res.getString("response");
+
+                results.add(new Criticism(criticismID, submissionID, reviewerID, criticism, response));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -717,6 +748,23 @@ public class PublicationsController {
 
             pstmt.executeUpdate();
         } catch (SQLException | FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void respondToCriticism(int criticismID, String response) {
+        Statement stmt = null;
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+
+            PreparedStatement pstmt = con.prepareStatement(
+                    "UPDATE criticisms SET response = ? WHERE criticismID = " + criticismID
+            );
+            pstmt.setString(1, response);
+
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

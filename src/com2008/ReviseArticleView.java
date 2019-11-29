@@ -2,10 +2,13 @@ package com2008;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ReviseArticleView {
     private JPanel mainPanel;
@@ -21,20 +24,25 @@ public class ReviseArticleView {
     private JTextArea abstractTextArea;
     private JPanel articlePanel;
     private JPanel criticismsPanel;
+    private JTable criticismsTable;
 
     private static JFrame frame = new JFrame("Add Submission");
     private File pdfFile = null;
     private int submissionId;
     private String userEmail;
     private Submission submission;
+    private Criticism[] criticisms;
 
     public ReviseArticleView(int submissionId, String userEmail) {
         this.submissionId = submissionId;
         this.userEmail = userEmail;
         this.submission = PublicationsController.getSubmission(submissionId);
+        this.criticisms = PublicationsController.getAllCriticisms(submissionId);
 
         articleTitleField.setText(submission.getTitle());
         abstractTextArea.setText(submission.getAbs());
+
+        loadCriticismsTable();
 
         backButton.addActionListener(new ActionListener() {
             @Override
@@ -62,7 +70,10 @@ public class ReviseArticleView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (verifyFields()) {
-                    //TODO: reply to the criticisms
+                    // respond to criticisms
+                    for(int i = 0; i < criticisms.length; i++) {
+                        PublicationsController.respondToCriticism(criticisms[i].getCriticismID(), criticismsTable.getValueAt(i, 2).toString());
+                    }
 
                     // add revised article
                     // if new pdf not chosen, add the old one.
@@ -70,14 +81,24 @@ public class ReviseArticleView {
                     RevisedSubmission revisedSubmission = new RevisedSubmission(submissionId, articleTitleField.getText(), abstractTextArea.getText(), pdfToAdd);
                     PublicationsController.addRevisedSubmission(revisedSubmission);
 
-                    JOptionPane.showMessageDialog(null,"Submitted.");
-                    App.showMainApp();
+                    JOptionPane.showMessageDialog(null,"Article revised.");
+                    AuthorView.showAuthorView(submissionId, userEmail);
                     frame.dispose();
                 } else {
                     //TODO:: not correct
                 }
             }
         });
+    }
+
+    private void loadCriticismsTable() {
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Reviewer", "Criticism", "Response"}, 0);
+        criticismsTable.setModel(model);
+        criticismsTable.getColumnModel().getColumn(0).setMaxWidth(250);
+
+        for(int i = 0; i < criticisms.length; i++) {
+            model.addRow(new Object[]{"Reviewer " + criticisms[i].getReviewerID(), criticisms[i].getCriticism(), ""});
+        }
     }
 
     public static void showReviseArticleView(int submissionId, String userEmail) {
@@ -94,5 +115,17 @@ public class ReviseArticleView {
     public boolean verifyFields() {
         //TODO:: check emails, check if no empty rows ets.
         return true;
+    }
+
+    public static void main(String[] args) {
+        showReviseArticleView(15, "pdf@op.pl");
+    }
+
+    private void createUIComponents() {
+        criticismsTable = new JTable(){
+            public boolean isCellEditable(int row, int column) {
+                return (column == 2);
+            };
+        };
     }
 }

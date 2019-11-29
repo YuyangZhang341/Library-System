@@ -1,14 +1,18 @@
 package com2008;
 
 public class Criticism {
+    private int criticismID;
     private int submissionID;
     private int reviewerID;
     private String criticism;
+    private String response;
 
-    public Criticism(int submissionID, int reviewerID, String criticism) {
+    public Criticism(int criticismID, int submissionID, int reviewerID, String criticism, String response) {
+        this.criticismID = criticismID;
         this.submissionID = submissionID;
         this.reviewerID = reviewerID;
         this.criticism = criticism;
+        this.response = response;
     }
 
     public void setSubmissionID(int submissionID) {
@@ -23,6 +27,14 @@ public class Criticism {
         this.criticism = criticism;
     }
 
+    public void setResponse(String response) {
+        this.response = response;
+    }
+
+    public int getCriticismID() {
+        return criticismID;
+    }
+
     public int getSubmissionID() {
         return submissionID;
     }
@@ -33,5 +45,9 @@ public class Criticism {
 
     public String getCriticism() {
         return criticism;
+    }
+
+    public String getResponse() {
+        return response;
     }
 }

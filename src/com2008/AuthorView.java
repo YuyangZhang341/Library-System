@@ -64,9 +64,6 @@ public class AuthorView {
     private JButton pdfButton2;
     private JButton logoutButton;
     private JButton reviseButton;
-    private DefaultTableModel criticismsTableModel = new DefaultTableModel(new String[]{"Criticism"}, 0);
-    private DefaultTableModel criticismsTable2Model = new DefaultTableModel(new String[]{"Criticism"}, 0);
-    private DefaultTableModel criticismsTable3Model = new DefaultTableModel(new String[]{"Criticism"}, 0);
 
     private int submissionId;
     private String userEmail;
@@ -121,7 +118,6 @@ public class AuthorView {
             errorsArea.setText(reviews[0].getTypographicalErrors());
             initialVerdictField.setText(reviews[0].getInitialVerdict());
             finalVerdictField.setText(reviews[0].getFinalVerdict());
-
         } else if (reviews.length==2) {
             reviewPane.remove(review3Panel);
 
@@ -134,7 +130,6 @@ public class AuthorView {
             errorsArea2.setText(reviews[1].getTypographicalErrors());
             initialVerdictField2.setText(reviews[1].getInitialVerdict());
             finalVerdictField2.setText(reviews[1].getFinalVerdict());
-
         } else if (reviews.length==3) {
             summaryArea.setText(reviews[0].getSummary());
             errorsArea.setText(reviews[0].getTypographicalErrors());
@@ -247,22 +242,43 @@ public class AuthorView {
     }
 
     private void loadCriticismsTable(int submissionId) {
+        DefaultTableModel criticismsTableModel = new DefaultTableModel(new String[]{"Criticism", "Response"}, 0);;
+        DefaultTableModel criticismsTable2Model = new DefaultTableModel(new String[]{"Criticism", "Response"}, 0);;
+        DefaultTableModel criticismsTable3Model = new DefaultTableModel(new String[]{"Criticism", "Response"}, 0);;
+
+        for(Criticism criticism: PublicationsController.getCriticisms(submissionId,1)) {
+            if(criticism.getResponse() != null) {
+                criticismsTableModel.addRow(new Object[]{criticism.getCriticism(), criticism.getResponse()});
+            }
+            else {
+                criticismsTableModel.addRow(new Object[]{criticism.getCriticism(), ""});
+            }
+        }
+
+        for(Criticism criticism: PublicationsController.getCriticisms(submissionId,2)) {
+            if(criticism.getResponse() != null) {
+                criticismsTable2Model.addRow(new Object[]{criticism.getCriticism(), criticism.getResponse()});
+            }
+            else {
+                criticismsTableModel.addRow(new Object[]{criticism.getCriticism(), ""});
+            }
+        }
+
+        for(Criticism criticism: PublicationsController.getCriticisms(submissionId,3)) {
+            if(criticism.getResponse() != null) {
+                criticismsTable3Model.addRow(new Object[]{criticism.getCriticism(), criticism.getResponse()});
+            }
+            else {
+                criticismsTableModel.addRow(new Object[]{criticism.getCriticism(), ""});
+            }
+        }
+
         criticismsTable.setModel(criticismsTableModel);
         criticismsTable2.setModel(criticismsTable2Model);
         criticismsTable3.setModel(criticismsTable3Model);
-
-        for(Criticism criticism: PublicationsController.getCriticisms(submissionId,1)) {
-            criticismsTableModel.addRow(new Object[]{criticism.getCriticism()});
-        }
-        for(Criticism criticism: PublicationsController.getCriticisms(submissionId,2)) {
-            criticismsTable2Model.addRow(new Object[]{criticism.getCriticism()});
-        }
-        for(Criticism criticism: PublicationsController.getCriticisms(submissionId,3)) {
-            criticismsTable3Model.addRow(new Object[]{criticism.getCriticism()});
-        }
     }
 
     public static void main(String[] args) {
-        showAuthorView(1, "author1@sheffield.ac.uk");
+        showAuthorView(15, "pdf@op.pl");
     }
 }
