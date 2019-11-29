@@ -36,9 +36,28 @@ public class newlogin {
                 frame.dispose();
             }
         });
+
         confirmButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 loginActionPerformed(e);
+            }
+        });
+
+        userNameTxt.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // enter pressed inside userNameTxt. confirmButton.doClick() instead of direct call to login function
+                // in order to highlight it to indicate that something happened.
+                confirmButton.doClick();
+            }
+        });
+
+        passwordTxt.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // enter pressed inside passwordTxt. confirmButton.doClick() instead of direct call to login function
+                // in order to highlight it to indicate that something happened.
+                confirmButton.doClick();
             }
         });
     }
@@ -76,7 +95,7 @@ public class newlogin {
                     switch(roles[0].getRole()) {
                         case "author":
                             submissionId = Integer.parseInt(roles[0].getIssnOrSubmissionId());
-                            //TODO: Go to author view.
+                            AuthorView.showAuthorView(submissionId, userName);
                             break;
                         case "editor":
                         case "chief editor":

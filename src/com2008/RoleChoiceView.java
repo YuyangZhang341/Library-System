@@ -64,19 +64,20 @@ public class RoleChoiceView {
         switch (role) {
             case "author":
                 submissionId = Integer.parseInt(rolesTable.getValueAt(rolesTable.getSelectedRow(), 1).toString());
-                //TODO: Go to author view.
+                AuthorView.showAuthorView(submissionId, email);
                 break;
             case "editor":
             case "chief editor":
                 issn = rolesTable.getValueAt(rolesTable.getSelectedRow(), 1).toString();
                 EditorView.showEditorView(issn, email);
-                frame.dispose();
                 break;
             case "reviewer":
                 submissionId = Integer.parseInt(rolesTable.getValueAt(rolesTable.getSelectedRow(), 1).toString());
                 //TODO: Go to reviewer view.
                 break;
         }
+
+        frame.dispose();
     }
 
     private void createUIComponents() {
