@@ -3,10 +3,7 @@ package com2008;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class ArticleActionsDialog extends JDialog {
     private JPanel contentPane;
@@ -82,12 +79,19 @@ public class ArticleActionsDialog extends JDialog {
     }
 
     private void makeDecision(String decision) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "INSERT INTO consideredSubmissions (submissionID, decision) VALUES(?,?)\n" +
+                "    ON DUPLICATE KEY UPDATE submissionID = ?, decision = ?";
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            stmt.executeUpdate("INSERT INTO consideredSubmissions (submissionID, decision) VALUES(" + submissionId + ", '" + decision + "')\n" +
-                    "    ON DUPLICATE KEY UPDATE submissionID = " + submissionId + ", decision='" + decision + "'");
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setInt(1, submissionId);
+            pstmt.setString(2, decision);
+            pstmt.setInt(3, submissionId);
+            pstmt.setString(4, decision);
+
+            pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }

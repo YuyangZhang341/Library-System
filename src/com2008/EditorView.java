@@ -54,6 +54,7 @@ public class EditorView {
         if (!isChiefEditor) {
             buttonsPanel.remove(changeEditorButton);
             buttonsPanel.remove(publishButton);
+            buttonsPanel.remove(addEditorsButton);
         }
 
         backButton.addActionListener(new ActionListener() {
