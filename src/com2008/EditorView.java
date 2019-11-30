@@ -179,8 +179,12 @@ public class EditorView {
     }
 
     private void publishButtonPressed() {
-        PublicationsController.publishEdition(journalIssn);
-        loadConsideredSubmissionsTable();
+        if(counter > 8) {
+            JOptionPane.showMessageDialog(null,"Maximum number of articles you can publish at once is 8.");
+        } else {
+            PublicationsController.publishEdition(journalIssn);
+            loadConsideredSubmissionsTable();
+        }
     }
 
     private void createUIComponents() {

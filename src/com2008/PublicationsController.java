@@ -5,6 +5,12 @@ import java.io.*;
 import java.sql.*;
 import java.util.*;
 
+/*
+ *    Copyright 2019 Apache PDFBox
+ *    SPDX-License-Identifier: Apache-2.0
+ */
+import org.apache.pdfbox.pdmodel.PDDocument;
+
 public class PublicationsController {
     public static String generateIssn() {
         Random random = new Random();
@@ -850,15 +856,24 @@ public class PublicationsController {
             // Add submissions to submitArticles with appropriate issn, vol and edition numbers
             while (res.next()) {
                 int submissionId = res.getInt("submissionID");
-                String title = res.getString("title");
-                String abs = res.getString("abstract");
-                String pdf = res.getString("pdf");
-                String mainAuthorsEmail = res.getString("mainAuthorsEmail");
+
+                File file = new File("src/pdf/submission.pdf");
+                FileOutputStream output = new FileOutputStream(file);
+                InputStream input = res.getBinaryStream("pdf");
+
+                byte[] buffer = new byte[1024];
+                while(input.read(buffer) > 0) {
+                    output.write(buffer);
+                }
 
                 //work out start page and end page
+                // below is a reference for the package we used to get the number of pages in a PDF.
+                /*
+                 *    Copyright 2019 Apache PDFBox
+                 *    SPDX-License-Identifier: Apache-2.0
+                 */
                 int startPage = previousLastPage + 1;
-                //TODO: change endpage according to pdf length
-                int endPage = startPage + 1;
+                int endPage = previousLastPage + PDDocument.load(file).getNumberOfPages();
                 previousLastPage = endPage;
 
                 String query2 = "INSERT INTO publishedArticles (submissionID, vol, number, startPage, endPage) " +
@@ -901,7 +916,7 @@ public class PublicationsController {
 
                 dbUpdate = pstmt2.executeUpdate();
             }
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
     }
