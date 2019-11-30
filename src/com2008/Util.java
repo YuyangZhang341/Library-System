@@ -2,6 +2,7 @@ package com2008;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.*;
 
 public class Util {
     private static int countInString(char c, String s) {
@@ -58,5 +59,27 @@ public class Util {
 
     public static boolean verifyEmailInTable(JTable table, int emailColumn) {
         return verifyEmailInTable(table, emailColumn, null);
+    }
+
+    public static boolean issnExists(String issn) {
+        PreparedStatement pstmt = null;
+        String query = "SELECT COUNT(issn) AS count FROM journals WHERE issn = ?";
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            pstmt = con.prepareStatement(query);
+            pstmt.setString(1, issn);
+
+            ResultSet res = pstmt.executeQuery();
+            int count = 0;
+            while (res.next()) {
+                count = Integer.parseInt(res.getString("count"));
+            }
+
+            return count >= 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }

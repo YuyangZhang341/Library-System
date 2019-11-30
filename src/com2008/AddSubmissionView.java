@@ -166,6 +166,13 @@ public class AddSubmissionView {
             return false;
         }
 
+        // check if issn exisits
+        if(! Util.issnExists(targetIssnTextField.getText())) {
+            targetIssnTextField.setBackground(Color.red);
+            JOptionPane.showMessageDialog(null,"No journal with such ISSN.");
+            return false;
+        }
+
         return true;
     }
 
