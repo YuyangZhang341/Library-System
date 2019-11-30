@@ -28,6 +28,7 @@ public class EditorView {
     private JButton retireButton;
     private JTextField chiefEditorTextField;
     private JLabel counterLabel;
+    private JButton addEditorsButton;
 
     private String journalIssn;
     private String userEmail;
@@ -91,6 +92,13 @@ public class EditorView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 publishButtonPressed();
+            }
+        });
+
+        addEditorsButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AddEditorsDialog.showAddEditorsDialog(journalIssn);
             }
         });
     }
