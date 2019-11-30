@@ -768,4 +768,49 @@ public class PublicationsController {
             e.printStackTrace();
         }
     }
+
+    public static SelectedArticles[] getSelectedArticles() {
+        Statement stmt = null;
+        ArrayList<SelectedArticles> results = new ArrayList<SelectedArticles>();
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+            ResultSet res = stmt.executeQuery("SELECT issn, name FROM selectedArticles");
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                String issn = res.getString("issn");
+                String name = res.getString("name");
+                String chiefEditorEmail = res.getString("chiefEditorEmail");
+
+                results.add(new SelectedArticles(issn, name,chiefEditorEmail));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        SelectedArticles arrayResults[] = new SelectedArticles[results.size()];
+        return results.toArray(arrayResults);
+    }
+
+    public static SelectedArticles getSelectedArticles(String issn) {
+        Statement stmt = null;
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+            ResultSet res = stmt.executeQuery("SELECT name FROM selectedArticles WHERE issn LIKE '" + issn + "'");
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                String name = res.getString("name");
+                String chiefEditorEmail = res.getString("chiefEditorEmail");
+
+                return new SelectedArticles(issn, name,chiefEditorEmail);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

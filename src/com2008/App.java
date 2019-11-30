@@ -36,6 +36,9 @@ public class App {
             public void actionPerformed(ActionEvent e) {
                 newlogin.showLogIn();
 
+
+                //ReviewArticles.showReviewArticle();
+
                 frame.dispose();
             }
         });
