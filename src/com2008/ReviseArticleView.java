@@ -84,8 +84,6 @@ public class ReviseArticleView {
                     JOptionPane.showMessageDialog(null,"Article revised.");
                     AuthorView.showAuthorView(submissionId, userEmail);
                     frame.dispose();
-                } else {
-                    //TODO:: not correct
                 }
             }
         });
@@ -113,7 +111,38 @@ public class ReviseArticleView {
     }
 
     public boolean verifyFields() {
-        //TODO:: check emails, check if no empty rows ets.
+        // set everything to white (if previously was red)
+        articleTitleField.setBackground(Color.white);
+        abstractTextArea.setBackground(Color.white);
+
+        if(! Util.checkForbiddenCharacters(articleTitleField.getText())) {
+            articleTitleField.setBackground(Color.red);
+            JOptionPane.showMessageDialog(null,"Characters ; : / \\ are forbidden.");
+            return false;
+        }
+
+        if(! Util.checkForbiddenCharacters(abstractTextArea.getText())) {
+            abstractTextArea.setBackground(Color.red);
+            JOptionPane.showMessageDialog(null,"Characters ; : / \\ are forbidden.");
+            return false;
+        }
+
+        if(articleTitleField.getText().equals("")) {
+            articleTitleField.setBackground(Color.red);
+            JOptionPane.showMessageDialog(null,"Fill out the article's title.");
+            return false;
+        }
+
+        if(abstractTextArea.getText().equals("")) {
+            abstractTextArea.setBackground(Color.red);
+            JOptionPane.showMessageDialog(null,"Fill out the article's abstract.");
+            return false;
+        }
+
+        // check if table full and doesn't contain forbidden characters
+        if(! Util.verifyTable(criticismsTable))
+            return false;
+
         return true;
     }
 
