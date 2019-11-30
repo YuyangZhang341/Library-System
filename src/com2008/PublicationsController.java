@@ -211,7 +211,7 @@ public class PublicationsController {
             e.printStackTrace();
         }
 
-        Author[] arrayResults = new Author[results.size()];
+        Author[] arrgit aayResults = new Author[results.size()];
         return results.toArray(arrayResults);
     }
 
@@ -434,9 +434,9 @@ public class PublicationsController {
             stmt = con.createStatement();
             ResultSet res = stmt.executeQuery("SELECT rs.submissionID, rs.title, rs.abstract, s.mainAuthorsEmail, cs.decision, COUNT(r.finalVerdict) as verdicts\n" +
                     "                    FROM revisedSubmissions rs\n" +
-                    "                    LEFT JOIN submissions s\n" +
-                    "                    LEFT JOIN reviews r on s.submissionID = r.submissionID\n" +
-                    "                    LEFT JOIN consideredSubmissions cs ON s.submissionID = cs.submissionId\n" +
+                    "                    LEFT JOIN submissions s ON rs.submissionID = s.submissionID\n" +
+                    "                    LEFT JOIN reviews r ON rs.submissionID = r.submissionID\n" +
+                    "                    LEFT JOIN consideredSubmissions cs ON rs.submissionID = cs.submissionId\n" +
                     "                    WHERE r.finalVerdict != '' AND s.issn = '" + journalIssn + "'\n" +
                     "                    GROUP BY s.submissionID\n"+
                     "                    HAVING verdicts>=3");
@@ -724,7 +724,7 @@ public class PublicationsController {
                 dbUpdate = stmt2.executeUpdate("DELETE FROM consideredSubmissions WHERE submissionID = " + submissionId);
 
                 // Delete the reviews for the submission
-                dbUpdate = stmt2.executeUpdate("DELETE FROM criticisms1 WHERE submissionID = " + submissionId);
+                dbUpdate = stmt2.executeUpdate("DELETE FROM criticisms WHERE submissionID = " + submissionId);
                 dbUpdate = stmt2.executeUpdate("DELETE FROM reviews WHERE submissionID = " + submissionId);
             }
         } catch (SQLException e) {
