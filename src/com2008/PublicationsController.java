@@ -17,11 +17,12 @@ public class PublicationsController {
         String newIssn = String.format("%04d", random.nextInt(10000)) + "-" + String.format("%04d", random.nextInt(10000));
         Boolean isUnique = true;
 
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "SELECT issn FROM journals";
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT issn FROM journals");
+            pstmt = con.prepareStatement(query);
+            ResultSet res = pstmt.executeQuery();
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -41,16 +42,20 @@ public class PublicationsController {
     }
 
     public static Editor[] getEditors(String journalIssn) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "SELECT u.title, u.forenames, u.surname, u.universityAffiliation, u.email, u.password, j.chiefEditorEmail " +
+                "FROM users u " +
+                "LEFT JOIN editors e ON e.email = u.email " +
+                "LEFT JOIN journals j ON  j.issn = e.issn " +
+                "WHERE j.issn = ?";
         ArrayList<Editor> results = new ArrayList<Editor>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT u.title, u.forenames, u.surname, u.universityAffiliation, u.email, u.password, j.chiefEditorEmail " +
-                    "FROM users u " +
-                    "LEFT JOIN editors e ON e.email = u.email " +
-                    "LEFT JOIN journals j ON  j.issn = e.issn " +
-                    "WHERE j.issn='" + journalIssn + "'");
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, journalIssn);
+
+            ResultSet res = pstmt.executeQuery();
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -73,12 +78,13 @@ public class PublicationsController {
     }
 
     public static Journal[] getJournals() {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "SELECT issn, name, chiefEditorEmail FROM journals";
         ArrayList<Journal> results = new ArrayList<Journal>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT issn, name, chiefEditorEmail FROM journals");
+            pstmt = con.prepareStatement(query);
+            ResultSet res = pstmt.executeQuery();
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -97,11 +103,15 @@ public class PublicationsController {
     }
 
     public static Journal getJournal(String issn) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "SELECT name, chiefEditorEmail FROM journals WHERE issn LIKE ?";
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT name, chiefEditorEmail FROM journals WHERE issn LIKE '" + issn + "'");
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, issn);
+
+            ResultSet res = pstmt.executeQuery();
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -118,12 +128,16 @@ public class PublicationsController {
     }
 
     public static Volume[] getVolumes(String issn) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "SELECT vol, year FROM volumes WHERE issn LIKE ?";
         ArrayList<Volume> results = new ArrayList<Volume>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT vol, year FROM volumes WHERE issn LIKE '" + issn + "'");
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, issn);
+
+            ResultSet res = pstmt.executeQuery();
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -141,12 +155,17 @@ public class PublicationsController {
     }
 
     public static Edition[] getEditions(String issn, int vol) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "SELECT number FROM editions WHERE issn = ? AND vol = ?";
         ArrayList<Edition> results = new ArrayList<Edition>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT number FROM editions WHERE issn='" + issn + "' AND vol=" + vol);
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, issn);
+            pstmt.setInt(2, vol);
+
+            ResultSet res = pstmt.executeQuery();
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -163,17 +182,23 @@ public class PublicationsController {
     }
 
     public static Article[] getArticles( String issn, int vol, int number) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "SELECT s.submissionID, rs.title, rs.abstract, pa.startPage, pa.endPage, s.mainAuthorsEmail " +
+                "FROM publishedArticles pa " +
+                "LEFT JOIN submissions s ON pa.submissionID = s.submissionID " +
+                "LEFT JOIN revisedSubmissions rs ON pa.submissionID = rs.submissionID " +
+                "LEFT JOIN users u ON s.mainAuthorsEmail = u.email " +
+                "WHERE s.issn = ? AND pa.vol = ? AND pa.number = ?";
         ArrayList<Article> results = new ArrayList<Article>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT s.submissionID, rs.title, rs.abstract, pa.startPage, pa.endPage, s.mainAuthorsEmail " +
-            "FROM publishedArticles pa " +
-            "LEFT JOIN submissions s ON pa.submissionID = s.submissionID " +
-            "LEFT JOIN revisedSubmissions rs ON pa.submissionID = rs.submissionID " +
-            "LEFT JOIN users u ON s.mainAuthorsEmail = u.email " +
-            "WHERE s.issn='" + issn + "' AND pa.vol=" + vol + " AND pa.number=" + number);
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, issn);
+            pstmt.setInt(2, vol);
+            pstmt.setInt(3, number);
+
+            ResultSet res = pstmt.executeQuery();
             // Fetch each row from the result set
 
             while (res.next()) {
@@ -195,12 +220,16 @@ public class PublicationsController {
     }
 
     public static Author[] getArticleAuthors(int submissionId) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "SELECT u.email, u.title, u.forenames, u.surname, u.universityAffiliation, u.password FROM users u LEFT JOIN authors a on u.email = a.email WHERE submissionID = ?";
         ArrayList<Author> results = new ArrayList<Author>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT u.email, u.title, u.forenames, u.surname, u.universityAffiliation, u.password FROM users u LEFT JOIN authors a on u.email = a.email WHERE submissionID = " + submissionId);
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setInt(1, submissionId);
+
+            ResultSet res = pstmt.executeQuery();
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -222,12 +251,16 @@ public class PublicationsController {
     }
 
     public static Submission getSubmission(int submissionId) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "SELECT * FROM submissions\n" +
+                "    WHERE submissionID = ?";
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT * FROM submissions\n" +
-                    "    WHERE submissionID = " + submissionId);
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setInt(1, submissionId);
+
+            ResultSet res = pstmt.executeQuery();
 
             File file = new File("src/pdf/submission.pdf");
             FileOutputStream output = new FileOutputStream(file);
@@ -255,12 +288,16 @@ public class PublicationsController {
     }
 
     public static RevisedSubmission getRevisedSubmission(int submissionId) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "SELECT * FROM revisedSubmissions\n" +
+                "    WHERE submissionID = ?";
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT * FROM revisedSubmissions\n" +
-                    "    WHERE submissionID = " + submissionId);
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setInt(1, submissionId);
+
+            ResultSet res = pstmt.executeQuery();
 
             File file = new File("src/pdf/revisedSubmission.pdf");
             FileOutputStream output = new FileOutputStream(file);
@@ -286,14 +323,18 @@ public class PublicationsController {
     }
 
     public static Article getArticle(int submissionId) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "SELECT s.issn, pa.vol, pa.number, pa.startPage, pa.endPage, rs.title, rs.abstract, rs.pdf, s.mainAuthorsEmail FROM publishedArticles pa\n" +
+                "    LEFT JOIN submissions s on s.submissionID = pa.submissionID\n" +
+                "    LEFT JOIN revisedSubmissions rs on s.submissionID = rs.submissionID" +
+                "    WHERE pa.submissionID = ?";
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT s.issn, pa.vol, pa.number, pa.startPage, pa.endPage, rs.title, rs.abstract, rs.pdf, s.mainAuthorsEmail FROM publishedArticles pa\n" +
-                    "    LEFT JOIN submissions s on s.submissionID = pa.submissionID\n" +
-                    "    LEFT JOIN revisedSubmissions rs on s.submissionID = rs.submissionID" +
-                    "    WHERE pa.submissionID = " + submissionId);
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setInt(1, submissionId);
+
+            ResultSet res = pstmt.executeQuery();
 
             File file = new File("src/pdf/article.pdf");
             FileOutputStream output = new FileOutputStream(file);
@@ -325,31 +366,54 @@ public class PublicationsController {
     }
 
     public static void addUser(String email, String title, String forenames, String surname, String uniAffiliation, String password) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "INSERT INTO users (email, title, forenames, surname, universityAffiliation, password) VALUES (?,?,?,?,?,?)";
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            int dbUpdate = stmt.executeUpdate("INSERT INTO users (email, title, forenames, surname, universityAffiliation, password)" +
-                    "VALUES ('" + email + "', '" + title + "', '" + forenames + "', '" + surname + "', '" + uniAffiliation + "', '" + password + "')");
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, email);
+            pstmt.setString(2, title);
+            pstmt.setString(3, forenames);
+            pstmt.setString(4, surname);
+            pstmt.setString(5, uniAffiliation);
+            pstmt.setString(6, password);
+
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addEditor(String issn, String email) {
+        PreparedStatement pstmt = null;
+        String query = "INSERT INTO editors (issn, email) VALUES (?,?)";
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, issn);
+            pstmt.setString(2, email);
+
+            pstmt.executeUpdate();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public static void addSubmission(Submission submission, Author[] authors) {
-        Statement stmt = null;
-
-        //TODO: check if authors already exist, if so don't replace passwords. LAter on include hashing passwords.
+        PreparedStatement pstmt = null;
+        String query = "INSERT INTO submissions (title, abstract, pdf, mainAuthorsEmail, issn) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             con.setAutoCommit(false);
-            stmt = con.createStatement();
 
             int submissionId = submission.getSubmissionId();
 
-            PreparedStatement pstmt = con.prepareStatement(
-                    "INSERT INTO submissions (title, abstract, pdf, mainAuthorsEmail, issn) VALUES (?, ?, ?, ?, ?)"
-            );
+            pstmt = con.prepareStatement(query);
+
             pstmt.setString(1, submission.getTitle());
             pstmt.setString(2, submission.getAbs());
             pstmt.setBinaryStream(3, new FileInputStream(submission.getPdf()));
@@ -359,9 +423,16 @@ public class PublicationsController {
             pstmt.executeUpdate();
 
             // check the submission id assigned
-            ResultSet submissionRes = stmt.executeQuery("SELECT submissionID FROM submissions\n" +
-                    "    WHERE mainAuthorsEmail = '" + submission.getMainAuthorsEmail() + "'\n" +
-                    "    AND abstract = '" + submission.getAbs() + "'");
+            query = "SELECT submissionID FROM submissions\n" +
+                    "    WHERE mainAuthorsEmail = ?\n" +
+                    "    AND abstract = ?";
+
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, submission.getMainAuthorsEmail());
+            pstmt.setString(2, submission.getAbs());
+
+            ResultSet submissionRes = pstmt.executeQuery();
             while (submissionRes.next()) {
                 submissionId = Integer.parseInt(submissionRes.getString("submissionID"));
             }
@@ -369,7 +440,13 @@ public class PublicationsController {
             // add author accounts
             for (Author author : authors) {
                 // check if an account already exists
-                ResultSet res = stmt.executeQuery("SELECT COUNT(email) AS count FROM users WHERE email = '" + author.getEmail() + "'");
+                query = "SELECT COUNT(email) AS count FROM users WHERE email = ?";
+
+                pstmt = con.prepareStatement(query);
+
+                pstmt.setString(1, author.getEmail());
+
+                ResultSet res = pstmt.executeQuery();
                 int count = 0;
                 while (res.next()) {
                     count = Integer.parseInt(res.getString("count"));
@@ -381,36 +458,51 @@ public class PublicationsController {
                 }
 
                 if (submissionId != -1) {
-                    int authorsUpdate = stmt.executeUpdate("INSERT INTO authors (submissionID, email) VALUES (" + submissionId + ", '" + author.getEmail() + "')");
-                }
-            }
+                    query = "INSERT INTO authors (submissionID, email) VALUES (?,?)";
 
-            con.commit();
-        } catch (SQLException | FileNotFoundException e) {
-            e.printStackTrace();
+                    pstmt = con.prepareStatement(query);
+
+                    pstmt.setInt(1, submissionId);
+                    pstmt.setString(2, author.getEmail());
+
+                    int authorsUpdate = pstmt.executeUpdate();
+                }
         }
+
+        con.commit();
+    } catch (SQLException | FileNotFoundException e) {
+        e.printStackTrace();
     }
+}
 
     public static void createJournal(Journal journal, Editor[] editors) {
-        Statement stmt = null;
-
-        //TODO: check if editors already exist, if so don't replace passwords. Later on include hashing passwords.
+        PreparedStatement pstmt = null;
+        String query = "INSERT INTO journals (issn, name, chiefEditorEmail) VALUES (?,?,?)";
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             con.setAutoCommit(false);
-            stmt = con.createStatement();
+            pstmt = con.prepareStatement(query);
 
             String issn = journal.getIssn();
             String name = journal.getName();
             String chiefEditorEmail = journal.getChiefEditorEmail();
 
-            int dbUpdate = stmt.executeUpdate("INSERT INTO journals (issn, name, chiefEditorEmail)" +
-                    "VALUES ('" + issn + "', '" + name + "', '" + chiefEditorEmail + "')");
+            pstmt.setString(1, issn);
+            pstmt.setString(2, name);
+            pstmt.setString(3, chiefEditorEmail);
+
+            int dbUpdate = pstmt.executeUpdate();
 
             // add author accounts
             for (Editor editor : editors) {
                 // check if an account already exists
-                ResultSet res = stmt.executeQuery("SELECT COUNT(email) AS count FROM users WHERE email = '" + editor.getEmail() + "'");
+                query = "SELECT COUNT(email) AS count FROM users WHERE email = ?";
+
+                pstmt = con.prepareStatement(query);
+
+                pstmt.setString(1, editor.getEmail());
+
+                ResultSet res = pstmt.executeQuery();
                 int count = 0;
                 while (res.next()) {
                     count = Integer.parseInt(res.getString("count"));
@@ -421,7 +513,14 @@ public class PublicationsController {
                     addUser(editor.getEmail(), editor.getTitle(), editor.getForenames(), editor.getSurname(), editor.getUniversityAffiliation(), editor.getPassword());
                 }
 
-                int editorsUpdate = stmt.executeUpdate("INSERT INTO editors (issn, email) VALUES ('" + issn + "', '" + editor.getEmail() + "')");
+                query = "INSERT INTO editors (issn, email) VALUES (?,?)";
+
+                pstmt = con.prepareStatement(query);
+
+                pstmt.setString(1, issn);
+                pstmt.setString(2, editor.getEmail());
+
+                int editorsUpdate = pstmt.executeUpdate();
             }
 
             con.commit();
@@ -433,19 +532,23 @@ public class PublicationsController {
 
 
     public static ConsideredSubmission[] getConsideredSubmissions(String journalIssn) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "SELECT rs.submissionID, rs.title, rs.abstract, s.mainAuthorsEmail, cs.decision, COUNT(r.finalVerdict) as verdicts\n" +
+                "                    FROM revisedSubmissions rs\n" +
+                "                    LEFT JOIN submissions s ON rs.submissionID = s.submissionID\n" +
+                "                    LEFT JOIN reviews r ON rs.submissionID = r.submissionID\n" +
+                "                    LEFT JOIN consideredSubmissions cs ON rs.submissionID = cs.submissionId\n" +
+                "                    WHERE r.finalVerdict != '' AND s.issn = ?\n" +
+                "                    GROUP BY s.submissionID\n"+
+                "                    HAVING verdicts>=3";
         ArrayList<ConsideredSubmission> results = new ArrayList<ConsideredSubmission>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT rs.submissionID, rs.title, rs.abstract, s.mainAuthorsEmail, cs.decision, COUNT(r.finalVerdict) as verdicts\n" +
-                    "                    FROM revisedSubmissions rs\n" +
-                    "                    LEFT JOIN submissions s ON rs.submissionID = s.submissionID\n" +
-                    "                    LEFT JOIN reviews r ON rs.submissionID = r.submissionID\n" +
-                    "                    LEFT JOIN consideredSubmissions cs ON rs.submissionID = cs.submissionId\n" +
-                    "                    WHERE r.finalVerdict != '' AND s.issn = '" + journalIssn + "'\n" +
-                    "                    GROUP BY s.submissionID\n"+
-                    "                    HAVING verdicts>=3");
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, journalIssn);
+
+            ResultSet res = pstmt.executeQuery();
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -467,16 +570,19 @@ public class PublicationsController {
     }
 
     public static Role[] getRoles(String email) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "SELECT a.submissionID, s.title FROM authors a\n" +
+                "    LEFT JOIN submissions s on a.submissionID = s.submissionID\n" +
+                "    WHERE a.email = ?";
         ArrayList<Role> results = new ArrayList<Role>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, email);
 
             // Look for author roles
-            ResultSet res = stmt.executeQuery("SELECT a.submissionID, s.title FROM authors a\n" +
-                    "    LEFT JOIN submissions s on a.submissionID = s.submissionID\n" +
-                    "    WHERE a.email = '" + email + "'");
+            ResultSet res = pstmt.executeQuery();
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -487,9 +593,15 @@ public class PublicationsController {
             }
 
             // Look for editor roles
-            res = stmt.executeQuery("SELECT e.issn, j.name, j.chiefEditorEmail FROM editors e\n" +
+            query = "SELECT e.issn, j.name, j.chiefEditorEmail FROM editors e\n" +
                     "    LEFT JOIN journals j on j.issn = e.issn\n" +
-                    "    WHERE e.email = '" + email + "'");
+                    "    WHERE e.email = ?";
+
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, email);
+
+            res = pstmt.executeQuery();
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -505,9 +617,15 @@ public class PublicationsController {
             }
 
             // Look for reviewer roles
-            res = stmt.executeQuery("SELECT r.submissionID, s.title FROM reviewers r\n" +
+            query = "SELECT r.submissionID, s.title FROM reviewers r\n" +
                     "    LEFT JOIN submissions s on r.submissionID = s.submissionID\n" +
-                    "    WHERE r.email = '" + email + "'");
+                    "    WHERE r.email = ?";
+
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, email);
+
+            res = pstmt.executeQuery();
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -525,15 +643,18 @@ public class PublicationsController {
     }
 
     public static Verdict[] getVerdicts(int submissionId) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "SELECT * FROM reviews a\n" +
+                "    WHERE submissionID = ?";
         ArrayList<Verdict> results = new ArrayList<Verdict>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setInt(1, submissionId);
 
             // Look for author roles
-            ResultSet res = stmt.executeQuery("SELECT * FROM reviews a\n" +
-                    "    WHERE submissionID = " + submissionId);
+            ResultSet res = pstmt.executeQuery();
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -553,15 +674,19 @@ public class PublicationsController {
     }
 
     public static Criticism[] getCriticisms(int submissionId, int reviewerId) {
-        Statement stmt = null;
+       PreparedStatement pstmt = null;
+        String query = "SELECT * FROM criticisms\n" +
+                "    WHERE submissionID = ? AND reviewerID = ?";
         ArrayList<Criticism> results = new ArrayList<Criticism>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setInt(1, submissionId);
+            pstmt.setInt(2, reviewerId);
 
             // Look for author roles
-            ResultSet res = stmt.executeQuery("SELECT * FROM criticisms\n" +
-                    "    WHERE submissionID = " + submissionId + " AND reviewerID = " + reviewerId);
+            ResultSet res = pstmt.executeQuery();
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -582,15 +707,18 @@ public class PublicationsController {
     }
 
     public static Criticism[] getAllCriticisms(int submissionId) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "SELECT * FROM criticisms\n" +
+                "    WHERE submissionID = ?";
         ArrayList<Criticism> results = new ArrayList<Criticism>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setInt(1, submissionId);
 
             // Look for author roles
-            ResultSet res = stmt.executeQuery("SELECT * FROM criticisms\n" +
-                    "    WHERE submissionID = " + submissionId);
+            ResultSet res = pstmt.executeQuery();
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -611,15 +739,18 @@ public class PublicationsController {
     }
 
     public static Review[] getReviews(int submissionId) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "SELECT * FROM reviews\n" +
+                "    WHERE submissionID = ?";
         ArrayList<Review> results = new ArrayList<Review>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setInt(1, submissionId);
 
             // Look for author roles
-            ResultSet res = stmt.executeQuery("SELECT * FROM reviews\n" +
-                    "    WHERE submissionID = " + submissionId);
+            ResultSet res = pstmt.executeQuery();
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -640,21 +771,24 @@ public class PublicationsController {
     }
 
     public static void addVolume(String issn, int vol, int year) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "INSERT INTO volumes (vol,year,issn) " +
+                "VALUES (?,?,?)";
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
+            pstmt = con.prepareStatement(query);
 
-            int res = stmt.executeUpdate("INSERT INTO volumes (vol,year,issn) " +
-                    "VALUES (" + vol + ", " + year + ", '" + issn + "')");
+            pstmt.setInt(1, vol);
+            pstmt.setInt(2, year);
+            pstmt.setString(3, issn);
+
+            int res = pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     private static int getVolumeNumber(String issn) {
-        Statement stmt = null;
-
         Volume[] volumes = getVolumes(issn);
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 
@@ -674,8 +808,8 @@ public class PublicationsController {
     }
 
     public static void publishEdition(String issn) {
-        Statement stmt = null;
-        Statement stmt2 = null;
+        PreparedStatement pstmt = null;
+        PreparedStatement pstmt2 = null;
 
         int targetVolume = getVolumeNumber(issn);
 
@@ -696,18 +830,28 @@ public class PublicationsController {
         }
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            stmt2 = con.createStatement();
+            String query = "INSERT INTO editions (number, issn, vol) " +
+                    "VALUES (?,?,?)";
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setInt(1, newEditionNumber);
+            pstmt.setString(2, issn);
+            pstmt.setInt(3, targetVolume);
 
             // Add the new edition
-            int dbUpdate = stmt.executeUpdate("INSERT INTO editions (number, issn, vol) " +
-                    "VALUES (" + newEditionNumber + ", '" + issn + "', " + targetVolume + ")");
+            int dbUpdate = pstmt.executeUpdate();
 
             // Get accepted submission for that issn
-            ResultSet res = stmt.executeQuery("SELECT s.submissionID, rs.title, rs.abstract, rs.pdf, s.mainAuthorsEmail FROM submissions s\n" +
+            query = "SELECT s.submissionID, rs.title, rs.abstract, rs.pdf, s.mainAuthorsEmail FROM submissions s\n" +
                     "    LEFT JOIN revisedSubmissions rs on s.submissionID = rs.submissionID" +
                     "    LEFT JOIN consideredSubmissions cs on s.submissionID = cs.submissionID\n" +
-                    "    WHERE s.issn = '" + issn + "' AND cs.decision = 'accepted'");
+                    "    WHERE s.issn = ? AND cs.decision = 'accepted'";
+
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, issn);
+
+            ResultSet res = pstmt.executeQuery();
 
             // Add submissions to submitArticles with appropriate issn, vol and edition numbers
             while (res.next()) {
@@ -732,15 +876,45 @@ public class PublicationsController {
                 int endPage = startPage + PDDocument.load(file).getNumberOfPages();
                 previousLastPage = endPage;
 
-                dbUpdate = stmt2.executeUpdate("INSERT INTO publishedArticles (submissionID, vol, number, startPage, endPage) " +
-                        "VALUES (" + submissionId + ", " + targetVolume + ", " + newEditionNumber + ", " + startPage + ", " + endPage + ")");
+                String query2 = "INSERT INTO publishedArticles (submissionID, vol, number, startPage, endPage) " +
+                        "VALUES (?,?,?,?,?)";
+
+                pstmt2 = con.prepareStatement(query2);
+
+                pstmt2.setInt(1, submissionId);
+                pstmt2.setInt(2, targetVolume);
+                pstmt2.setInt(3, newEditionNumber);
+                pstmt2.setInt(4, startPage);
+                pstmt2.setInt(5, endPage);
+
+                dbUpdate = pstmt2.executeUpdate();
 
                 // Delete the submission from consideredSubmissions table
-                dbUpdate = stmt2.executeUpdate("DELETE FROM consideredSubmissions WHERE submissionID = " + submissionId);
+
+                query2 = "DELETE FROM consideredSubmissions WHERE submissionID = ?";
+
+                pstmt2 = con.prepareStatement(query2);
+
+                pstmt2.setInt(1, submissionId);
+
+                dbUpdate = pstmt2.executeUpdate();
 
                 // Delete the reviews for the submission
-                dbUpdate = stmt2.executeUpdate("DELETE FROM criticisms WHERE submissionID = " + submissionId);
-                dbUpdate = stmt2.executeUpdate("DELETE FROM reviews WHERE submissionID = " + submissionId);
+                query2 = "DELETE FROM criticisms WHERE submissionID = ?";
+
+                pstmt2 = con.prepareStatement(query2);
+
+                pstmt2.setInt(1, submissionId);
+
+                dbUpdate = pstmt2.executeUpdate();
+
+                query2 = "DELETE FROM reviews WHERE submissionID = ?";
+
+                pstmt2 = con.prepareStatement(query2);
+
+                pstmt2.setInt(1, submissionId);
+
+                dbUpdate = pstmt2.executeUpdate();
             }
         } catch (SQLException | IOException e) {
             e.printStackTrace();
@@ -748,12 +922,10 @@ public class PublicationsController {
     }
 
     public static void addRevisedSubmission(RevisedSubmission revisedSubmission) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-
-            PreparedStatement pstmt = con.prepareStatement(
+            pstmt = con.prepareStatement(
                     "INSERT INTO revisedSubmissions (submissionID, title, abstract, pdf) VALUES (?, ?, ?, ?)"
             );
             pstmt.setInt(1, revisedSubmission.getSubmissionId());
@@ -768,29 +940,31 @@ public class PublicationsController {
     }
 
     public static void respondToCriticism(int criticismID, String response) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "UPDATE criticisms SET response = ? WHERE criticismID = ?";
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
+            pstmt = con.prepareStatement(query);
 
-            PreparedStatement pstmt = con.prepareStatement(
-                    "UPDATE criticisms SET response = ? WHERE criticismID = " + criticismID
-            );
             pstmt.setString(1, response);
+            pstmt.setInt(2, criticismID);
 
             pstmt.executeUpdate();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     public static SelectedArticles[] getSelectedArticles() {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "SELECT issn, name FROM selectedArticles";
         ArrayList<SelectedArticles> results = new ArrayList<SelectedArticles>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT issn, name FROM selectedArticles");
+            pstmt = con.prepareStatement(query);
+
+            ResultSet res = pstmt.executeQuery();
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -809,11 +983,15 @@ public class PublicationsController {
     }
 
     public static SelectedArticles getSelectedArticles(String issn) {
-        Statement stmt = null;
+        PreparedStatement pstmt = null;
+        String query = "SELECT name FROM selectedArticles WHERE issn LIKE ?";
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT name FROM selectedArticles WHERE issn LIKE '" + issn + "'");
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, issn);
+
+            ResultSet res = pstmt.executeQuery();
 
             // Fetch each row from the result set
             while (res.next()) {
