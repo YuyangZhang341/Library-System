@@ -36,11 +36,11 @@ public class ConsideredSubmissionView {
         this.journalIssn = journalIssn;
         this.userEmail = userEmail;
 
-        Submission submission = PublicationsController.getSubmission(submissionId);
+        RevisedSubmission revisedSubmission = PublicationsController.getRevisedSubmission(submissionId);
         Verdict verdicts[] = PublicationsController.getVerdicts(submissionId);
 
-        articleTitleLabel.setText("Article title: " + submission.getTitle());
-        abstractTextArea.setText(submission.getAbs());
+        articleTitleLabel.setText("Article title: " + revisedSubmission.getTitle());
+        abstractTextArea.setText(revisedSubmission.getAbs());
         if(verdicts.length == 3) {
             verdictTextField1.setText(verdicts[0].getVerdict());
             verdictTextField2.setText(verdicts[1].getVerdict());
@@ -61,9 +61,9 @@ public class ConsideredSubmissionView {
             public void actionPerformed(ActionEvent e) {
                 // open the submission's pdf
                 try {
-                    if(submission.getPdf().exists()) {
+                    if(revisedSubmission.getPdf().exists()) {
                         if(Desktop.isDesktopSupported()) {
-                            Desktop.getDesktop().open(submission.getPdf());
+                            Desktop.getDesktop().open(revisedSubmission.getPdf());
                         } else {
                             System.out.println("Awt Desktop not supported.");
                         }
