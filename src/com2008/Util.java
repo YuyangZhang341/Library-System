@@ -1,6 +1,8 @@
 package com2008;
 
 import javax.swing.*;
+import java.awt.*;
+import java.sql.*;
 
 public class Util {
     private static int countInString(char c, String s) {
@@ -24,16 +26,15 @@ public class Util {
         return countInString('@', email) == 1;
     }
 
-    public static boolean verifyTable(JTable table) {
+    public static boolean verifyTable(JTable table, Component parentComponent) {
         // if any field in the table is empty, return false. else return true.
         for(int i = 0; i < table.getColumnCount(); i++) {
             for(int j = 0; j < table.getRowCount(); j++) {
-                if(table.getValueAt(j, i).toString().equals("")) {
-                    JOptionPane.showMessageDialog(null,"Field in row " + j + ", column " + i + " in the table is empty.");
+                if(table.getValueAt(j, i) == null || table.getValueAt(j, i).toString().equals("")) {
+                    JOptionPane.showMessageDialog(parentComponent,"Field in row " + j + ", column " + i + " in the table is empty. (Make sure you finished editing the table.)");
                     return false;
-                }
-                if(! checkForbiddenCharacters(table.getValueAt(j, i).toString())) {
-                    JOptionPane.showMessageDialog(null,"Field in row " + j + ", column " + i + " contains a forbidden character (; : / \\)");
+                } else if(! checkForbiddenCharacters(table.getValueAt(j, i).toString())) {
+                    JOptionPane.showMessageDialog(parentComponent,"Field in row " + j + ", column " + i + " contains a forbidden character (; : / \\)");
                     return false;
                 }
             }
@@ -41,14 +42,44 @@ public class Util {
         return true;
     }
 
-    public static boolean verifyEmailInTable(JTable table, int passwordColumn) {
+    public static boolean verifyTable(JTable table) {
+        return verifyTable(table, null);
+    }
+
+    public static boolean verifyEmailInTable(JTable table, int emailColumn, Component parentComponent) {
         // check emails in the table
         for(int i = 0; i < table.getRowCount(); i++) {
-            if(! Util.verifyEmail(table.getValueAt(i, passwordColumn).toString())) {
-                JOptionPane.showMessageDialog(null,"Email in row " + i + " in the table is incorrect.");
+            if(! Util.verifyEmail(table.getValueAt(i, emailColumn).toString())) {
+                JOptionPane.showMessageDialog(parentComponent,"Email in row " + i + " in the table is incorrect.");
                 return false;
             }
         }
         return true;
+    }
+
+    public static boolean verifyEmailInTable(JTable table, int emailColumn) {
+        return verifyEmailInTable(table, emailColumn, null);
+    }
+
+    public static boolean issnExists(String issn) {
+        PreparedStatement pstmt = null;
+        String query = "SELECT COUNT(issn) AS count FROM journals WHERE issn = ?";
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            pstmt = con.prepareStatement(query);
+            pstmt.setString(1, issn);
+
+            ResultSet res = pstmt.executeQuery();
+            int count = 0;
+            while (res.next()) {
+                count = Integer.parseInt(res.getString("count"));
+            }
+
+            return count >= 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }

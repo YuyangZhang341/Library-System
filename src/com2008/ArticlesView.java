@@ -21,7 +21,6 @@ public class ArticlesView {
     private int startPage;
     private int endPage;
 
-    //TODO: set frame title to be the current journal's names with article number
     private static JFrame frame = new JFrame("Articles");
 
     public ArticlesView(String issn, int vol, int number) {

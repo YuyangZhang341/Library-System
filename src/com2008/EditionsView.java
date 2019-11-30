@@ -17,7 +17,6 @@ public class EditionsView {
     private String issn;
     private int vol;
 
-    //TODO: set frame title to be the current journal's names with edition number
     private static JFrame frame = new JFrame("Editions");
 
     public EditionsView(String issn, int vol) {
