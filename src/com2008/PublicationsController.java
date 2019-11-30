@@ -371,16 +371,29 @@ public class PublicationsController {
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             pstmt = con.prepareStatement(query);
+            // check if an account already exists
+            query = "SELECT COUNT(email) AS count FROM users WHERE email = ?";
 
-            pstmt.setString(1, email);
-            pstmt.setString(2, title);
-            pstmt.setString(3, forenames);
-            pstmt.setString(4, surname);
-            pstmt.setString(5, uniAffiliation);
-            pstmt.setString(6, password);
+            PreparedStatement pstmt2 = con.prepareStatement(query);
 
-            pstmt.executeUpdate();
+            pstmt2.setString(1, email);
 
+            ResultSet res = pstmt2.executeQuery();
+            int count = 0;
+            while (res.next()) {
+                count = Integer.parseInt(res.getString("count"));
+            }
+
+            if (count < 1) {
+                pstmt.setString(1, email);
+                pstmt.setString(2, title);
+                pstmt.setString(3, forenames);
+                pstmt.setString(4, surname);
+                pstmt.setString(5, uniAffiliation);
+                pstmt.setString(6, password);
+
+                pstmt.executeUpdate();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -439,23 +452,7 @@ public class PublicationsController {
 
             // add author accounts
             for (Author author : authors) {
-                // check if an account already exists
-                query = "SELECT COUNT(email) AS count FROM users WHERE email = ?";
-
-                pstmt = con.prepareStatement(query);
-
-                pstmt.setString(1, author.getEmail());
-
-                ResultSet res = pstmt.executeQuery();
-                int count = 0;
-                while (res.next()) {
-                    count = Integer.parseInt(res.getString("count"));
-                }
-
-                if (count < 1) {
-                    //TODO: make sure the password is hashed or whatever
-                    addUser(author.getEmail(), author.getTitle(), author.getForenames(), author.getSurname(), author.getUniversityAffiliation(), author.getPassword());
-                }
+                addUser(author.getEmail(), author.getTitle(), author.getForenames(), author.getSurname(), author.getUniversityAffiliation(), author.getPassword());
 
                 if (submissionId != -1) {
                     query = "INSERT INTO authors (submissionID, email) VALUES (?,?)";
@@ -495,23 +492,7 @@ public class PublicationsController {
 
             // add author accounts
             for (Editor editor : editors) {
-                // check if an account already exists
-                query = "SELECT COUNT(email) AS count FROM users WHERE email = ?";
-
-                pstmt = con.prepareStatement(query);
-
-                pstmt.setString(1, editor.getEmail());
-
-                ResultSet res = pstmt.executeQuery();
-                int count = 0;
-                while (res.next()) {
-                    count = Integer.parseInt(res.getString("count"));
-                }
-
-                if (count < 1) {
-                    //TODO: make sure the password is hashed or whatever
-                    addUser(editor.getEmail(), editor.getTitle(), editor.getForenames(), editor.getSurname(), editor.getUniversityAffiliation(), editor.getPassword());
-                }
+                addUser(editor.getEmail(), editor.getTitle(), editor.getForenames(), editor.getSurname(), editor.getUniversityAffiliation(), editor.getPassword());
 
                 query = "INSERT INTO editors (issn, email) VALUES (?,?)";
 

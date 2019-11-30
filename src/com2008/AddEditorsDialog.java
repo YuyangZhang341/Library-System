@@ -61,7 +61,9 @@ public class AddEditorsDialog extends JDialog {
     }
 
     private void onOK() {
-        if (verifyFields()) {
+        if (editorsTable.getRowCount() == 0) {
+            dispose();
+        } else if (verifyFields()) {
             Editor[] editors = new Editor[editorsTable.getRowCount()];
 
             for (int i = 0; i < editorsTable.getRowCount(); i++) {
@@ -88,16 +90,14 @@ public class AddEditorsDialog extends JDialog {
                         editors[i].getEmail()
                 );
             }
-            JOptionPane.showMessageDialog(null, "Editors Added.");
+            JOptionPane.showMessageDialog(d, "Editors Added.");
             dispose();
-        } else {
-            //TODO:: not correct
         }
     }
 
     public boolean verifyFields() {
         // check if table full and doesn't contain forbidden characters
-        if(! Util.verifyTable(editorsTable))
+        if(! Util.verifyTable(editorsTable, d))
             return false;
 
         // check emails in the table
