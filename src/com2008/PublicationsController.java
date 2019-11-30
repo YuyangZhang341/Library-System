@@ -211,7 +211,7 @@ public class PublicationsController {
             e.printStackTrace();
         }
 
-        Author[] arrgit aayResults = new Author[results.size()];
+        Author[] arrayResults = new Author[results.size()];
         return results.toArray(arrayResults);
     }
 
