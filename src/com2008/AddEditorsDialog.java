@@ -10,6 +10,7 @@ public class AddEditorsDialog extends JDialog {
     private JButton buttonCancel;
     private JButton addRowButton;
     private JTable editorsTable;
+    private JScrollPane editorsScrollPane;
 
     static AddEditorsDialog d;
 
@@ -72,9 +73,21 @@ public class AddEditorsDialog extends JDialog {
                         editorsTable.getValueAt(i, 5).toString(),
                         false,
                         journalIssn);
-            }
 
-            //TODO insert editors
+
+                PublicationsController.addUser(
+                        editors[i].getEmail(),
+                        editors[i].getTitle(),
+                        editors[i].getForenames(),
+                        editors[i].getSurname(),
+                        editors[i].getUniversityAffiliation(),
+                        editors[i].getPassword());
+
+                PublicationsController.addEditor(
+                        journalIssn,
+                        editors[i].getEmail()
+                );
+            }
             JOptionPane.showMessageDialog(null, "Editors Added.");
             dispose();
         } else {
