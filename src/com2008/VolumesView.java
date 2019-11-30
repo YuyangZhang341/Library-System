@@ -15,7 +15,6 @@ public class VolumesView {
 
     private String issn;
 
-    //TODO: set frame title to journal's name
     private static JFrame frame = new JFrame("Volumes");
 
     public VolumesView(String issn) {
