@@ -75,8 +75,6 @@ public class CreateJournalView {
                     JOptionPane.showMessageDialog(null, "Submitted.");
                     App.showMainApp();
                     frame.dispose();
-                } else {
-                    //TODO:: not correct
                 }
             }
         });
@@ -104,7 +102,43 @@ public class CreateJournalView {
     }
 
     public boolean verifyFields() {
-        //TODO:: check emails, check if no empty rows ets.
+        JTextField[] fields = {forenamesField, emailField, journalIssnField, journalTitleField, passwordField, surnameField, titleField, universityAffiliationField};
+
+        // set everything to white (if previously was red)
+        for(JTextField field : fields) {
+            field.setBackground(Color.white);
+        }
+
+        // check fields for forbidden characters
+        for(JTextField field : fields) {
+            if(! Util.checkForbiddenCharacters(field.getText())) {
+                field.setBackground(Color.red);
+                JOptionPane.showMessageDialog(null,"Characters ; : / \\ are forbidden.");
+                return false;
+            }
+
+            if(field.getText().equals("")) {
+                field.setBackground(Color.red);
+                JOptionPane.showMessageDialog(null,"Fill out all the fields.");
+                return false;
+            }
+        }
+
+        // verify email
+        if(! Util.verifyEmail(emailField.getText())) {
+            emailField.setBackground(Color.red);
+            JOptionPane.showMessageDialog(null,"Incorrect email.");
+            return false;
+        }
+
+        // check if table full and doesn't contain forbidden characters
+        if(! Util.verifyTable(editorsTable))
+            return false;
+
+        // check emails in the table
+        if(! Util.verifyEmailInTable(editorsTable, 0))
+            return false;
+
         return true;
     }
 

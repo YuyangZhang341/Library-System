@@ -43,7 +43,7 @@ public class AddSubmissionView {
     private DefaultTableModel coauthorsTableModel = new DefaultTableModel(new String[]{"Email", "Title", "Forenames", "Surname", "University Affiliation", "Password"}, 0);
 
     private static JFrame frame = new JFrame("Add Submission");
-    private File pdfFile;
+    private File pdfFile = null;
 
     public AddSubmissionView() {
         backButton.addActionListener(new ActionListener() {
@@ -97,8 +97,6 @@ public class AddSubmissionView {
                     JOptionPane.showMessageDialog(null,"Submitted.");
                     App.showMainApp();
                     frame.dispose();
-                } else {
-                    //TODO:: not correct
                 }
             }
         });
@@ -116,7 +114,55 @@ public class AddSubmissionView {
     }
 
     public boolean verifyFields() {
-        //TODO:: check emails, check if no empty rows ets.
+        JTextField[] fields = {articleTitleField, emailField, forenamesField, passwordField, surnameField, targetIssnTextField, titleField, universityAffiliationField};
+
+        // set everything to white (if previously was red)
+        for(JTextField field : fields) {
+            field.setBackground(Color.white);
+        }
+        abstractTextArea.setBackground(Color.white);
+
+        // check fields for forbidden characters
+        for(JTextField field : fields) {
+            if(! Util.checkForbiddenCharacters(field.getText())) {
+                field.setBackground(Color.red);
+                JOptionPane.showMessageDialog(null,"Characters ; : / \\ are forbidden.");
+                return false;
+            }
+
+            if(field.getText().equals("")) {
+                field.setBackground(Color.red);
+                JOptionPane.showMessageDialog(null,"Fill out all the fields.");
+                return false;
+            }
+        }
+
+        // verify email
+        if(! Util.verifyEmail(emailField.getText())) {
+            emailField.setBackground(Color.red);
+            JOptionPane.showMessageDialog(null,"Incorrect email.");
+            return false;
+        }
+
+        // check if table full and doesn't contain forbidden characters
+        if(! Util.verifyTable(coauthorsTable))
+            return false;
+
+        // check emails in the table
+        if(! Util.verifyEmailInTable(coauthorsTable, 0))
+            return false;
+
+        if(pdfFile == null) {
+            JOptionPane.showMessageDialog(null,"Choose a PDF file.");
+            return false;
+        }
+
+        if(abstractTextArea.getText().equals("")) {
+            abstractTextArea.setBackground(Color.red);
+            JOptionPane.showMessageDialog(null,"Fill out the abstract.");
+            return false;
+        }
+
         return true;
     }
 

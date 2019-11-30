@@ -83,6 +83,14 @@ public class AddEditorsDialog extends JDialog {
     }
 
     public boolean verifyFields() {
+        // check if table full and doesn't contain forbidden characters
+        if(! Util.verifyTable(editorsTable))
+            return false;
+
+        // check emails in the table
+        if(! Util.verifyEmailInTable(editorsTable, 0))
+            return false;
+
         return true;
     }
 
