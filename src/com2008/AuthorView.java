@@ -260,7 +260,7 @@ public class AuthorView {
                 criticismsTable2Model.addRow(new Object[]{criticism.getCriticism(), criticism.getResponse()});
             }
             else {
-                criticismsTableModel.addRow(new Object[]{criticism.getCriticism(), ""});
+                criticismsTable2Model.addRow(new Object[]{criticism.getCriticism(), ""});
             }
         }
 
@@ -269,7 +269,7 @@ public class AuthorView {
                 criticismsTable3Model.addRow(new Object[]{criticism.getCriticism(), criticism.getResponse()});
             }
             else {
-                criticismsTableModel.addRow(new Object[]{criticism.getCriticism(), ""});
+                criticismsTable3Model.addRow(new Object[]{criticism.getCriticism(), ""});
             }
         }
 

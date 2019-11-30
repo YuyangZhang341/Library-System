@@ -79,6 +79,9 @@ public class AddSubmissionView {
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                // stop editing the table
+                coauthorsTable.getSelectionModel().clearSelection();
+
                 if (verifyFields()) {
                     Author authors[] = new Author[coauthorsTable.getRowCount() + 1];
                     authors[0] = new Author(emailField.getText(), titleField.getText(), forenamesField.getText(), surnameField.getText(),

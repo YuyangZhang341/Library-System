@@ -873,7 +873,7 @@ public class PublicationsController {
                  *    SPDX-License-Identifier: Apache-2.0
                  */
                 int startPage = previousLastPage + 1;
-                int endPage = startPage + PDDocument.load(file).getNumberOfPages();
+                int endPage = previousLastPage + PDDocument.load(file).getNumberOfPages();
                 previousLastPage = endPage;
 
                 String query2 = "INSERT INTO publishedArticles (submissionID, vol, number, startPage, endPage) " +
