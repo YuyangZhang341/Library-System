@@ -14,7 +14,9 @@ public class Util {
 
     public static boolean checkForbiddenCharacters(String s) {
         // return false if string contains ; : / \
-        return !(s.contains(";") || s.contains(":") || s.contains("/") || s.contains("\\"));
+        return !(s.contains(";") || s.contains(":") || s.contains("/") || s.contains("\\")
+                || s.toLowerCase().contains("drop ") || s.toLowerCase().contains("select ")
+                || s.toLowerCase().contains("insert ") || s.toLowerCase().contains("set "));
     }
 
     public static boolean verifyEmail(String email) {
