@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Vector;
 
 public class ReviewArticles {
     private JPanel main;
@@ -69,22 +70,15 @@ public class ReviewArticles {
     }
 
     private void loadRightTable() {
-        DefaultTableModel model = new DefaultTableModel(new String[]{"ISSN", "Name"}, 0);
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Titlt", "Abstract"}, 0);
         rightTable.setModel(model);
 
-        for (Journal journal : PublicationsController.getJournals()) {
-            model.addRow(new Object[]{journal.getIssn(), journal.getName()});
+        for (Submission submission : PublicationsController.getSubmissions()) {
+            model.addRow(new Object[]{submission.getTitle(), submission.getAbs()});
         }
     }
 
-    private void loadLeftTable() {
-        DefaultTableModel model = new DefaultTableModel(new String[]{"ISSN", "Name"}, 0);
-        leftTable.setModel(model);
-
-        for (SelectedArticles selectedArticles : PublicationsController.getSelectedArticles()) {
-            model.addRow(new Object[]{selectedArticles.getIssn(), selectedArticles.getName()});
-        }
-    }
+    private void loadLeftTable() {}
 
     public static void showReviewArticle() {
         frame.setContentPane(new ReviewArticles().main);
@@ -97,18 +91,72 @@ public class ReviewArticles {
         frame.setVisible(true);
     }
 
-    private void createComponents(){
-        leftTable = new JTable(){
-          public boolean isCellEditable(int lCow, int lColum){
-              return false;
-          } ;
-        };
-
-        rightTable = new JTable(){
-            public boolean isRightCellEditable(int rRow, int rColum){
+    private void createUIComponents() {
+        //disable editing cells in the table
+        leftTable = new JTable() {
+            public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-    }
 
+        rightTable = new JTable() {
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+
+        leftTable.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent mouseEvent) {
+                JTable leftTable =(JTable) mouseEvent.getSource();
+                Point leftPoint = mouseEvent.getPoint();
+                int leftRow = leftTable.rowAtPoint(leftPoint);
+                int leftRowCount = leftTable.getRowCount();
+                int selectedRow = leftTable.getSelectedRow();
+                if (mouseEvent.getClickCount() == 2 &&
+                        selectedRow != -1 &&
+                        leftRowCount <= 3) {
+                }else if (mouseEvent.getClickCount() == 3 &&
+                        selectedRow != -1 &&
+                        leftRow <= 3){
+                    leftTable.remove(selectedRow);
+                }
+            }
+        });
+
+        rightTable.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent mouseEvent) {
+
+                //get selected row
+                int rightIndex = rightTable.getSelectedRow();
+                //get total number of columns
+                int rightColumn = rightTable.getColumnCount();
+                //Create a saved collection
+                Vector<Vector<Object>> vector =new Vector<Vector<Object>>();
+                //Create another collection to join to the first collection
+                Vector<Object> object =new Vector<Object>();
+                //Pull all data from the index row into the second collection
+                for(int n= 0; n < rightColumn; n ++){
+                    object.add(rightTable.getValueAt(rightIndex,n));
+                }
+                //Adds data from the second collection to the first collection
+                vector.add(object);
+                //Create a collection for creating column names
+                Vector<Object> object1 = new Vector<Object>();
+                //get model from leftTable
+                DefaultTableModel model = (DefaultTableModel)leftTable.getModel();
+                //Add the template to table2
+                model.setDataVector(vector, object1);
+
+
+                JTable rightTable =(JTable) mouseEvent.getSource();
+                Point rightPoint = mouseEvent.getPoint();
+                int rightRow = rightTable.rowAtPoint(rightPoint);
+                if (mouseEvent.getClickCount() == 2 &&
+                        rightTable.getSelectedRow() != -1 &&
+                        leftTable.getRowCount() <= 3) {
+                    leftTable.setModel(model);
+                }
+            }
+        });
+    }
 }
