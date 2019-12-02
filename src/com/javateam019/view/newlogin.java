@@ -23,6 +23,7 @@ public class newlogin {
     private JPanel mainPanel;
     private JButton confirmButton;
     private JButton backButton;
+    private JButton changePassword;
 
     private DbUtil DbUtil = new DbUtil();
     private UserDao userDao = new UserDao();
@@ -30,9 +31,14 @@ public class newlogin {
 
     public newlogin() {
         backButton.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 App.showMainApp();
+                frame.dispose();
+            }
+        });
+        changePassword.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ChangePaswd.showChangeP();
                 frame.dispose();
             }
         });
@@ -45,17 +51,18 @@ public class newlogin {
 
     /**
      * log in event handler
+     *
      * @param evt
      */
     private void loginActionPerformed(ActionEvent evt) {
-        String userName =this.userNameTxt.getText();
+        String userName = this.userNameTxt.getText();
         String password = new String(this.passwordTxt.getPassword());
-        if(StringUtil.isEmpty(userName)){
-            JOptionPane.showMessageDialog(null,"Please enter your username");
+        if (StringUtil.isEmpty(userName)) {
+            JOptionPane.showMessageDialog(null, "Please enter your username");
             return;
         }
-        if(StringUtil.isEmpty(password)){
-            JOptionPane.showMessageDialog(null,"Please enter your password");
+        if (StringUtil.isEmpty(password)) {
+            JOptionPane.showMessageDialog(null, "Please enter your password");
             return;
         }
 
@@ -63,13 +70,13 @@ public class newlogin {
         Connection con = null;
         try {
             con = DbUtil.getCon();
-            User recentUser =userDao.login(con, user);
-            if(recentUser!=null){
+            User recentUser = userDao.login(con, user);
+            if (recentUser != null) {
                 frame.dispose();
                 MainFrame.showMainFrame();
 
-            }else{
-                JOptionPane.showMessageDialog(null,"user name or password is wrong");
+            } else {
+                JOptionPane.showMessageDialog(null, "user name or password is wrong");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -79,7 +86,7 @@ public class newlogin {
     }
 
 
-    public static void showLogIn(){
+    public static void showLogIn() {
         frame.setContentPane(new newlogin().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -89,6 +96,7 @@ public class newlogin {
         frame.setSize(screenDimensions.width, screenDimensions.height);
         frame.setVisible(true);
     }
+
     public static void main(String[] args) {
         showLogIn();
     }
