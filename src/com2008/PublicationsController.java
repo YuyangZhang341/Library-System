@@ -249,6 +249,41 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
+    public static Submission[] getSubmissions() {
+        Statement stmt = null;
+        ArrayList<Submission> results = new ArrayList<Submission>();
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            stmt = con.createStatement();
+            ResultSet res = stmt.executeQuery("SELECT submissionID, title, abstract, pdf, mainAuthorEmail, issn FROM submissions");
+
+            File file = new File("src/pdf/submission.pdf");
+            FileOutputStream output = new FileOutputStream(file);
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                int submissionID = res.getInt("submissionID");
+                String title = res.getString("title");
+                String abs = res.getString("abstract");
+                InputStream input = res.getBinaryStream("pdf");
+                String mainAuthorsEmail = res.getString("mainAuthorsEmail");
+                String issn = res.getString("issn");
+
+                byte[] buffer = new byte[1024];
+                while(input.read(buffer) > 0) {
+                    output.write(buffer);
+                }
+
+                results.add(new Submission(submissionID, title, abs, file, mainAuthorsEmail, issn));
+            }
+        }catch (SQLException | IOException e) {
+            e.printStackTrace();
+        }
+
+        Submission arrayResults[] = new Submission[results.size()];
+        return results.toArray(arrayResults);
+    }
+
     public static Submission getSubmission(int submissionId) {
         PreparedStatement pstmt = null;
         String query = "SELECT * FROM submissions\n" +
