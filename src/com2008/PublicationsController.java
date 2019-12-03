@@ -719,6 +719,37 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
+    public static Review getReview(int submissionId, String email) {
+        PreparedStatement pstmt = null;
+        String query = "SELECT r.reviewerID, r.summary, r.typographicalErrors, r.initialVerdict, r.submissionID, r.finalVerdict FROM reviews r\n" +
+                "    LEFT JOIN reviewers r2 on r.reviewerID = r2.reviewerID\n" +
+                "    WHERE email = ? AND r.submissionID = ?";
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, email);
+            pstmt.setInt(2, submissionId);
+
+            ResultSet res = pstmt.executeQuery();
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                int reviewerId = res.getInt("reviewerID");
+                String summary = res.getString("summary");
+                String typographicalErrors = res.getString("typographicalErrors");
+                String initialVerdict = res.getString("initialVerdict");
+                String finalVerdict = res.getString("finalVerdict");
+
+                return new Review(reviewerId, summary, typographicalErrors, initialVerdict, submissionId, finalVerdict);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public static Review[] getReviews(int submissionId) {
         PreparedStatement pstmt = null;
         String query = "SELECT * FROM reviews\n" +

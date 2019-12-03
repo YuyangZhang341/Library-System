@@ -1,6 +1,7 @@
 package com2008;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,8 +14,8 @@ public class ReviewerView {
     private JPanel reviewPanel;
     private JTextArea errorsTextArea;
     private JTable criticismsTable;
-    private JComboBox comboBox1;
-    private JComboBox comboBox2;
+    private JComboBox initialVerdictComboBox;
+    private JComboBox finalVerdictComboBox;
     private JButton deleteCriticismButton;
     private JButton addCriticismButton;
     private JScrollPane submissionScrollPane;
@@ -53,8 +54,32 @@ public class ReviewerView {
             }
         });
 
-        // block the review if it's been submitted already
-
+        // block the review fields if it's been submitted already
+        Review review = PublicationsController.getReview(submissionId, userEmail);
+        System.out.println(review == null);
+        if(review != null) {
+            summaryTextArea.setText(review.getSummary());
+            summaryTextArea.setEditable(false);
+            errorsTextArea.setText(review.getTypographicalErrors());
+            errorsTextArea.setEditable(false);
+            reviewPanel.remove(addCriticismButton);
+            reviewPanel.remove(deleteCriticismButton);
+            loadCriticismsTable(review.getReviewerId());
+            switch(review.getInitialVerdict()) {
+                case "Weak Accept":
+                    initialVerdictComboBox.setSelectedIndex(1);
+                    break;
+                case "Weak Reject":
+                    initialVerdictComboBox.setSelectedIndex(2);
+                    break;
+                case "Strong Reject":
+                    initialVerdictComboBox.setSelectedIndex(3);
+                    break;
+                default:
+                    initialVerdictComboBox.setSelectedIndex(0);
+            }
+            initialVerdictComboBox.setEnabled(false);
+        }
 
         // fill in the submission fields.
         Submission submission = PublicationsController.getSubmission(submissionId);
@@ -116,6 +141,27 @@ public class ReviewerView {
         Dimension screenDimensions = toolkit.getScreenSize();
         frame.setSize(screenDimensions.width, screenDimensions.height);
         frame.setVisible(true);
+    }
+
+    private void loadCriticismsTable(int reviewerId) {
+        Criticism[] criticisms = PublicationsController.getCriticisms(submissionId, reviewerId);
+        boolean displayingResponses = criticisms[0] != null && criticisms[0].getResponse() != null;
+
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Criticism"}, 0);
+
+        if(displayingResponses) {
+            model = new DefaultTableModel(new String[]{"Criticism", "Response"}, 0);
+        }
+
+        criticismsTable.setModel(model);
+
+        for(Criticism criticism : criticisms) {
+            if(displayingResponses) {
+                model.addRow(new Object[]{criticism.getCriticism(), criticism.getResponse()});
+            } else {
+                model.addRow(new Object[]{criticism.getCriticism()});
+            }
+        }
     }
 
     public static void main(String[] args) {

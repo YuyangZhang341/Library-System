@@ -70,7 +70,7 @@
                       <text value="Final Verdict"/>
                     </properties>
                   </component>
-                  <component id="1101d" class="javax.swing.JComboBox" binding="comboBox1" default-binding="true">
+                  <component id="1101d" class="javax.swing.JComboBox" binding="initialVerdictComboBox">
                     <constraints>
                       <grid row="6" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -83,7 +83,7 @@
                       </model>
                     </properties>
                   </component>
-                  <component id="d8b24" class="javax.swing.JComboBox" binding="comboBox2" default-binding="true">
+                  <component id="d8b24" class="javax.swing.JComboBox" binding="finalVerdictComboBox">
                     <constraints>
                       <grid row="7" column="2" row-span="1" col-span="3" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
