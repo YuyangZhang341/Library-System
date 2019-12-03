@@ -1,7 +1,6 @@
 package com2008;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,7 +8,6 @@ import java.util.Map;
 
 public class ArticleView {
     private JPanel mainPanel;
-    private JScrollPane authorsScrollPane;
     private JPanel topPanel;
     private JPanel infoPanel;
     private JPanel titleAndIssnPanel;
@@ -25,7 +23,6 @@ public class ArticleView {
     private JButton openButton;
     private JButton backButton;
     private JTextArea abstractTextArea;
-    private JTable authorsTable;
     private JTextField journalNameField;
     private JTextField issnField;
     private JTextField volField;
@@ -56,7 +53,6 @@ public class ArticleView {
         pageRangeField.setText(article.getStartPage() + " - " + article.getEndPage());
         articleTitleField.setText(article.getTitle());
         abstractTextArea.setText(article.getAbs());
-        loadAuthorsTable();
 
         backButton.addActionListener(new ActionListener() {
             @Override
@@ -104,22 +100,5 @@ public class ArticleView {
         Dimension screenDimensions = toolkit.getScreenSize();
         frame.setSize(screenDimensions.width, screenDimensions.height);
         frame.setVisible(true);
-    }
-
-    private void loadAuthorsTable() {
-        DefaultTableModel model = new DefaultTableModel(new String[]{"Title", "Forenames", "Surname", "University Affiliation"}, 0);
-        authorsTable.setModel(model);
-
-        for(Author author: PublicationsController.getArticleAuthors(submissionId)) {
-            model.addRow(new Object[]{author.getTitle(), author.getForenames(), author.getSurname(), author.getUniversityAffiliation()});
-        }
-    }
-
-    private void createUIComponents() {
-        authorsTable = new JTable(){
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            };
-        };
     }
 }
