@@ -21,6 +21,7 @@ public class UserDao {
      * @throws Exception
      */
     public User login(Connection con, User user) throws Exception{
+
         User resultUser = null;
         String sql="select * from users where email=? and password=?";
         PreparedStatement pstmt = con.prepareStatement(sql);

@@ -10,7 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
+import org.jasypt.util.text.StrongTextEncryptor;
 
 public class ChangePaswd {
     private static JFrame frame = new JFrame("ChangePassword");
@@ -57,8 +57,14 @@ public class ChangePaswd {
             return;
         }
 
+        // encypte
+        StrongTextEncryptor ste = new StrongTextEncryptor();
+        ste.setPassword("youNotKnow");
+        String encyptedPassword = ste.encrypt(newPassword1);
+
         User oldUser = new User(userName, oldPassword);
-        User newUser = new User(userName, newPassword1);
+        User newUser = new User(userName, encyptedPassword);
+
         Connection con = null;
         try {
             con = DbUtil.getCon();

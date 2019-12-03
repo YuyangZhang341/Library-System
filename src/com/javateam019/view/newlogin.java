@@ -7,6 +7,7 @@ import com.javateam019.util.StringUtil;
 import com2008.App;
 
 
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -65,6 +66,7 @@ public class newlogin {
             JOptionPane.showMessageDialog(null, "Please enter your password");
             return;
         }
+
 
         User user = new User(userName, password);
         Connection con = null;
