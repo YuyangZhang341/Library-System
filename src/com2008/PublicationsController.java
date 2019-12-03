@@ -1101,4 +1101,37 @@ public class PublicationsController {
             e.printStackTrace();
         }
     }
+
+    public static void addFinalVerdict(int submissionId, int reviewerId, String verdict, String userEmail) {
+        PreparedStatement pstmt = null;
+        String query = "UPDATE reviews SET finalVerdict = ? WHERE submissionID = ? AND reviewerID = ?";
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            // add final verdict
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, verdict);
+            pstmt.setInt(2, submissionId);
+            pstmt.setInt(3, reviewerId);
+
+            pstmt.executeUpdate();
+
+            // delete the reviewer
+            pstmt = con.prepareStatement("DELETE FROM reviewers WHERE email = ? AND submissionID = ?");
+            pstmt.setString(1, userEmail);
+            pstmt.setInt(2, submissionId);
+
+            pstmt.executeUpdate();
+
+            // if no roles left, delete the user from the system
+            if (PublicationsController.getRoles(userEmail).length == 0) {
+                pstmt = con.prepareStatement("DELETE FROM users WHERE email = ?");
+                pstmt.setString(1, userEmail);
+                pstmt.executeUpdate();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

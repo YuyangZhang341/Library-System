@@ -31,7 +31,7 @@ public class Util {
         for(int i = 0; i < table.getColumnCount(); i++) {
             for(int j = 0; j < table.getRowCount(); j++) {
                 if(table.getValueAt(j, i) == null || table.getValueAt(j, i).toString().equals("")) {
-                    JOptionPane.showMessageDialog(parentComponent,"Field in row " + j + ", column " + i + " in the table is empty. (Make sure you finished editing the table.)");
+                    JOptionPane.showMessageDialog(parentComponent,"Field in row " + j + ", column " + i + " in the table is empty. (Make sure you finished editing the table. Press enter inside a cell to finish editing it.)");
                     return false;
                 } else if(! checkForbiddenCharacters(table.getValueAt(j, i).toString())) {
                     JOptionPane.showMessageDialog(parentComponent,"Field in row " + j + ", column " + i + " contains a forbidden character (; : / \\)");

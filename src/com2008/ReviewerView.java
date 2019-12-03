@@ -2,7 +2,6 @@ package com2008;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,10 +27,11 @@ public class ReviewerView {
     private JPanel revisedPanel;
     private JScrollPane revisedScrollPane;
     private JTextField revisedTitleTextField;
-    private JLabel revisedAbstractTextField;
+    private JLabel revisedAbstractLabel;
     private JButton revisedPdfButton;
     private JPanel mainPanel;
     private JLabel finalVerdictLabel;
+    private JTextArea revisedAbstractTextField;
 
     private int submissionId;
     private String userEmail;
@@ -64,19 +64,27 @@ public class ReviewerView {
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(verifyFields()) {
-                    Review review = new Review(
-                            reviewerId, summaryTextArea.getText(), errorsTextArea.getText(),
-                            initialVerdictComboBox.getSelectedItem().toString(), submissionId, null);
+                if(initialVerdictComboBox.isEnabled()) {
+                    if(verifyFields()) {
+                        Review review = new Review(
+                                reviewerId, summaryTextArea.getText(), errorsTextArea.getText(),
+                                initialVerdictComboBox.getSelectedItem().toString(), submissionId, null);
 
-                    Criticism[] criticisms = new Criticism[criticismsTable.getRowCount()];
-                    for(int i = 0; i < criticismsTable.getRowCount(); i++) {
-                        criticisms[i] = new Criticism(-1, submissionId, reviewerId, criticismsTable.getValueAt(i, 0).toString(), null);
+                        Criticism[] criticisms = new Criticism[criticismsTable.getRowCount()];
+                        for(int i = 0; i < criticismsTable.getRowCount(); i++) {
+                            criticisms[i] = new Criticism(-1, submissionId, reviewerId, criticismsTable.getValueAt(i, 0).toString(), null);
+                        }
+
+                        PublicationsController.addInitialReview(review, criticisms);
+                        JOptionPane.showMessageDialog(null,"Review added.");
+                        frame.dispose();
+                        ReviewerView.showReviewerView(submissionId, userEmail);
                     }
-
-                    PublicationsController.addInitialReview(review, criticisms);
+                } else {
+                    PublicationsController.addFinalVerdict(submissionId, reviewerId, finalVerdictComboBox.getSelectedItem().toString(), userEmail);
+                    JOptionPane.showMessageDialog(null,"Final verdict added. Logging out.");
+                    App.showMainApp();
                     frame.dispose();
-                    ReviewerView.showReviewerView(reviewerId, userEmail);
                 }
             }
         });
@@ -226,9 +234,5 @@ public class ReviewerView {
             return false;
 
         return true;
-    }
-
-    public static void main(String[] args) {
-        showReviewerView(22, "rafal@ok.pl");
     }
 }

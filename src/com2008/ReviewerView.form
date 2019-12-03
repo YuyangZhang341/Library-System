@@ -121,7 +121,10 @@
                     <children>
                       <component id="edb8e" class="javax.swing.JTextArea" binding="summaryTextArea">
                         <constraints/>
-                        <properties/>
+                        <properties>
+                          <lineWrap value="true"/>
+                          <wrapStyleWord value="true"/>
+                        </properties>
                       </component>
                     </children>
                   </scrollpane>
@@ -134,7 +137,10 @@
                     <children>
                       <component id="e1b28" class="javax.swing.JTextArea" binding="errorsTextArea">
                         <constraints/>
-                        <properties/>
+                        <properties>
+                          <lineWrap value="true"/>
+                          <wrapStyleWord value="true"/>
+                        </properties>
                       </component>
                     </children>
                   </scrollpane>
@@ -202,6 +208,8 @@
                     </constraints>
                     <properties>
                       <editable value="false"/>
+                      <lineWrap value="true"/>
+                      <wrapStyleWord value="true"/>
                     </properties>
                   </component>
                   <component id="2362b" class="javax.swing.JButton" binding="pdfButton">
@@ -247,7 +255,7 @@
                       <editable value="false"/>
                     </properties>
                   </component>
-                  <component id="e125c" class="javax.swing.JLabel" binding="revisedAbstractTextField">
+                  <component id="e125c" class="javax.swing.JLabel" binding="revisedAbstractLabel">
                     <constraints>
                       <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -255,7 +263,7 @@
                       <text value="Abstract"/>
                     </properties>
                   </component>
-                  <component id="e79b2" class="javax.swing.JTextArea">
+                  <component id="e79b2" class="javax.swing.JTextArea" binding="revisedAbstractTextField">
                     <constraints>
                       <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
                         <preferred-size width="150" height="50"/>
@@ -263,6 +271,8 @@
                     </constraints>
                     <properties>
                       <editable value="false"/>
+                      <lineWrap value="true"/>
+                      <wrapStyleWord value="true"/>
                     </properties>
                   </component>
                   <component id="b443a" class="javax.swing.JButton" binding="revisedPdfButton">
