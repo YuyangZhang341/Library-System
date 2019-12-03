@@ -93,7 +93,9 @@ public class CreateJournalView {
         removeRowButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                editorsTableModel.removeRow(editorsTableModel.getRowCount() - 1);
+                if(editorsTableModel.getRowCount() > 0 ) {
+                    editorsTableModel.removeRow(editorsTableModel.getRowCount() - 1);
+                }
             }
         });
     }

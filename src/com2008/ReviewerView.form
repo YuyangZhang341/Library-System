@@ -121,7 +121,9 @@
                     <children>
                       <component id="edb8e" class="javax.swing.JTextArea" binding="summaryTextArea">
                         <constraints/>
-                        <properties/>
+                        <properties>
+                          <wrapStyleWord value="true"/>
+                        </properties>
                       </component>
                     </children>
                   </scrollpane>
@@ -134,7 +136,10 @@
                     <children>
                       <component id="e1b28" class="javax.swing.JTextArea" binding="errorsTextArea">
                         <constraints/>
-                        <properties/>
+                        <properties>
+                          <lineWrap value="true"/>
+                          <wrapStyleWord value="true"/>
+                        </properties>
                       </component>
                     </children>
                   </scrollpane>
@@ -198,7 +203,10 @@
                         <preferred-size width="150" height="50"/>
                       </grid>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <lineWrap value="true"/>
+                      <wrapStyleWord value="true"/>
+                    </properties>
                   </component>
                   <component id="2362b" class="javax.swing.JButton" binding="pdfButton">
                     <constraints>
@@ -255,7 +263,10 @@
                         <preferred-size width="150" height="50"/>
                       </grid>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <lineWrap value="true"/>
+                      <wrapStyleWord value="true"/>
+                    </properties>
                   </component>
                   <component id="b443a" class="javax.swing.JButton" binding="revisedPdfButton">
                     <constraints>

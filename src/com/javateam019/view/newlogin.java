@@ -104,7 +104,7 @@ public class newlogin {
                             break;
                         case "reviewer":
                             submissionId = Integer.parseInt(roles[0].getIssnOrSubmissionId());
-                            //TODO: Go to reviewer view.
+                            ReviewerView.showReviewerView(submissionId, userName);
                             break;
                     }
                 } else {
