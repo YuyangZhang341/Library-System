@@ -1046,4 +1046,59 @@ public class PublicationsController {
 
         return null;
     }
+
+    public static int getReviewerId(int submissionId, String userEmail) {
+        PreparedStatement pstmt = null;
+        String query = "SELECT reviewerID FROM reviewers WHERE submissionID = ? AND email = ?";
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setInt(1, submissionId);
+            pstmt.setString(2, userEmail);
+
+            ResultSet res = pstmt.executeQuery();
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                return res.getInt("reviewerID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
+
+    public static void addInitialReview(Review review, Criticism[] criticisms) {
+        PreparedStatement pstmt = null;
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            // add review
+            pstmt = con.prepareStatement(
+                    "INSERT INTO reviews VALUES (?, ?, ?, ?, ?, null)"
+            );
+            pstmt.setInt(1, review.getReviewerId());
+            pstmt.setString(2, review.getSummary());
+            pstmt.setString(3, review.getTypographicalErrors());
+            pstmt.setString(4, review.getInitialVerdict());
+            pstmt.setInt(5, review.getSubmissionId());
+
+            pstmt.executeUpdate();
+
+            // add criticisms
+            for(Criticism criticism : criticisms) {
+                pstmt = con.prepareStatement(
+                        "INSERT INTO criticisms (submissionID, reviewerID, criticism, response) VALUES (?, ?, ?, null)"
+                );
+                pstmt.setInt(1, review.getSubmissionId());
+                pstmt.setInt(2, review.getReviewerId());
+                pstmt.setString(3, criticism.getCriticism());
+
+                pstmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
