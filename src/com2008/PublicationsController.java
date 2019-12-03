@@ -871,7 +871,6 @@ public class PublicationsController {
                 dbUpdate = pstmt2.executeUpdate();
 
                 // Delete the submission from consideredSubmissions table
-
                 query2 = "DELETE FROM consideredSubmissions WHERE submissionID = ?";
 
                 pstmt2 = con.prepareStatement(query2);
@@ -896,6 +895,35 @@ public class PublicationsController {
                 pstmt2.setInt(1, submissionId);
 
                 dbUpdate = pstmt2.executeUpdate();
+
+                // Delete the authors of the submission
+                query2 = "SELECT email FROM authors WHERE submissionID = ?";
+
+                pstmt2 = con.prepareStatement(query2);
+
+                pstmt2.setInt(1, submissionId);
+
+                ResultSet res2 = pstmt2.executeQuery();
+
+                while(res2.next()) {
+                    String userEmail = res2.getString("email");
+
+                    String query3 = "DELETE FROM authors WHERE email = ?";
+                    PreparedStatement pstmt3 = con.prepareStatement(query3);
+                    pstmt3.setString(1, userEmail);
+                    int res3 = pstmt3.executeUpdate();
+
+                    if (PublicationsController.getRoles(userEmail).length == 0) {
+                        query3 = "DELETE FROM users WHERE email = ?";
+                        pstmt3 = con.prepareStatement(query3);
+                        pstmt3.setString(1, userEmail);
+                        res3 = pstmt3.executeUpdate();
+                    }
+                }
+
+
+
+
             }
         } catch (SQLException | IOException e) {
             e.printStackTrace();

@@ -11,6 +11,7 @@ public class AddEditorsDialog extends JDialog {
     private JButton addRowButton;
     private JTable editorsTable;
     private JScrollPane editorsScrollPane;
+    private JButton removeRowButton;
 
     static AddEditorsDialog d;
 
@@ -58,6 +59,13 @@ public class AddEditorsDialog extends JDialog {
                 onCancel();
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+        removeRowButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                editorsTableModel.removeRow(editorsTableModel.getRowCount() - 1);
+            }
+        });
     }
 
     private void onOK() {
