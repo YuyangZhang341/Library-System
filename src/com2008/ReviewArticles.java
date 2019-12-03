@@ -17,39 +17,17 @@ public class ReviewArticles {
     private JPanel confirm;
 
     private JLabel titleLable;
-    private JButton select2;
-    private JButton delete2;
     private JButton confirm2;
     private JButton back;
     private JScrollPane leftJournalsScrollPane;
     private JScrollPane rightJournalsScrollPane;
     private JTable leftTable;
     private JTable rightTable;
-    private JButton backButton;
-    boolean a = false;
     private static JFrame frame = new JFrame("Review");
 
     public ReviewArticles() {
-        loadLeftTable();
+        //loadLeftTable();
         loadRightTable();
-
-/*
-        select2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-
-                frame.dispose();
-            }
-        });
-
-        delete2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                App.showMainApp();
-                frame.dispose();
-            }
-        });
 
         confirm2.addActionListener(new ActionListener() {
             @Override
@@ -59,26 +37,25 @@ public class ReviewArticles {
             }
         });
 
-        back.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                App.showMainApp();
-                frame.dispose();
-            }
-        });
-*/
+    }
+
+    private void selectedId(){
+
     }
 
     private void loadRightTable() {
-        DefaultTableModel model = new DefaultTableModel(new String[]{"Titlt", "Abstract"}, 0);
+        DefaultTableModel model = new DefaultTableModel(new String[]{"submissionID", "Titlt", "Abstract"}, 0);
         rightTable.setModel(model);
 
         for (Submission submission : PublicationsController.getSubmissions()) {
-            model.addRow(new Object[]{submission.getTitle(), submission.getAbs()});
+            model.addRow(new Object[]{submission.getSubmissionId(), submission.getTitle(), submission.getAbs()});
         }
     }
 
-    private void loadLeftTable() {}
+    private void loadLeftTable() {
+        DefaultTableModel model = new DefaultTableModel(new String[]{"submissionID", "Titlt", "Abstract"}, 0);
+        leftTable.setModel(model);
+    }
 
     public static void showReviewArticle() {
         frame.setContentPane(new ReviewArticles().main);
@@ -126,35 +103,22 @@ public class ReviewArticles {
         rightTable.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent mouseEvent) {
 
-                //get selected row
-                int rightIndex = rightTable.getSelectedRow();
-                //get total number of columns
-                int rightColumn = rightTable.getColumnCount();
-                //Create a saved collection
-                Vector<Vector<Object>> vector =new Vector<Vector<Object>>();
-                //Create another collection to join to the first collection
-                Vector<Object> object =new Vector<Object>();
-                //Pull all data from the index row into the second collection
-                for(int n= 0; n < rightColumn; n ++){
-                    object.add(rightTable.getValueAt(rightIndex,n));
-                }
-                //Adds data from the second collection to the first collection
-                vector.add(object);
-                //Create a collection for creating column names
-                Vector<Object> object1 = new Vector<Object>();
-                //get model from leftTable
-                DefaultTableModel model = (DefaultTableModel)leftTable.getModel();
-                //Add the template to table2
-                model.setDataVector(vector, object1);
-
-
                 JTable rightTable =(JTable) mouseEvent.getSource();
                 Point rightPoint = mouseEvent.getPoint();
                 int rightRow = rightTable.rowAtPoint(rightPoint);
                 if (mouseEvent.getClickCount() == 2 &&
                         rightTable.getSelectedRow() != -1 &&
                         leftTable.getRowCount() <= 3) {
+                    JournalsView.showJournalsView();
+                }else if(mouseEvent.getClickCount() == 3 &&
+                        rightTable.getSelectedRow() != -1 &&
+                        leftTable.getRowCount() <= 3){
+                    int id = (int) rightTable.getValueAt(rightTable.getSelectedRow(), 1);
+
+                    DefaultTableModel model = new DefaultTableModel(new String[]{"submissionID", "Titlt", "Abstract"}, 0);
                     leftTable.setModel(model);
+
+
                 }
             }
         });
