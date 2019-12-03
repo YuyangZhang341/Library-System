@@ -2,6 +2,7 @@ package com2008;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,24 +31,58 @@ public class ReviewerView {
     private JLabel revisedAbstractTextField;
     private JButton revisedPdfButton;
     private JPanel mainPanel;
+    private JLabel finalVerdictLabel;
 
     private int submissionId;
     private String userEmail;
+    private int reviewerId;
 
     private static JFrame frame = new JFrame("Article");
+    DefaultTableModel criticismsTableModel = new DefaultTableModel(new String[]{"Criticism"}, 0);
 
     public ReviewerView(int submissionId, String userEmail) {
         this.submissionId = submissionId;
         this.userEmail = userEmail;
+        this.reviewerId = PublicationsController.getReviewerId(submissionId, userEmail);
 
         addCriticismButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                criticismsTable.setModel(criticismsTableModel);
+                criticismsTableModel.addRow(new Object[]{""});
             }
         });
 
         deleteCriticismButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(criticismsTableModel.getRowCount() > 0 )
+                    criticismsTableModel.removeRow(criticismsTableModel.getRowCount() - 1);
+            }
+        });
+
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(verifyFields()) {
+                    Review review = new Review(
+                            reviewerId, summaryTextArea.getText(), errorsTextArea.getText(),
+                            initialVerdictComboBox.getSelectedItem().toString(), submissionId, null);
+
+                    Criticism[] criticisms = new Criticism[criticismsTable.getRowCount()];
+                    for(int i = 0; i < criticismsTable.getRowCount(); i++) {
+                        criticisms[i] = new Criticism(-1, submissionId, reviewerId, criticismsTable.getValueAt(i, 0).toString(), null);
+                    }
+
+                    PublicationsController.addInitialReview(review, criticisms);
+                    frame.dispose();
+                    ReviewerView.showReviewerView(reviewerId, userEmail);
+                }
+            }
+        });
+
+
+        button1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
 
@@ -56,7 +91,6 @@ public class ReviewerView {
 
         // block the review fields if it's been submitted already
         Review review = PublicationsController.getReview(submissionId, userEmail);
-        System.out.println(review == null);
         if(review != null) {
             summaryTextArea.setText(review.getSummary());
             summaryTextArea.setEditable(false);
@@ -108,6 +142,8 @@ public class ReviewerView {
         RevisedSubmission revisedSubmission = PublicationsController.getRevisedSubmission(submissionId);
         if (revisedSubmission==null) {
             tabbedPane1.remove(revisedScrollPane);
+            reviewPanel.remove(finalVerdictLabel);
+            reviewPanel.remove(finalVerdictComboBox);
         } else {
             revisedTitleTextField.setText(revisedSubmission.getTitle());
             revisedAbstractTextField.setText(revisedSubmission.getAbs());
@@ -145,26 +181,54 @@ public class ReviewerView {
 
     private void loadCriticismsTable(int reviewerId) {
         Criticism[] criticisms = PublicationsController.getCriticisms(submissionId, reviewerId);
-        boolean displayingResponses = criticisms[0] != null && criticisms[0].getResponse() != null;
-
-        DefaultTableModel model = new DefaultTableModel(new String[]{"Criticism"}, 0);
+        boolean displayingResponses = criticisms.length >= 1 && criticisms[0].getResponse() != null;
 
         if(displayingResponses) {
-            model = new DefaultTableModel(new String[]{"Criticism", "Response"}, 0);
+            criticismsTableModel = new DefaultTableModel(new String[]{"Criticism", "Response"}, 0);
         }
 
-        criticismsTable.setModel(model);
+        criticismsTable.setModel(criticismsTableModel);
 
         for(Criticism criticism : criticisms) {
             if(displayingResponses) {
-                model.addRow(new Object[]{criticism.getCriticism(), criticism.getResponse()});
+                criticismsTableModel.addRow(new Object[]{criticism.getCriticism(), criticism.getResponse()});
             } else {
-                model.addRow(new Object[]{criticism.getCriticism()});
+                criticismsTableModel.addRow(new Object[]{criticism.getCriticism()});
             }
         }
     }
 
+    private boolean verifyFields() {
+        JTextArea[] areas = {summaryTextArea, errorsTextArea};
+
+        // set everything to white (if previously was red)
+        for(JTextArea area : areas) {
+            area.setBackground(Color.white);
+        }
+
+        // check fields for forbidden characters
+        for(JTextArea area : areas) {
+            if(! Util.checkForbiddenCharacters(area.getText())) {
+                area.setBackground(Color.red);
+                JOptionPane.showMessageDialog(null,"Characters ; : / \\ are forbidden.");
+                return false;
+            }
+
+            if(area.getText().equals("")) {
+                area.setBackground(Color.red);
+                JOptionPane.showMessageDialog(null,"Fill out all the fields.");
+                return false;
+            }
+        }
+
+        // check if table full and doesn't contain forbidden characters
+        if(! Util.verifyTable(criticismsTable))
+            return false;
+
+        return true;
+    }
+
     public static void main(String[] args) {
-        showReviewerView(22, "marcin@ok.pl");
+        showReviewerView(22, "rafal@ok.pl");
     }
 }

@@ -62,7 +62,7 @@
                       <text value="Initial Verdict"/>
                     </properties>
                   </component>
-                  <component id="537d" class="javax.swing.JLabel">
+                  <component id="537d" class="javax.swing.JLabel" binding="finalVerdictLabel">
                     <constraints>
                       <grid row="7" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -187,7 +187,9 @@
                         <preferred-size width="150" height="-1"/>
                       </grid>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <editable value="false"/>
+                    </properties>
                   </component>
                   <component id="8f5da" class="javax.swing.JLabel">
                     <constraints>
@@ -203,6 +205,9 @@
                         <preferred-size width="150" height="50"/>
                       </grid>
                     </constraints>
+                    <properties>
+                      <editable value="false"/>
+                    </properties>
                     <properties>
                       <lineWrap value="true"/>
                       <wrapStyleWord value="true"/>
@@ -247,7 +252,9 @@
                         <preferred-size width="150" height="-1"/>
                       </grid>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <editable value="false"/>
+                    </properties>
                   </component>
                   <component id="e125c" class="javax.swing.JLabel" binding="revisedAbstractTextField">
                     <constraints>
@@ -264,6 +271,7 @@
                       </grid>
                     </constraints>
                     <properties>
+                      <editable value="false"/>
                       <lineWrap value="true"/>
                       <wrapStyleWord value="true"/>
                     </properties>
