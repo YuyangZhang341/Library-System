@@ -37,14 +37,14 @@ public class ConsideredSubmissionView {
         this.userEmail = userEmail;
 
         RevisedSubmission revisedSubmission = PublicationsController.getRevisedSubmission(submissionId);
-        Verdict verdicts[] = PublicationsController.getVerdicts(submissionId);
+        Review[] reviews = PublicationsController.getReviews(submissionId);
 
         articleTitleLabel.setText("Article title: " + revisedSubmission.getTitle());
         abstractTextArea.setText(revisedSubmission.getAbs());
-        if(verdicts.length == 3) {
-            verdictTextField1.setText(verdicts[0].getVerdict());
-            verdictTextField2.setText(verdicts[1].getVerdict());
-            verdictTextField3.setText(verdicts[2].getVerdict());
+        if(reviews.length == 3) {
+            verdictTextField1.setText(reviews[0].getFinalVerdict());
+            verdictTextField2.setText(reviews[1].getFinalVerdict());
+            verdictTextField3.setText(reviews[2].getFinalVerdict());
         }
         loadAuthorsTable();
 

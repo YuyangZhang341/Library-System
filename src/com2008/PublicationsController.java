@@ -623,37 +623,6 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
-    public static Verdict[] getVerdicts(int submissionId) {
-        PreparedStatement pstmt = null;
-        String query = "SELECT * FROM reviews a\n" +
-                "    WHERE submissionID = ?";
-        ArrayList<Verdict> results = new ArrayList<Verdict>();
-
-        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            pstmt = con.prepareStatement(query);
-
-            pstmt.setInt(1, submissionId);
-
-            // Look for author roles
-            ResultSet res = pstmt.executeQuery();
-
-            // Fetch each row from the result set
-            while (res.next()) {
-                int reviewerId = res.getInt("reviewerID");
-                String summary = res.getString("summary");
-                String typographicalErrors = res.getString("typographicalErrors");
-                String verdict = res.getString("finalVerdict");
-
-                results.add(new Verdict(submissionId, reviewerId, summary, typographicalErrors, verdict));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        Verdict[] arrayResults = new Verdict[results.size()];
-        return results.toArray(arrayResults);
-    }
-
     public static Criticism[] getCriticisms(int submissionId, int reviewerId) {
        PreparedStatement pstmt = null;
         String query = "SELECT * FROM criticisms\n" +

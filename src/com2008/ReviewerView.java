@@ -7,7 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class ReviewerView {
-    private JButton button1;
+    private JButton logOutButton;
     private JButton submitButton;
     private JTabbedPane tabbedPane1;
     private JTextArea summaryTextArea;
@@ -31,7 +31,7 @@ public class ReviewerView {
     private JButton revisedPdfButton;
     private JPanel mainPanel;
     private JLabel finalVerdictLabel;
-    private JTextArea revisedAbstractTextField;
+    private JTextArea revisedAbstractTextArea;
 
     private int submissionId;
     private String userEmail;
@@ -90,10 +90,11 @@ public class ReviewerView {
         });
 
 
-        button1.addActionListener(new ActionListener() {
+        logOutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                App.showMainApp();
+                frame.dispose();
             }
         });
 
@@ -154,7 +155,7 @@ public class ReviewerView {
             reviewPanel.remove(finalVerdictComboBox);
         } else {
             revisedTitleTextField.setText(revisedSubmission.getTitle());
-            revisedAbstractTextField.setText(revisedSubmission.getAbs());
+            revisedAbstractTextArea.setText(revisedSubmission.getAbs());
             revisedPdfButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {

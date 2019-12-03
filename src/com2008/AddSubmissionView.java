@@ -107,7 +107,9 @@ public class AddSubmissionView {
         removeRowButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                coauthorsTableModel.removeRow(coauthorsTableModel.getRowCount() - 1);
+                if(coauthorsTableModel.getRowCount() > 0 ) {
+                    coauthorsTableModel.removeRow(coauthorsTableModel.getRowCount() - 1);
+                }
             }
         });
     }
