@@ -159,17 +159,21 @@ public class EditorView {
     }
 
     private void retireButtonPressed(String userEmail) {
-        System.out.println(userEmail);
-        Statement stmt = null;
+        String query = "DELETE FROM editors WHERE email = ?";
+        PreparedStatement pstmt = null;
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
+            pstmt = con.prepareStatement(query);
+            pstmt.setString(1, userEmail);
 
-            int res = stmt.executeUpdate("DELETE FROM editors WHERE email = '" + userEmail + "'");
+            int res = pstmt.executeUpdate();
             System.out.println(res);
 
             if (PublicationsController.getRoles(userEmail).length == 0) {
-                res = stmt.executeUpdate("DELETE FROM users WHERE email = '" + userEmail + "'");
+                query = "DELETE FROM users WHERE email = ?";
+                pstmt = con.prepareStatement(query);
+                pstmt.setString(1,userEmail);
+                res = pstmt.executeUpdate();
                 System.out.println(res);
             }
 

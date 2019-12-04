@@ -123,7 +123,7 @@ public class newlogin {
                                     break;
                                 case "reviewer":
                                     submissionId = Integer.parseInt(roles[0].getIssnOrSubmissionId());
-                                    //TODO: Go to reviewer view.
+                                    ReviewerView.showReviewerView(submissionId, userName);
                                     break;
                             }
                         } else {
@@ -144,10 +144,7 @@ public class newlogin {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
-
 
     public static void showLogIn() {
         frame.setContentPane(new newlogin().mainPanel);

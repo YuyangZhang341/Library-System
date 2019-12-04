@@ -36,6 +36,7 @@ public class CreateJournalView {
     private JTextField journalTitleField;
     private JTextField journalIssnField;
     private JLabel journalIssnLabel;
+    private JButton removeRowButton;
     private DefaultTableModel editorsTableModel = new DefaultTableModel(new String[]{"Email", "Title", "Forenames", "Surname", "University Affiliation", "Password"}, 0);
 
     private static JFrame frame = new JFrame("Create Journal");
@@ -88,6 +89,15 @@ public class CreateJournalView {
         });
 
         journalIssnField.setText(PublicationsController.generateIssn());
+
+        removeRowButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(editorsTableModel.getRowCount() > 0 ) {
+                    editorsTableModel.removeRow(editorsTableModel.getRowCount() - 1);
+                }
+            }
+        });
     }
 
     public static void showCreateJournalView() {

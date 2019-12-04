@@ -83,6 +83,7 @@
                   <editable value="false"/>
                   <lineWrap value="true"/>
                   <text value=""/>
+                  <wrapStyleWord value="true"/>
                 </properties>
               </component>
               <component id="a105a" class="javax.swing.JButton" binding="pdfButton">
@@ -137,6 +138,7 @@
                 <properties>
                   <editable value="false"/>
                   <lineWrap value="true"/>
+                  <wrapStyleWord value="true"/>
                 </properties>
               </component>
               <component id="a569a" class="javax.swing.JTextField" binding="authorsField2">
@@ -200,6 +202,7 @@
                     <properties>
                       <editable value="false"/>
                       <lineWrap value="true"/>
+                      <wrapStyleWord value="true"/>
                     </properties>
                   </component>
                 </children>
@@ -217,6 +220,7 @@
                     <properties>
                       <editable value="false"/>
                       <lineWrap value="true"/>
+                      <wrapStyleWord value="true"/>
                     </properties>
                   </component>
                 </children>

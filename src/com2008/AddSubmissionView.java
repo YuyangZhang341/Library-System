@@ -40,6 +40,7 @@ public class AddSubmissionView {
     private JTextArea abstractTextArea;
     private JLabel surnameLabel;
     private JTextField targetIssnTextField;
+    private JButton removeRowButton;
     private DefaultTableModel coauthorsTableModel = new DefaultTableModel(new String[]{"Email", "Title", "Forenames", "Surname", "University Affiliation", "Password"}, 0);
 
     private static JFrame frame = new JFrame("Add Submission");
@@ -100,6 +101,14 @@ public class AddSubmissionView {
                     JOptionPane.showMessageDialog(null,"Submitted.");
                     App.showMainApp();
                     frame.dispose();
+                }
+            }
+        });
+        removeRowButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(coauthorsTableModel.getRowCount() > 0 ) {
+                    coauthorsTableModel.removeRow(coauthorsTableModel.getRowCount() - 1);
                 }
             }
         });

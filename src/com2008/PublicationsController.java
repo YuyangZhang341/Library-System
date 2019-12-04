@@ -660,37 +660,6 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
-    public static Verdict[] getVerdicts(int submissionId) {
-        PreparedStatement pstmt = null;
-        String query = "SELECT * FROM reviews a\n" +
-                "    WHERE submissionID = ?";
-        ArrayList<Verdict> results = new ArrayList<Verdict>();
-
-        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            pstmt = con.prepareStatement(query);
-
-            pstmt.setInt(1, submissionId);
-
-            // Look for author roles
-            ResultSet res = pstmt.executeQuery();
-
-            // Fetch each row from the result set
-            while (res.next()) {
-                int reviewerId = res.getInt("reviewerID");
-                String summary = res.getString("summary");
-                String typographicalErrors = res.getString("typographicalErrors");
-                String verdict = res.getString("finalVerdict");
-
-                results.add(new Verdict(submissionId, reviewerId, summary, typographicalErrors, verdict));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        Verdict[] arrayResults = new Verdict[results.size()];
-        return results.toArray(arrayResults);
-    }
-
     public static Criticism[] getCriticisms(int submissionId, int reviewerId) {
         PreparedStatement pstmt = null;
         String query = "SELECT * FROM criticisms\n" +
@@ -754,6 +723,37 @@ public class PublicationsController {
 
         Criticism[] arrayResults = new Criticism[results.size()];
         return results.toArray(arrayResults);
+    }
+
+    public static Review getReview(int submissionId, String email) {
+        PreparedStatement pstmt = null;
+        String query = "SELECT r.reviewerID, r.summary, r.typographicalErrors, r.initialVerdict, r.submissionID, r.finalVerdict FROM reviews r\n" +
+                "    LEFT JOIN reviewers r2 on r.reviewerID = r2.reviewerID\n" +
+                "    WHERE email = ? AND r.submissionID = ?";
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, email);
+            pstmt.setInt(2, submissionId);
+
+            ResultSet res = pstmt.executeQuery();
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                int reviewerId = res.getInt("reviewerID");
+                String summary = res.getString("summary");
+                String typographicalErrors = res.getString("typographicalErrors");
+                String initialVerdict = res.getString("initialVerdict");
+                String finalVerdict = res.getString("finalVerdict");
+
+                return new Review(reviewerId, summary, typographicalErrors, initialVerdict, submissionId, finalVerdict);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
     public static Review[] getReviews(int submissionId) {
@@ -908,7 +908,6 @@ public class PublicationsController {
                 dbUpdate = pstmt2.executeUpdate();
 
                 // Delete the submission from consideredSubmissions table
-
                 query2 = "DELETE FROM consideredSubmissions WHERE submissionID = ?";
 
                 pstmt2 = con.prepareStatement(query2);
@@ -933,6 +932,31 @@ public class PublicationsController {
                 pstmt2.setInt(1, submissionId);
 
                 dbUpdate = pstmt2.executeUpdate();
+
+                // Delete the authors of the submission
+                query2 = "SELECT email FROM authors WHERE submissionID = ?";
+
+                pstmt2 = con.prepareStatement(query2);
+
+                pstmt2.setInt(1, submissionId);
+
+                ResultSet res2 = pstmt2.executeQuery();
+
+                while(res2.next()) {
+                    String userEmail = res2.getString("email");
+
+                    String query3 = "DELETE FROM authors WHERE email = ?";
+                    PreparedStatement pstmt3 = con.prepareStatement(query3);
+                    pstmt3.setString(1, userEmail);
+                    int res3 = pstmt3.executeUpdate();
+
+                    if (PublicationsController.getRoles(userEmail).length == 0) {
+                        query3 = "DELETE FROM users WHERE email = ?";
+                        pstmt3 = con.prepareStatement(query3);
+                        pstmt3.setString(1, userEmail);
+                        res3 = pstmt3.executeUpdate();
+                    }
+                }
             }
         } catch (SQLException | IOException e) {
             e.printStackTrace();
@@ -1023,5 +1047,93 @@ public class PublicationsController {
         }
 
         return null;
+    }
+
+    public static int getReviewerId(int submissionId, String userEmail) {
+        PreparedStatement pstmt = null;
+        String query = "SELECT reviewerID FROM reviewers WHERE submissionID = ? AND email = ?";
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setInt(1, submissionId);
+            pstmt.setString(2, userEmail);
+
+            ResultSet res = pstmt.executeQuery();
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                return res.getInt("reviewerID");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
+
+    public static void addInitialReview(Review review, Criticism[] criticisms) {
+        PreparedStatement pstmt = null;
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            // add review
+            pstmt = con.prepareStatement(
+                    "INSERT INTO reviews VALUES (?, ?, ?, ?, ?, null)"
+            );
+            pstmt.setInt(1, review.getReviewerId());
+            pstmt.setString(2, review.getSummary());
+            pstmt.setString(3, review.getTypographicalErrors());
+            pstmt.setString(4, review.getInitialVerdict());
+            pstmt.setInt(5, review.getSubmissionId());
+
+            pstmt.executeUpdate();
+
+            // add criticisms
+            for(Criticism criticism : criticisms) {
+                pstmt = con.prepareStatement(
+                        "INSERT INTO criticisms (submissionID, reviewerID, criticism, response) VALUES (?, ?, ?, null)"
+                );
+                pstmt.setInt(1, review.getSubmissionId());
+                pstmt.setInt(2, review.getReviewerId());
+                pstmt.setString(3, criticism.getCriticism());
+
+                pstmt.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addFinalVerdict(int submissionId, int reviewerId, String verdict, String userEmail) {
+        PreparedStatement pstmt = null;
+        String query = "UPDATE reviews SET finalVerdict = ? WHERE submissionID = ? AND reviewerID = ?";
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            // add final verdict
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, verdict);
+            pstmt.setInt(2, submissionId);
+            pstmt.setInt(3, reviewerId);
+
+            pstmt.executeUpdate();
+
+            // delete the reviewer
+            pstmt = con.prepareStatement("DELETE FROM reviewers WHERE email = ? AND submissionID = ?");
+            pstmt.setString(1, userEmail);
+            pstmt.setInt(2, submissionId);
+
+            pstmt.executeUpdate();
+
+            // if no roles left, delete the user from the system
+            if (PublicationsController.getRoles(userEmail).length == 0) {
+                pstmt = con.prepareStatement("DELETE FROM users WHERE email = ?");
+                pstmt.setString(1, userEmail);
+                pstmt.executeUpdate();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
