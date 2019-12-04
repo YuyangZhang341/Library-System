@@ -21,22 +21,35 @@ public class UserDao {
      * @throws Exception
      */
     public User login(Connection con, User user) throws Exception{
+
         User resultUser = null;
-        String sql="select * from users where email=? and password=?";
+        //String sql="select * from users where email=? and password=?";
+        String sql="select * from users where email=?";
         PreparedStatement pstmt = con.prepareStatement(sql);
         pstmt.setString(1,user.getEmail());
-        pstmt.setString(2,user.getPassword());
+        //pstmt.setString(2,user.getPassword());
         ResultSet rs = pstmt.executeQuery();
         if(rs.next()){
             resultUser = new User();
-            //resultUser.setTitle(rs.getString("title"));
-            //resultUser.setForenames(rs.getString("forename"));
-           // resultUser.setSurname(rs.getString("surname"));
-            //resultUser.setUniversityAffiliation(rs.getString("universityAffiliation"));
             resultUser.setEmail(rs.getString("email"));
             resultUser.setPassword(rs.getString("password"));
 
         }
         return resultUser;
+    }
+
+    /**
+     * update password
+     * @param con
+     * @param user
+     * @return
+     * @throws Exception
+     */
+    public int changePassword(Connection con, User user) throws Exception{
+        String sql = "update users set password=? where email =? ";
+        PreparedStatement pstmt = con.prepareStatement(sql);
+        pstmt.setString(1,user.getPassword());
+        pstmt.setString(2,user.getEmail());
+        return pstmt.executeUpdate();
     }
 }

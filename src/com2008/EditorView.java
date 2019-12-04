@@ -1,5 +1,7 @@
 package com2008;
 
+import com.javateam019.view.ChangePaswd;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
