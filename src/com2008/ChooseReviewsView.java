@@ -47,8 +47,17 @@ public class ChooseReviewsView {
         DefaultTableModel model = new DefaultTableModel(new String[]{"Submission ID", "Title", "Abstract"}, 0);
         articlesTable.setModel(model);
 
-        for(Submission article: PublicationsController.getSubmissions()) {
-            model.addRow(new Object[]{article.getSubmissionId(), article.getTitle(), article.getAbs()});
+        for(Submission article : PublicationsController.getUnreviewedSubmission()) {
+            System.out.println("hello");
+            boolean conflictOfInterest = false;
+            String usersAffilitation = PublicationsController.getAffiliation(email);
+            for(Author author : PublicationsController.getArticleAuthors(article.getSubmissionId())) {
+                System.out.println("bye");
+                if(author.getUniversityAffiliation().equals(usersAffilitation))
+                    conflictOfInterest = true;
+            }
+            if(!conflictOfInterest)
+                model.addRow(new Object[]{article.getSubmissionId(), article.getTitle(), article.getAbs()});
         }
     }
 

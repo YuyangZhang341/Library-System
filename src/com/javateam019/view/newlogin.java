@@ -125,6 +125,10 @@ public class newlogin {
                                     submissionId = Integer.parseInt(roles[0].getIssnOrSubmissionId());
                                     ReviewerView.showReviewerView(submissionId, userName);
                                     break;
+                                case "potential reviewer":
+                                    submissionId = Integer.parseInt(roles[0].getIssnOrSubmissionId());
+                                    ChooseReviewsView.showChooseReviewsView(userName);
+                                break;
                             }
                         } else {
                             RoleChoiceView.showRoleChoiceView(userName);
