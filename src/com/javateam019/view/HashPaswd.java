@@ -6,14 +6,15 @@ import org.jasypt.util.text.BasicTextEncryptor;
 
 import org.jasypt.util.text.StrongTextEncryptor;
 
+//some examples on hash and dehash
 public class HashPaswd {
     public static void main(String[] args) {
-        // 加密
+        // hash
         BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
         textEncryptor.setPassword("akak");
         String newPassword = textEncryptor.encrypt("123456");
         System.out.println(newPassword);
-        // 解密
+        // dehash
         BasicTextEncryptor textEncryptor2 = new BasicTextEncryptor();
         textEncryptor2.setPassword("akak");
         String oldPassword = textEncryptor2.decrypt("123456");
@@ -31,15 +32,15 @@ public class HashPaswd {
          * Files. This class is thread-safe.
          */
         StrongTextEncryptor ste = new StrongTextEncryptor();
-        // 加密
+        // hash
         ste.setPassword("ahha");
         String encyptedResult = ste.encrypt("123456");
        // System.out.println("encyptedResult:" + encyptedResult);
-        // 解密
+        // dehash
         String dencyptedResult = ste.decrypt(encyptedResult);
         //System.out.println(dencyptedResult);
 
-
+        //strong huah and verifying
         String inputP= "123456";
         String userPassword = "123456";
         StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
