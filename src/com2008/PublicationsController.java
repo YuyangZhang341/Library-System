@@ -741,6 +741,9 @@ public class PublicationsController {
         String update = "INSERT INTO reviewers (email, submissionID, reviewerID)\n" +
                 "VALUES (?,?,?)";
 
+        PreparedStatement pstmt3 = null;
+        String update3 = "UPDATE submissions SET reviewCount = reviewCount + 1 WHERE submissionID = ?";
+
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             pstmt = con.prepareStatement(query);
 
@@ -758,6 +761,12 @@ public class PublicationsController {
             pstmt2.setInt(3, numOfReviews+1);
 
             int res = pstmt2.executeUpdate();
+
+            pstmt3 = con.prepareStatement(update3);
+
+            pstmt3.setInt(1, submissionId);
+
+            res = pstmt3.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
