@@ -16,6 +16,7 @@ public class SubmissionView {
     private JButton backButton;
     private JPanel mainPanel;
     private JScrollPane abstractScrollPane;
+    private JButton chooseToReviewTheButton;
 
     private int submissionId;
     private String userEmail;
@@ -29,7 +30,7 @@ public class SubmissionView {
         Submission submission = PublicationsController.getSubmission(submissionId);
         Review[] reviews = PublicationsController.getReviews(submissionId);
 
-        articleTitleLabel.setText(submission.getTitle());
+        articleTitleField.setText(submission.getTitle());
         abstractTextArea.setText(submission.getAbs());
 
         backButton.addActionListener(new ActionListener() {
@@ -59,9 +60,17 @@ public class SubmissionView {
                 }
             }
         });
+
+        chooseToReviewTheButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PublicationsController.chooseSubmissionToReview(submissionId, userEmail);
+                JOptionPane.showMessageDialog(null, "Article chosen for review");
+            }
+        });
     }
 
-    public static void showConsideredSubmissionsView(int submissionId, String userEmail) {
+    public static void showSubmissionsView(int submissionId, String userEmail) {
         frame.setContentPane(new SubmissionView(submissionId, userEmail).mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();

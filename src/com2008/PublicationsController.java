@@ -735,6 +735,39 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
+    public static void chooseSubmissionToReview(int submissionId, String email) {
+        PreparedStatement pstmt = null;
+        String query = "SELECT s.submissionID, COUNT(r.submissionID) AS reviewing FROM submissions s\n" +
+                "    LEFT JOIN reviewers r on s.submissionID = r.submissionID\n" +
+                "    WHERE s.submissionID NOT IN (SELECT submissionID FROM publishedArticles) AND s.submissionID = ?\n" +
+                "    GROUP BY s.submissionID";
+
+        PreparedStatement pstmt2 = null;
+        String update = "INSERT INTO reviewers (email, submissionID, reviewerID)\n" +
+                "VALUES (?,?,?)";
+
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setInt(1, submissionId);
+
+            ResultSet resultSet = pstmt.executeQuery();
+            int numOfReviews = 0;
+            while(resultSet.next()) {
+                numOfReviews = resultSet.getInt("reviewing");
+            }
+            pstmt2 = con.prepareStatement(update);
+
+            pstmt2.setString(1, email);
+            pstmt2.setInt(2, submissionId);
+            pstmt2.setInt(3, numOfReviews+1);
+
+            int res = pstmt2.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static Review getReview(int submissionId, String email) {
         PreparedStatement pstmt = null;
         String query = "SELECT r.reviewerID, r.summary, r.typographicalErrors, r.initialVerdict, r.submissionID, r.finalVerdict FROM reviews r\n" +

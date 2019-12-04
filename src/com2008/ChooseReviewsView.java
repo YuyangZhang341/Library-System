@@ -68,7 +68,7 @@ public class ChooseReviewsView {
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
                     int submissionId = Integer.parseInt(articlesTable.getValueAt(articlesTable.getSelectedRow(), 0).toString());
-//                    ChooseArticleForReviewDialog.
+                    ChooseArticleForReviewDialog.showChooseArticleForReviewDialog(submissionId, email);
                 }
             }
         });
