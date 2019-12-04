@@ -250,16 +250,17 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
-    public static Submission[] getSubmissions() {
+    public static Submission[] getUnreviewedSubmission() {
         Statement stmt = null;
         ArrayList<Submission> results = new ArrayList<Submission>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT submissionID, title, abstract, pdf, mainAuthorEmail, issn FROM submissions");
-
-            File file = new File("src/pdf/submission.pdf");
-            FileOutputStream output = new FileOutputStream(file);
+            ResultSet res = stmt.executeQuery("SELECT s.submissionID, s.title, s.abstract, s.mainAuthorsEmail, s.issn, COUNT(r.submissionID) AS reviewing FROM submissions s\n" +
+                    "    LEFT JOIN reviewers r on s.submissionID = r.submissionID\n" +
+                    "    WHERE s.submissionID NOT IN (SELECT submissionID FROM publishedArticles)\n" +
+                    "    GROUP BY s.submissionID\n" +
+                    "    HAVING reviewing < 3");
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -270,14 +271,9 @@ public class PublicationsController {
                 String mainAuthorsEmail = res.getString("mainAuthorsEmail");
                 String issn = res.getString("issn");
 
-                byte[] buffer = new byte[1024];
-                while(input.read(buffer) > 0) {
-                    output.write(buffer);
-                }
-
-                results.add(new Submission(submissionID, title, abs, file, mainAuthorsEmail, issn));
+                results.add(new Submission(submissionID, title, abs, null, mainAuthorsEmail, issn));
             }
-        }catch (SQLException | IOException e) {
+        }catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -1146,4 +1142,6 @@ public class PublicationsController {
             e.printStackTrace();
         }
     }
+
+
 }
