@@ -53,7 +53,7 @@ public class ChooseReviewsView {
         DefaultTableModel model = new DefaultTableModel(new String[]{"Submission ID", "Title", "Abstract"}, 0);
         articlesTable.setModel(model);
 
-        for(Submission article : PublicationsController.getUnreviewedSubmission()) {
+        for(Submission article : PublicationsController.getUnreviewedSubmission(email)) {
             boolean conflictOfInterest = false;
             String usersAffilitation = PublicationsController.getAffiliation(email);
             for(Author author : PublicationsController.getArticleAuthors(article.getSubmissionId())) {

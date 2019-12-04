@@ -66,8 +66,15 @@ public class SubmissionView {
         chooseToReviewTheButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                PublicationsController.chooseSubmissionToReview(submissionId, userEmail);
-                JOptionPane.showMessageDialog(null, "Article chosen for review");
+                PublicationsController.chooseSubmissionToReview(submissionId, userEmail, reviewerSubmissionId);
+                int reviewCount = PublicationsController.getSubmission(reviewerSubmissionId).getReviewCount();
+                if(reviewCount < 3) {
+                    JOptionPane.showMessageDialog(null, "Article chosen for review. You still need to review " + (3 - reviewCount) + " submissions.");
+                    ChooseReviewsView.showChooseReviewsView(reviewerSubmissionId, userEmail);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Article chosen for review. Thank you.");
+                    App.showMainApp();
+                }
             }
         });
     }

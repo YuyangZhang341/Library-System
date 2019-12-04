@@ -250,17 +250,21 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
-    public static Submission[] getUnreviewedSubmission() {
-        Statement stmt = null;
+    public static Submission[] getUnreviewedSubmission(String userEmail) {
+        PreparedStatement pstmt = null;
         ArrayList<Submission> results = new ArrayList<Submission>();
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT s.submissionID, s.title, s.abstract, s.mainAuthorsEmail, s.issn, COUNT(r.submissionID) AS reviewing FROM submissions s\n" +
+            pstmt = con.prepareStatement("SELECT s.submissionID, s.title, s.abstract, s.mainAuthorsEmail, s.issn, COUNT(r.submissionID) AS reviewing FROM submissions s\n" +
                     "    LEFT JOIN reviewers r on s.submissionID = r.submissionID\n" +
                     "    WHERE s.submissionID NOT IN (SELECT submissionID FROM publishedArticles)\n" +
+                    "      AND ? NOT IN (SELECT email FROM reviewers rq WHERE rq.submissionID = s.submissionID)\n" +
                     "    GROUP BY s.submissionID\n" +
                     "    HAVING reviewing < 3");
+
+            pstmt.setString(1, userEmail);
+
+            ResultSet res = pstmt.executeQuery();
 
             // Fetch each row from the result set
             while (res.next()) {
@@ -730,7 +734,7 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
-    public static void chooseSubmissionToReview(int submissionId, String email) {
+    public static void chooseSubmissionToReview(int submissionId, String email, int reviewerSubmissionId) {
         PreparedStatement pstmt = null;
         String query = "SELECT s.submissionID, COUNT(r.submissionID) AS reviewing FROM submissions s\n" +
                 "    LEFT JOIN reviewers r on s.submissionID = r.submissionID\n" +
@@ -764,7 +768,7 @@ public class PublicationsController {
 
             pstmt3 = con.prepareStatement(update3);
 
-            pstmt3.setInt(1, submissionId);
+            pstmt3.setInt(1, reviewerSubmissionId);
 
             res = pstmt3.executeUpdate();
         } catch (SQLException e) {

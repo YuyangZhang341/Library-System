@@ -63,8 +63,15 @@ public class ChooseArticleForReviewDialog extends JDialog {
     }
 
     private void chooseArticle(int submissionId, String userEmail) {
-        PublicationsController.chooseSubmissionToReview(submissionId, userEmail);
-//        JOptionPane.showMessageDialog(d, "Article chosen for review");
+        PublicationsController.chooseSubmissionToReview(submissionId, userEmail, reviewerSubmissionId);
+        int reviewCount = PublicationsController.getSubmission(reviewerSubmissionId).getReviewCount();
+        if(reviewCount < 3) {
+            JOptionPane.showMessageDialog(d, "Article chosen for review. You still need to review " + (3 - reviewCount) + " submissions.");
+            ChooseReviewsView.showChooseReviewsView(reviewerSubmissionId, userEmail);
+        } else {
+            JOptionPane.showMessageDialog(d, "Article chosen for review. Thank you.");
+            App.showMainApp();
+        }
     }
 
     private void onCancel() {
