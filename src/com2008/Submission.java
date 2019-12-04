@@ -9,6 +9,7 @@ public class Submission {
     private File pdf;
     private String mainAuthorsEmail;
     private String issn;
+    private int reviewCount;
 
     public Submission(int submissionId, String title, String abs, File pdf, String mainAuthorsEmail, String issn) {
         this.submissionId = submissionId;
@@ -17,6 +18,17 @@ public class Submission {
         this.pdf = pdf;
         this.mainAuthorsEmail = mainAuthorsEmail;
         this.issn = issn;
+        this.reviewCount = 0;
+    }
+
+    public Submission(int submissionId, String title, String abs, File pdf, String mainAuthorsEmail, String issn, int reviewCount) {
+        this.submissionId = submissionId;
+        this.title = title;
+        this.abs = abs;
+        this.pdf = pdf;
+        this.mainAuthorsEmail = mainAuthorsEmail;
+        this.issn = issn;
+        this.reviewCount = reviewCount;
     }
 
     public int getSubmissionId() {
@@ -43,6 +55,10 @@ public class Submission {
         return issn;
     }
 
+    public int getReviewCount() {
+        return reviewCount;
+    }
+
     public void setSubmissionId(int submissionId) {
         this.submissionId = submissionId;
     }
@@ -65,5 +81,9 @@ public class Submission {
 
     public void setIssn(String issn) {
         this.issn = issn;
+    }
+
+    public void setReviewCount(int reviewCount) {
+        this.reviewCount = reviewCount;
     }
 }

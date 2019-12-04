@@ -307,13 +307,14 @@ public class PublicationsController {
                 InputStream input = res.getBinaryStream("pdf");
                 String mainAuthorsEmail = res.getString("mainAuthorsEmail");
                 String issn = res.getString("issn");
+                int reviewCount = res.getInt("reviewCount");
 
                 byte[] buffer = new byte[1024];
                 while(input.read(buffer) > 0) {
                     output.write(buffer);
                 }
 
-                return new Submission(submissionId, title, abs, file, mainAuthorsEmail, issn);
+                return new Submission(submissionId, title, abs, file, mainAuthorsEmail, issn, reviewCount);
             }
         } catch (SQLException | IOException e) {
             e.printStackTrace();
@@ -608,6 +609,15 @@ public class PublicationsController {
                 String nameOrTitle = res.getString("title");
 
                 results.add(new Role(email, "author", submissionId, nameOrTitle));
+
+                // check if the user needs to pick submissions to review.
+                Submission submission = getSubmission(Integer.parseInt(submissionId));
+                if(submission.getReviewCount() < 3) {
+                    results.add(new Role(email, "potential reviewer", submissionId,
+                            "You still need to review " + (3-submission.getReviewCount())
+                                    + " submission(s) to cover the costs of publishing the submission titled "
+                                    + submission.getTitle()));
+                }
             }
 
             // Look for editor roles
