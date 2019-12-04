@@ -20,12 +20,14 @@ public class SubmissionView {
 
     private int submissionId;
     private String userEmail;
+    private int reviewerSubmissionId;
 
     private static JFrame frame = new JFrame("Article");
 
-    public SubmissionView(int submissionId, String userEmail) {
+    public SubmissionView(int submissionId, String userEmail, int reviewerSubmissionId) {
         this.submissionId = submissionId;
         this.userEmail = userEmail;
+        this.reviewerSubmissionId = reviewerSubmissionId;
 
         Submission submission = PublicationsController.getSubmission(submissionId);
         Review[] reviews = PublicationsController.getReviews(submissionId);
@@ -36,7 +38,7 @@ public class SubmissionView {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ChooseReviewsView.showChooseReviewsView(userEmail);
+                ChooseReviewsView.showChooseReviewsView(reviewerSubmissionId, userEmail);
                 frame.dispose();
             }
         });
@@ -70,8 +72,8 @@ public class SubmissionView {
         });
     }
 
-    public static void showSubmissionsView(int submissionId, String userEmail) {
-        frame.setContentPane(new SubmissionView(submissionId, userEmail).mainPanel);
+    public static void showSubmissionsView(int submissionId, String userEmail, int reviewerSubmissionId) {
+        frame.setContentPane(new SubmissionView(submissionId, userEmail, reviewerSubmissionId).mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
 

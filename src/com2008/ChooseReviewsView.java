@@ -14,14 +14,20 @@ public class ChooseReviewsView {
     private JButton logOutButton;
     private JScrollPane articlesScrollPane;
     private JTable articlesTable;
+    private JLabel counterLabel;
 
     private String email;
+    private int reviewerSubmissionId;
+    private int reviewCount;
 
     private static JFrame frame = new JFrame("Articles to review");
 
-    public ChooseReviewsView(String email) {
+    public ChooseReviewsView(int reviewerSubmissionId, String email) {
         this.email = email;
+        this.reviewerSubmissionId = reviewerSubmissionId;
+        this.reviewCount = PublicationsController.getSubmission(reviewerSubmissionId).getReviewCount();
         loadArticlesTable();
+        counterLabel.setText("" + reviewCount + "/3 chosen by all authors");
 
         logOutButton.addActionListener(new ActionListener() {
             @Override
@@ -32,8 +38,8 @@ public class ChooseReviewsView {
         });
     }
 
-    public static void showChooseReviewsView(String email) {
-        frame.setContentPane(new ChooseReviewsView(email).mainPanel);
+    public static void showChooseReviewsView(int reviewerSubmissionId, String email) {
+        frame.setContentPane(new ChooseReviewsView(reviewerSubmissionId, email).mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
 
@@ -48,11 +54,9 @@ public class ChooseReviewsView {
         articlesTable.setModel(model);
 
         for(Submission article : PublicationsController.getUnreviewedSubmission()) {
-            System.out.println("hello");
             boolean conflictOfInterest = false;
             String usersAffilitation = PublicationsController.getAffiliation(email);
             for(Author author : PublicationsController.getArticleAuthors(article.getSubmissionId())) {
-                System.out.println("bye");
                 if(author.getUniversityAffiliation().equals(usersAffilitation))
                     conflictOfInterest = true;
             }
@@ -77,13 +81,13 @@ public class ChooseReviewsView {
                 int row = table.rowAtPoint(point);
                 if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
                     int submissionId = Integer.parseInt(articlesTable.getValueAt(articlesTable.getSelectedRow(), 0).toString());
-                    ChooseArticleForReviewDialog.showChooseArticleForReviewDialog(submissionId, email);
+                    ChooseArticleForReviewDialog.showChooseArticleForReviewDialog(submissionId, email, reviewerSubmissionId);
                 }
             }
         });
     }
 
     public static void main(String[] args) {
-        showChooseReviewsView("marcin@ok.pl");
+        showChooseReviewsView(25, "newnew@op.pl");
     }
 }

@@ -12,10 +12,12 @@ public class ChooseArticleForReviewDialog extends JDialog {
 
     private int submissionId;
     private String userEmail;
+    private int reviewerSubmissionId;
 
-    public ChooseArticleForReviewDialog(int submissionId, String userEmail) {
+    public ChooseArticleForReviewDialog(int submissionId, String userEmail, int reviewerSubmissionId) {
         this.submissionId = submissionId;
         this.userEmail = userEmail;
+        this.reviewerSubmissionId = reviewerSubmissionId;
 
         setContentPane(contentPane);
         setModal(true);
@@ -39,7 +41,9 @@ public class ChooseArticleForReviewDialog extends JDialog {
         viewButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                viewArticle(submissionId, userEmail);
+                viewArticle(submissionId, userEmail, reviewerSubmissionId);
+                ((Window)d.getParent()).dispose();
+                dispose();
             }
         });
 
@@ -47,21 +51,20 @@ public class ChooseArticleForReviewDialog extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 chooseArticle(submissionId, userEmail);
+                ((Window)d.getParent()).dispose();
+                dispose();
+                ChooseReviewsView.showChooseReviewsView(reviewerSubmissionId, userEmail);
             }
         });
     }
 
-    private void viewArticle(int submissionId, String userEmail) {
-        SubmissionView.showSubmissionsView(submissionId, userEmail);
-        System.out.println(d.getParent().getName());
-        ((Window)d.getParent()).dispose();
-        dispose();
+    private void viewArticle(int submissionId, String userEmail, int reviewerSubmissionId) {
+        SubmissionView.showSubmissionsView(submissionId, userEmail, reviewerSubmissionId);
     }
 
     private void chooseArticle(int submissionId, String userEmail) {
         PublicationsController.chooseSubmissionToReview(submissionId, userEmail);
-        dispose();
-        JOptionPane.showMessageDialog(d, "Article chosen for review");
+//        JOptionPane.showMessageDialog(d, "Article chosen for review");
     }
 
     private void onCancel() {
@@ -69,16 +72,10 @@ public class ChooseArticleForReviewDialog extends JDialog {
         dispose();
     }
 
-    public static void showChooseArticleForReviewDialog(int submissionId, String userEmail) {
-        d = new ChooseArticleForReviewDialog(submissionId, userEmail);
+    public static void showChooseArticleForReviewDialog(int submissionId, String userEmail, int reviewerSubmissionId) {
+        d = new ChooseArticleForReviewDialog(submissionId, userEmail, reviewerSubmissionId);
         d.pack();
         d.setLocationRelativeTo(null);
         d.setVisible(true);
-    }
-
-    public static void main(String[] args) {
-        ChooseArticleForReviewDialog dialog = new ChooseArticleForReviewDialog(23, "marcin@ok.pl");
-        dialog.pack();
-        dialog.setVisible(true);
     }
 }

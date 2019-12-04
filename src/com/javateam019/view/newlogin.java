@@ -127,7 +127,7 @@ public class newlogin {
                                     break;
                                 case "potential reviewer":
                                     submissionId = Integer.parseInt(roles[0].getIssnOrSubmissionId());
-                                    ChooseReviewsView.showChooseReviewsView(userName);
+                                    ChooseReviewsView.showChooseReviewsView(submissionId, userName);
                                 break;
                             }
                         } else {
