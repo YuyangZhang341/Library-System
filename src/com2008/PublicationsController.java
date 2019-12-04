@@ -256,7 +256,7 @@ public class PublicationsController {
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT submissionID, title, abstract, pdf, mainAuthorEmail, issn FROM submissions");
+            ResultSet res = stmt.executeQuery("SELECT submissionID, title, abstract, pdf, mainAuthorsEmail, issn FROM submissions");
 
             File file = new File("src/pdf/submission.pdf");
             FileOutputStream output = new FileOutputStream(file);

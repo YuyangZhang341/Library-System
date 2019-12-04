@@ -6,7 +6,6 @@ import com.javateam019.util.DbUtil;
 import com.javateam019.util.StringUtil;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -15,10 +14,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import com2008.ArticleActionsDialog;
-import javafx.scene.control.TextFormatter;
 import org.jasypt.util.password.StrongPasswordEncryptor;
-import org.jasypt.util.text.StrongTextEncryptor;
 
 public class ChangePaswd extends JDialog {
     private JPanel mainPanel;
