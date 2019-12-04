@@ -31,7 +31,7 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="2a4d1" class="javax.swing.JTable" binding="leftTable">
+                  <component id="2a4d1" class="javax.swing.JTable" binding="leftTable" custom-create="true">
                     <constraints/>
                     <properties/>
                   </component>
@@ -56,7 +56,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="4d8e5" class="javax.swing.JTable" binding="rightTable">
+              <component id="4d8e5" class="javax.swing.JTable" binding="rightTable" custom-create="true">
                 <constraints/>
                 <properties/>
               </component>

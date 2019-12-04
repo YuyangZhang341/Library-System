@@ -50,17 +50,21 @@ public class ReviewArticles {
     }
 
     private void loadRightTable() {
-        DefaultTableModel model = new DefaultTableModel(new String[]{"Title", "Abstract"}, 0);
+        DefaultTableModel model = new DefaultTableModel(new String[]{"submissionID", "Title", "Abstract"}, 0);
         rightTable.setModel(model);
 
         for (Submission submission : PublicationsController.getSubmissions()) {
-            model.addRow(new Object[]{submission.getTitle(), submission.getAbs()});
+            model.addRow(new Object[]{submission.getSubmissionId(), submission.getTitle(), submission.getAbs()});
         }
     }
 
     private void loadLeftTable(){
-        DefaultTableModel model = new DefaultTableModel(new String[]{"Title", "Abstract"}, 0);
-        rightTable.setModel(model);
+        DefaultTableModel model = new DefaultTableModel(new String[]{"submissionID", "Title", "Abstract"}, 0);
+        leftTable.setModel(model);
+
+        for (Submission submission : PublicationsController.getSubmissions()) {
+            model.addRow(new Object[]{submission.getSubmissionId(), submission.getTitle(), submission.getAbs()});
+        }
     }
 
     private void createUIComponents(){
@@ -71,12 +75,27 @@ public class ReviewArticles {
             }
         };
 
-        rightTable = new JTable(){
+        leftTable = new JTable(){
             public boolean isCellEditable(int row, int column){
                 return false;
             }
         };
 
+        rightTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                JTable rightTable = (JTable) e.getSource();
+                Point point = e.getPoint();
+                int row = rightTable.rowAtPoint(point);
+                int leftRows = leftTable.getRowCount();
+                if (e.getClickCount() == 2 && rightTable.getSelectedRow() != -1 && leftRows <3){
+                    int id = (int) rightTable.getValueAt(rightTable.getSelectedRow(),0);
+                   /* for (Submission submission : PublicationsController.getSubmissions()) {
+                        model.addRow(new Object[]{submission.getSubmissionId(), submission.getTitle(), submission.getAbs()});
+                    }*/
+                }
+            }
+        });
     }
 }
 
