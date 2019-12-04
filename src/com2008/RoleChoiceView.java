@@ -23,6 +23,10 @@ public class RoleChoiceView {
         this.email = email;
 
         loadRolesTable();
+        rolesTable.getColumnModel().getColumn(0).setMinWidth(150);
+        rolesTable.getColumnModel().getColumn(1).setMinWidth(150);
+        rolesTable.getColumnModel().getColumn(0).setMaxWidth(150);
+        rolesTable.getColumnModel().getColumn(1).setMaxWidth(150);
 
         backButton.addActionListener(new ActionListener() {
             @Override
@@ -84,6 +88,10 @@ public class RoleChoiceView {
             case "reviewer":
                 submissionId = Integer.parseInt(rolesTable.getValueAt(rolesTable.getSelectedRow(), 1).toString());
                 ReviewerView.showReviewerView(submissionId, email);
+                break;
+            case "potential reviewer":
+                submissionId = Integer.parseInt(rolesTable.getValueAt(rolesTable.getSelectedRow(), 1).toString());
+                //todo: potential reviewer
                 break;
         }
 
