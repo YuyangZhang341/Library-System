@@ -70,7 +70,7 @@ public class EditorView {
         changePasswordButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                ChangePaswd.showChangeP(userEmail);
             }
         });
 

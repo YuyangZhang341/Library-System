@@ -1,5 +1,7 @@
 package com2008;
 
+import com.javateam019.view.ChangePaswd;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -12,6 +14,7 @@ public class RoleChoiceView {
     private JPanel mainPanel;
     private JPanel navPanel;
     private JScrollPane rolesScrollPane;
+    private JButton changePasswordButton;
 
     private String email;
     private static JFrame frame = new JFrame("Available roles");
@@ -32,6 +35,13 @@ public class RoleChoiceView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 chooseRole();
+            }
+        });
+
+        changePasswordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ChangePaswd.showChangeP(email);
             }
         });
     }
@@ -99,9 +109,5 @@ public class RoleChoiceView {
                 }
             }
         });
-    }
-
-    public static void main(String[] args) {
-        showRoleChoiceView("co@jest.kurde.123");
     }
 }

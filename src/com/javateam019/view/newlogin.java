@@ -41,7 +41,6 @@ public class newlogin {
         changePassword.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 ChangePaswd.showChangeP();
-                frame.dispose();
             }
         });
 
@@ -107,7 +106,6 @@ public class newlogin {
                         //correct
                         // Check which roles the user is registered for
                         Role roles[] = PublicationsController.getRoles(userName);
-
                         // If there's only one role, go straight to the appropriate view. Else, show the role choice view.
                         if(roles.length == 1) {
                             int submissionId;

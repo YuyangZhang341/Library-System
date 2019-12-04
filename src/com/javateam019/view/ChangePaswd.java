@@ -9,15 +9,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import com2008.ArticleActionsDialog;
+import javafx.scene.control.TextFormatter;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.jasypt.util.text.StrongTextEncryptor;
 
-public class ChangePaswd {
-    private static JFrame frame = new JFrame("ChangePassword");
+public class ChangePaswd extends JDialog {
     private JPanel mainPanel;
     private JPasswordField oldPasswordField;
     private JPasswordField newPasswordField1;
@@ -28,36 +31,56 @@ public class ChangePaswd {
     private DbUtil DbUtil = new DbUtil();
     private UserDao userDao = new UserDao();
 
-        public ChangePaswd(){
+    static ChangePaswd d;
+
+    public ChangePaswd(String userEmail) {
+        this();
+        userNameTextField.setText(userEmail);
+        userNameTextField.setEditable(false);
+    }
+
+    public ChangePaswd(){
+        setContentPane(mainPanel);
+        setModal(true);
+
         confirmButton1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 changePasswordPerformed(e);
             }
         });
+
+        // call onCancel() when cross is clicked
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                dispose();
+            }
+        });
     }
+
     private void changePasswordPerformed(ActionEvent evt){
         String userName = this.userNameTextField.getText();
         String oldPassword = new String(this.oldPasswordField.getPassword());
         String newPassword1 = new String(this.newPasswordField1.getPassword());
         String newPassword2 = new String(this.newPasswordField2.getPassword());
         if (StringUtil.isEmpty(userName)) {
-            JOptionPane.showMessageDialog(null, "Enter your user name");
+            JOptionPane.showMessageDialog(d, "Enter your user name");
             return;
         }
         if (StringUtil.isEmpty(oldPassword)) {
-            JOptionPane.showMessageDialog(null, "Please enter your old password");
+            JOptionPane.showMessageDialog(d, "Please enter your old password");
             return;
         }
         if (StringUtil.isEmpty(newPassword1)) {
-            JOptionPane.showMessageDialog(null, "Please enter your new password");
+            JOptionPane.showMessageDialog(d, "Please enter your new password");
             return;
         }
         if (StringUtil.isEmpty(newPassword2)) {
-            JOptionPane.showMessageDialog(null, "Please confirm your password");
+            JOptionPane.showMessageDialog(d, "Please confirm your password");
             return;
         }
         if(!newPassword1.equals(newPassword2)){
-            JOptionPane.showMessageDialog(null, "please unify two passwords");
+            JOptionPane.showMessageDialog(d, "please unify two passwords");
             return;
         }
 
@@ -86,20 +109,21 @@ public class ChangePaswd {
                     if (passwordEncryptor.checkPassword(oldPassword, encryptedPassword2)) {
                         //correct
                         userDao.changePassword(con,newUser);
-                        JOptionPane.showMessageDialog(null, "change successful");
+                        JOptionPane.showMessageDialog(d, "change successful");
                         this.resetTxt();
                         System.out.println(encryptedPassword2);
                         System.out.println("true");
+                        dispose();
                     } else {
                         //wrong
-                        JOptionPane.showMessageDialog(null, "initial user name or password is wrong");
+                        JOptionPane.showMessageDialog(d, "initial user name or password is wrong");
                         System.out.println(encryptedPassword2);
                     }
                 }else{
                     System.out.println("failed");
                 }
             }else {
-                JOptionPane.showMessageDialog(null, "no user");
+                JOptionPane.showMessageDialog(d, "no user");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -121,16 +145,20 @@ public class ChangePaswd {
             this.newPasswordField2.setText("");
     }
 
+    public static void showChangeP(String userEmail) {
+        d = new ChangePaswd(userEmail);
+        d.pack();
+        d.setSize(275,400);
+        d.setLocationRelativeTo(null);
+        d.setVisible(true);
+    }
 
     public static void showChangeP() {
-        frame.setContentPane(new ChangePaswd().mainPanel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
-        Dimension screenDimensions = toolkit.getScreenSize();
-        frame.setSize(screenDimensions.width, screenDimensions.height);
-        frame.setVisible(true);
+        d = new ChangePaswd();
+        d.pack();
+        d.setSize(275,400);
+        d.setLocationRelativeTo(null);
+        d.setVisible(true);
     }
     public static void main(String[] args) {
         showChangeP();

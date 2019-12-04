@@ -1,5 +1,7 @@
 package com2008;
 
+import com.javateam019.view.ChangePaswd;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -64,6 +66,7 @@ public class AuthorView {
     private JButton pdfButton2;
     private JButton logoutButton;
     private JButton reviseButton;
+    private JButton changePasswordButton;
 
     private int submissionId;
     private String userEmail;
@@ -206,6 +209,13 @@ public class AuthorView {
             public void actionPerformed(ActionEvent e) {
                 App.showMainApp();
                 frame.dispose();
+            }
+        });
+
+        changePasswordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ChangePaswd.showChangeP(userEmail);
             }
         });
     }
