@@ -267,7 +267,6 @@ public class PublicationsController {
                 int submissionID = res.getInt("submissionID");
                 String title = res.getString("title");
                 String abs = res.getString("abstract");
-                InputStream input = res.getBinaryStream("pdf");
                 String mainAuthorsEmail = res.getString("mainAuthorsEmail");
                 String issn = res.getString("issn");
 
@@ -1143,5 +1142,25 @@ public class PublicationsController {
         }
     }
 
+    public static String getAffiliation(String userEmail) {
+        PreparedStatement pstmt = null;
+        String query = "SELECT universityAffiliation FROM users WHERE email = ?";
 
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, userEmail);
+
+            ResultSet res = pstmt.executeQuery();
+
+            // Fetch each row from the result set
+            while (res.next()) {
+                return res.getString("universityAffiliation");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }
 }

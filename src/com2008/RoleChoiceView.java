@@ -91,7 +91,7 @@ public class RoleChoiceView {
                 break;
             case "potential reviewer":
                 submissionId = Integer.parseInt(rolesTable.getValueAt(rolesTable.getSelectedRow(), 1).toString());
-                //todo: potential reviewer
+                ChooseReviewsView.showChooseReviewsView(email);
                 break;
         }
 
