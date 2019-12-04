@@ -34,10 +34,10 @@ public class App {
         logInButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                newlogin.showLogIn();
+                //newlogin.showLogIn();
 
 
-                //ReviewArticles.showReviewArticle();
+                ReviewArticles.showReviewArticles();
 
                 frame.dispose();
             }

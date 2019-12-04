@@ -1,6 +1,5 @@
 package com2008;
 
-import javax.swing.*;
 import java.io.*;
 import java.sql.*;
 import java.util.*;
@@ -98,6 +97,32 @@ public class PublicationsController {
         }
         Journal arrayResults[] = new Journal[results.size()];
         return results.toArray(arrayResults);
+    }
+
+    public static Submission[] getSubmissions(){
+        PreparedStatement pstmt = null;
+        String query = "SELECT submissionID, title, abstract, mainAuthorsEmail, issn FROM submissions";
+
+        ArrayList<Submission> results = new ArrayList<Submission>();
+
+        try(Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")){
+            pstmt = con.prepareStatement(query);
+            ResultSet res = pstmt.executeQuery();
+
+            while(res.next()){
+                int submissionID = res.getInt("submissionID");
+                String title = res.getString("title");
+                String abs = res.getString("abstract");
+                String mainAuthorsEmail = res.getString("mainAuthorsEmail");
+                String issn = res.getString("issn");
+
+                results.add(new Submission(submissionID, title, abs, mainAuthorsEmail, issn));
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        Submission arrayResults[] = new Submission[results.size()];
+        return  results.toArray(arrayResults);
     }
 
     public static Journal getJournal(String issn) {
@@ -246,41 +271,6 @@ public class PublicationsController {
             e.printStackTrace();
         }
         Author[] arrayResults = new Author[results.size()];
-        return results.toArray(arrayResults);
-    }
-
-    public static Submission[] getSubmissions() {
-        Statement stmt = null;
-        ArrayList<Submission> results = new ArrayList<Submission>();
-
-        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            stmt = con.createStatement();
-            ResultSet res = stmt.executeQuery("SELECT submissionID, title, abstract, pdf, mainAuthorEmail, issn FROM submissions");
-
-            File file = new File("src/pdf/submission.pdf");
-            FileOutputStream output = new FileOutputStream(file);
-
-            // Fetch each row from the result set
-            while (res.next()) {
-                int submissionID = res.getInt("submissionID");
-                String title = res.getString("title");
-                String abs = res.getString("abstract");
-                InputStream input = res.getBinaryStream("pdf");
-                String mainAuthorsEmail = res.getString("mainAuthorsEmail");
-                String issn = res.getString("issn");
-
-                byte[] buffer = new byte[1024];
-                while(input.read(buffer) > 0) {
-                    output.write(buffer);
-                }
-
-                results.add(new Submission(submissionID, title, abs, file, mainAuthorsEmail, issn));
-            }
-        }catch (SQLException | IOException e) {
-            e.printStackTrace();
-        }
-
-        Submission arrayResults[] = new Submission[results.size()];
         return results.toArray(arrayResults);
     }
 
@@ -728,7 +718,6 @@ public class PublicationsController {
         return results.toArray(arrayResults);
     }
 
-}
 
     public static Review[] getReviews(int submissionId) {
         PreparedStatement pstmt = null;

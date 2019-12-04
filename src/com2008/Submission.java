@@ -19,6 +19,14 @@ public class Submission {
         this.issn = issn;
     }
 
+    public Submission(int submissionId, String title, String abs, String mainAuthorsEmail, String issn) {
+        this.submissionId = submissionId;
+        this.title = title;
+        this.abs = abs;
+        this.mainAuthorsEmail = mainAuthorsEmail;
+        this.issn = issn;
+    }
+
     public int getSubmissionId() {
         return submissionId;
     }
