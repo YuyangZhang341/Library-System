@@ -5,7 +5,8 @@ import com.javateam019.model.User;
 import com.javateam019.util.DbUtil;
 import com.javateam019.util.StringUtil;
 import com2008.App;
-
+import org.jasypt.util.password.StrongPasswordEncryptor;
+import org.jasypt.util.text.BasicTextEncryptor;
 
 
 import javax.swing.*;
@@ -70,13 +71,31 @@ public class newlogin {
 
         User user = new User(userName, password);
         Connection con = null;
+        ResultSet rs = null;
+        StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
         try {
             con = DbUtil.getCon();
-            User recentUser = userDao.login(con, user);
+            User recentUser = userDao.login(con,  user);
+            // find the user if not null
             if (recentUser != null) {
-                frame.dispose();
-                MainFrame.showMainFrame();
-
+                String sql="select * from users where email='"+userName+"' ";
+                PreparedStatement pstmt = con.prepareStatement(sql);
+                rs = pstmt.executeQuery();
+                //check the user typed in text box and check if password is correct
+                if(rs.next()){
+                    String encryptedPassword = rs.getString("password");
+                    if (passwordEncryptor.checkPassword(password, encryptedPassword)) {
+                        //correct
+                        JOptionPane.showMessageDialog(null, "login successful");
+                        frame.dispose();
+                        MainFrame.showMainFrame();
+                    } else {
+                        //wrong
+                        JOptionPane.showMessageDialog(null, "wrong user name or password");
+                    }
+                }else{
+                    System.out.println("failed");
+                }
             } else {
                 JOptionPane.showMessageDialog(null, "user name or password is wrong");
             }

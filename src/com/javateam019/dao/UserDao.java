@@ -23,10 +23,11 @@ public class UserDao {
     public User login(Connection con, User user) throws Exception{
 
         User resultUser = null;
-        String sql="select * from users where email=? and password=?";
+        //String sql="select * from users where email=? and password=?";
+        String sql="select * from users where email=?";
         PreparedStatement pstmt = con.prepareStatement(sql);
         pstmt.setString(1,user.getEmail());
-        pstmt.setString(2,user.getPassword());
+        //pstmt.setString(2,user.getPassword());
         ResultSet rs = pstmt.executeQuery();
         if(rs.next()){
             resultUser = new User();

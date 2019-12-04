@@ -1,6 +1,7 @@
 package com.javateam019.view;
 
 
+import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.jasypt.util.text.BasicTextEncryptor;
 
 import org.jasypt.util.text.StrongTextEncryptor;
@@ -15,7 +16,7 @@ public class HashPaswd {
         // 解密
         BasicTextEncryptor textEncryptor2 = new BasicTextEncryptor();
         textEncryptor2.setPassword("akak");
-        String oldPassword = textEncryptor2.decrypt(newPassword);
+        String oldPassword = textEncryptor2.decrypt("123456");
         System.out.println(oldPassword);
         System.out.println("--------------------------");
         /**
@@ -38,6 +39,20 @@ public class HashPaswd {
         String dencyptedResult = ste.decrypt(encyptedResult);
         //System.out.println(dencyptedResult);
 
+
+        String inputP= "123456";
+        String userPassword = "123456";
+        StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
+        String encryptedPassword = passwordEncryptor.encryptPassword(userPassword);
+
+        if (passwordEncryptor.checkPassword(inputP, encryptedPassword)) {
+            //correct
+            System.out.println(encryptedPassword);
+            System.out.println("true");
+        } else {
+            // bad login!
+            System.out.println("false");
+        }
 
     }
 }

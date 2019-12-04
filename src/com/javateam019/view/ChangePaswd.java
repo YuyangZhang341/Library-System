@@ -10,6 +10,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.jasypt.util.text.StrongTextEncryptor;
 
 public class ChangePaswd {
@@ -58,27 +62,44 @@ public class ChangePaswd {
         }
 
         // encypte
-        StrongTextEncryptor ste = new StrongTextEncryptor();
-        ste.setPassword("youNotKnow");
-        String encyptedPassword = ste.encrypt(newPassword1);
+        StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
+        String encryptedPassword = passwordEncryptor.encryptPassword(newPassword1);
 
         User oldUser = new User(userName, oldPassword);
-        User newUser = new User(userName, encyptedPassword);
+        User newUser = new User(userName, encryptedPassword);
 
         Connection con = null;
+        ResultSet rs = null;
         try {
             con = DbUtil.getCon();
             User recentUser = userDao.login(con, oldUser);
-            int changeNum = userDao.changePassword(con,newUser);
+//            int changeNum = userDao.changePassword(con,newUser);
             if (recentUser != null) {
-                if (changeNum == 1){
-                    JOptionPane.showMessageDialog(null, "change successful");
-                    this.resetTxt();
+
+                String sql="select * from users where email='"+userName+"' ";
+                PreparedStatement pstmt = con.prepareStatement(sql);
+                rs = pstmt.executeQuery();
+                //check the user typed in text box and check if password is correct
+                if(rs.next()){
+
+                    String encryptedPassword2 = rs.getString("password");
+                    if (passwordEncryptor.checkPassword(oldPassword, encryptedPassword2)) {
+                        //correct
+                        userDao.changePassword(con,newUser);
+                        JOptionPane.showMessageDialog(null, "change successful");
+                        this.resetTxt();
+                        System.out.println(encryptedPassword2);
+                        System.out.println("true");
+                    } else {
+                        //wrong
+                        JOptionPane.showMessageDialog(null, "initial user name or password is wrong");
+                        System.out.println(encryptedPassword2);
+                    }
                 }else{
-                    JOptionPane.showMessageDialog(null, "failed");
+                    System.out.println("failed");
                 }
             }else {
-                JOptionPane.showMessageDialog(null, "initial user name or password is wrong");
+                JOptionPane.showMessageDialog(null, "no user");
             }
         } catch (Exception e) {
             e.printStackTrace();
