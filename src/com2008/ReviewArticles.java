@@ -50,21 +50,19 @@ public class ReviewArticles {
     }
 
     private void loadRightTable() {
-        DefaultTableModel model = new DefaultTableModel(new String[]{"submissionID", "Title", "Abstract"}, 0);
-        rightTable.setModel(model);
+        DefaultTableModel rightModel = new DefaultTableModel(new String[]{"submissionID", "Title", "Abstract"}, 0);
+        rightTable.setModel(rightModel);
 
         for (Submission submission : PublicationsController.getSubmissions()) {
-            model.addRow(new Object[]{submission.getSubmissionId(), submission.getTitle(), submission.getAbs()});
+            rightModel.addRow(new Object[]{submission.getSubmissionId(), submission.getTitle(), submission.getAbs()});
         }
     }
 
     private void loadLeftTable(){
-        DefaultTableModel model = new DefaultTableModel(new String[]{"submissionID", "Title", "Abstract"}, 0);
-        leftTable.setModel(model);
+        DefaultTableModel leftModel = new DefaultTableModel(new String[]{"submissionID", "Title", "Abstract"}, 0);
+        leftTable.setModel(leftModel);
 
-        for (Submission submission : PublicationsController.getSubmissions()) {
-            model.addRow(new Object[]{submission.getSubmissionId(), submission.getTitle(), submission.getAbs()});
-        }
+
     }
 
     private void createUIComponents(){
@@ -93,6 +91,9 @@ public class ReviewArticles {
                    /* for (Submission submission : PublicationsController.getSubmissions()) {
                         model.addRow(new Object[]{submission.getSubmissionId(), submission.getTitle(), submission.getAbs()});
                     }*/
+                   System.out.println(id);
+                   System.out.println(PublicationsController.getSubmissionsByID(id));
+
                 }
             }
         });

@@ -125,6 +125,33 @@ public class PublicationsController {
         return  results.toArray(arrayResults);
     }
 
+    public static Submission[] getSubmissionsByID(int submissionID){
+        PreparedStatement pstmt = null;
+        String query = "SELECT submissionID, title, abstract, mainAuthorsEmail, issn FROM submissions WHERE submissionID = ?";
+
+        ArrayList<Submission> results = new ArrayList<Submission>();
+
+        try(Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")){
+            pstmt = con.prepareStatement(query);
+            pstmt.setInt(1, submissionID);
+            ResultSet res = pstmt.executeQuery();
+
+            while(res.next()){
+                String title = res.getString("title");
+                String abs = res.getString("abstract");
+                String mainAuthorsEmail = res.getString("mainAuthorsEmail");
+                String issn = res.getString("issn");
+
+                results.add(new Submission(submissionID, title, abs, mainAuthorsEmail, issn));
+            }
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+        Submission arrayResults[] = new Submission[results.size()];
+        return  results.toArray(arrayResults);
+    }
+
+
     public static Journal getJournal(String issn) {
         PreparedStatement pstmt = null;
         String query = "SELECT name, chiefEditorEmail FROM journals WHERE issn LIKE ?";
