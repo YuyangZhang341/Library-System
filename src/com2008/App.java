@@ -36,9 +36,6 @@ public class App {
             public void actionPerformed(ActionEvent e) {
                 newlogin.showLogIn();
 
-
-                //ReviewArticles.showReviewArticle();
-
                 frame.dispose();
             }
         });
@@ -64,10 +61,7 @@ public class App {
         frame.setContentPane(new App().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
-        Dimension screenDimensions = toolkit.getScreenSize();
-        frame.setSize(screenDimensions.width, screenDimensions.height);
+        frame.setSize(Util.WIDTH, Util.HEIGHT);
 
         frame.setVisible(true);
     }

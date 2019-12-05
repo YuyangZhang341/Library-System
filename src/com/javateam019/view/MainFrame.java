@@ -2,6 +2,7 @@ package com.javateam019.view;
 
 import com.sun.tools.javac.Main;
 import com2008.App;
+import com2008.Util;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,10 +17,7 @@ public class MainFrame {
         frame.setContentPane(new MainFrame().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
-        Dimension screenDimensions = toolkit.getScreenSize();
-        frame.setSize(screenDimensions.width, screenDimensions.height);
+        frame.setSize(Util.WIDTH, Util.HEIGHT);
 
         frame.setVisible(true);
     }

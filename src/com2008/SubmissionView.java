@@ -83,10 +83,7 @@ public class SubmissionView {
         frame.setContentPane(new SubmissionView(submissionId, userEmail, reviewerSubmissionId).mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
-        Dimension screenDimensions = toolkit.getScreenSize();
-        frame.setSize(screenDimensions.width, screenDimensions.height);
+        frame.setSize(Util.WIDTH, Util.HEIGHT);
         frame.setVisible(true);
     }
 }

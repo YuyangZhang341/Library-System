@@ -5,6 +5,11 @@ import java.awt.*;
 import java.sql.*;
 
 public class Util {
+    private static Toolkit toolkit = Toolkit.getDefaultToolkit();
+    private static Dimension screenDimensions = toolkit.getScreenSize();
+    public static int HEIGHT = screenDimensions.height - 40;
+    public static int WIDTH = screenDimensions.width;
+
     private static int countInString(char c, String s) {
         int counter = 0;
         for(int i = 0; i < s.length(); i++) {
