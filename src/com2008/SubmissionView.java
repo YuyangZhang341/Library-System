@@ -71,9 +71,11 @@ public class SubmissionView {
                 if(reviewCount < 3) {
                     JOptionPane.showMessageDialog(null, "Article chosen for review. You still need to review " + (3 - reviewCount) + " submissions.");
                     ChooseReviewsView.showChooseReviewsView(reviewerSubmissionId, userEmail);
+                    frame.dispose();
                 } else {
                     JOptionPane.showMessageDialog(null, "Article chosen for review. Thank you.");
                     App.showMainApp();
+                    frame.dispose();
                 }
             }
         });
