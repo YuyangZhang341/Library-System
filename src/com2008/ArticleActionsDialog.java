@@ -79,22 +79,7 @@ public class ArticleActionsDialog extends JDialog {
     }
 
     private void makeDecision(String decision) {
-        PreparedStatement pstmt = null;
-        String query = "INSERT INTO consideredSubmissions (submissionID, decision) VALUES(?,?)\n" +
-                "    ON DUPLICATE KEY UPDATE submissionID = ?, decision = ?";
-
-        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
-            pstmt = con.prepareStatement(query);
-
-            pstmt.setInt(1, submissionId);
-            pstmt.setString(2, decision);
-            pstmt.setInt(3, submissionId);
-            pstmt.setString(4, decision);
-
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        PublicationsController.setDecision(submissionId, decision);
 
         dispose();
         ((Window)d.getParent()).dispose();
