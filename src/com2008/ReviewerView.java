@@ -99,7 +99,6 @@ public class ReviewerView {
             }
         });
 
-
         logOutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

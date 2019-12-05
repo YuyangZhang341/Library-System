@@ -86,8 +86,13 @@ public class AuthorView {
         titleField.setText(title);
         String authorsFieldText = "";
         for (Author a : authors) {
-            authorsFieldText += a.getForenames() + " " + a.getSurname() + " ";
+            authorsFieldText += a.toString() + ", ";
         }
+
+        // delete last commas
+        if(!authorsFieldText.equals(""))
+            authorsFieldText = authorsFieldText.substring(0, authorsFieldText.length()-2);
+
         authorsField.setText(authorsFieldText);
         abstractArea.setText(abs);
 

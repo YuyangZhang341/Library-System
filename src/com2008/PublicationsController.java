@@ -778,9 +778,9 @@ public class PublicationsController {
 
     public static Review getReview(int submissionId, String email) {
         PreparedStatement pstmt = null;
-        String query = "SELECT r.reviewerID, r.summary, r.typographicalErrors, r.initialVerdict, r.submissionID, r.finalVerdict FROM reviews r\n" +
-                "    LEFT JOIN reviewers r2 on r.reviewerID = r2.reviewerID\n" +
-                "    WHERE email = ? AND r.submissionID = ?";
+        String query = "SELECT r.reviewerID, r.summary, r.typographicalErrors, r.initialVerdict, r.submissionID, r.finalVerdict, r2.email FROM reviews r\n" +
+                "    LEFT JOIN reviewers r2 ON r.reviewerID = r2.reviewerID AND r.submissionID = r2.submissionID\n" +
+                "    WHERE r2.email = ? AND r.submissionID = ?";
 
         try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
             pstmt = con.prepareStatement(query);
