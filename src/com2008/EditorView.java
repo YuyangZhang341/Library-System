@@ -126,32 +126,34 @@ public class EditorView {
             String conflictsCell = "";
 
             // make automatic decisions to articles which have no decision.
-            Review[] reviews = PublicationsController.getReviews(cSubmission.getSubmissionId());
+            if(cSubmission.getDecision().equals("")) {
+                Review[] reviews = PublicationsController.getReviews(cSubmission.getSubmissionId());
 
-            String verdict1 = reviews[0].getFinalVerdict();
-            String verdict2 = reviews[1].getFinalVerdict();
-            String verdict3 = reviews[2].getFinalVerdict();
+                String verdict1 = reviews[0].getFinalVerdict();
+                String verdict2 = reviews[1].getFinalVerdict();
+                String verdict3 = reviews[2].getFinalVerdict();
 
-            if(
-                (verdict1.equals("Strong Accept") && !verdict2.equals("Strong Reject") && !verdict3.equals("Strong Reject"))
-                || (verdict2.equals("Strong Accept") && !verdict1.equals("Strong Reject") && !verdict3.equals("Strong Reject"))
-                || (verdict3.equals("Strong Accept") && !verdict2.equals("Strong Reject") && !verdict1.equals("Strong Reject"))
-                || (verdict1.equals("Weak Accept") && verdict2.equals("Weak Accept") && !verdict3.equals("Strong Reject"))
-                || (verdict2.equals("Weak Accept") && verdict3.equals("Weak Accept") && !verdict1.equals("Strong Reject"))
-                || (verdict3.equals("Weak Accept") && verdict1.equals("Weak Accept") && !verdict2.equals("Strong Reject"))
-            ) {
-                PublicationsController.setDecision(cSubmission.getSubmissionId(), "accepted");
-                cSubmission.setDecision("accepted");
-            } else if(
-                (verdict1.equals("Strong Reject") && !verdict2.equals("Strong Accept") && !verdict3.equals("Strong Accept"))
-                || (verdict2.equals("Strong Reject") && !verdict1.equals("Strong Accept") && !verdict3.equals("Strong Accept"))
-                || (verdict3.equals("Strong Reject") && !verdict2.equals("Strong Accept") && !verdict1.equals("Strong Accept"))
-                || (verdict1.equals("Weak Reject") && verdict2.equals("Weak Reject") && !verdict3.equals("Strong Accept"))
-                || (verdict2.equals("Weak Reject") && verdict3.equals("Weak Reject") && !verdict1.equals("Strong Accept"))
-                || (verdict3.equals("Weak Reject") && verdict1.equals("Weak Reject") && !verdict2.equals("Strong Accept"))
-            ) {
-                PublicationsController.setDecision(cSubmission.getSubmissionId(), "rejected");
-                cSubmission.setDecision("rejected");
+                if(
+                        (verdict1.equals("Strong Accept") && !verdict2.equals("Strong Reject") && !verdict3.equals("Strong Reject"))
+                                || (verdict2.equals("Strong Accept") && !verdict1.equals("Strong Reject") && !verdict3.equals("Strong Reject"))
+                                || (verdict3.equals("Strong Accept") && !verdict2.equals("Strong Reject") && !verdict1.equals("Strong Reject"))
+                                || (verdict1.equals("Weak Accept") && verdict2.equals("Weak Accept") && !verdict3.equals("Strong Reject"))
+                                || (verdict2.equals("Weak Accept") && verdict3.equals("Weak Accept") && !verdict1.equals("Strong Reject"))
+                                || (verdict3.equals("Weak Accept") && verdict1.equals("Weak Accept") && !verdict2.equals("Strong Reject"))
+                ) {
+                    PublicationsController.setDecision(cSubmission.getSubmissionId(), "accepted");
+                    cSubmission.setDecision("accepted");
+                } else if(
+                        (verdict1.equals("Strong Reject") && !verdict2.equals("Strong Accept") && !verdict3.equals("Strong Accept"))
+                                || (verdict2.equals("Strong Reject") && !verdict1.equals("Strong Accept") && !verdict3.equals("Strong Accept"))
+                                || (verdict3.equals("Strong Reject") && !verdict2.equals("Strong Accept") && !verdict1.equals("Strong Accept"))
+                                || (verdict1.equals("Weak Reject") && verdict2.equals("Weak Reject") && !verdict3.equals("Strong Accept"))
+                                || (verdict2.equals("Weak Reject") && verdict3.equals("Weak Reject") && !verdict1.equals("Strong Accept"))
+                                || (verdict3.equals("Weak Reject") && verdict1.equals("Weak Reject") && !verdict2.equals("Strong Accept"))
+                ) {
+                    PublicationsController.setDecision(cSubmission.getSubmissionId(), "rejected");
+                    cSubmission.setDecision("rejected");
+                }
             }
 
             // look for conflicts
