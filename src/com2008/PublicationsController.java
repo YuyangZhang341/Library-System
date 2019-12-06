@@ -984,6 +984,32 @@ public class PublicationsController {
 
                 dbUpdate = pstmt2.executeUpdate();
 
+                // fetch all reviewers
+                PreparedStatement fetchReviewers = con.prepareStatement("SELECT email FROM reviewers WHERE submissionID = ?");
+                fetchReviewers.setInt(1, submissionId);
+
+                ResultSet fetchedReviewers = fetchReviewers.executeQuery();
+                ArrayList<String> emails = new ArrayList<String>();
+
+                while(fetchedReviewers.next()) {
+                    emails.add(fetchedReviewers.getString("email"));
+                }
+
+                // delete the reviewers
+                pstmt2 = con.prepareStatement("DELETE FROM reviewers WHERE  submissionID = ?");
+                pstmt2.setInt(1, submissionId);
+
+                dbUpdate = pstmt2.executeUpdate();
+
+                // if no roles left, delete the user from the system
+                for (String email : emails) {
+                    if (PublicationsController.getRoles(email).length == 0) {
+                        pstmt = con.prepareStatement("DELETE FROM users WHERE email = ?");
+                        pstmt.setString(1, email);
+                        pstmt.executeUpdate();
+                    }
+                }
+
                 // Delete the authors of the submission
                 query2 = "SELECT email FROM authors WHERE submissionID = ?";
 
@@ -1168,20 +1194,6 @@ public class PublicationsController {
             pstmt.setInt(3, reviewerId);
 
             pstmt.executeUpdate();
-
-            // delete the reviewer
-            pstmt = con.prepareStatement("DELETE FROM reviewers WHERE email = ? AND submissionID = ?");
-            pstmt.setString(1, userEmail);
-            pstmt.setInt(2, submissionId);
-
-            pstmt.executeUpdate();
-
-            // if no roles left, delete the user from the system
-            if (PublicationsController.getRoles(userEmail).length == 0) {
-                pstmt = con.prepareStatement("DELETE FROM users WHERE email = ?");
-                pstmt.setString(1, userEmail);
-                pstmt.executeUpdate();
-            }
 
         } catch (SQLException e) {
             e.printStackTrace();
