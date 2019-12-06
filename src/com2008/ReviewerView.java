@@ -60,6 +60,8 @@ public class ReviewerView {
             public void actionPerformed(ActionEvent e) {
                 criticismsTable.setModel(criticismsTableModel);
                 criticismsTableModel.addRow(new Object[]{""});
+
+                criticismsTable.setRowSelectionInterval(criticismsTable.getRowCount()-1, criticismsTable.getRowCount()-1);
             }
         });
 

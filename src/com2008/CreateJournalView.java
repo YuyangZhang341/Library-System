@@ -85,6 +85,8 @@ public class CreateJournalView {
             public void actionPerformed(ActionEvent e) {
                 editorsTable.setModel(editorsTableModel);
                 editorsTableModel.addRow(new Object[]{"", "", "", "", ""});
+
+                editorsTable.setRowSelectionInterval(editorsTable.getRowCount()-1, editorsTable.getRowCount()-1);
             }
         });
 

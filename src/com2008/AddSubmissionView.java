@@ -74,6 +74,8 @@ public class AddSubmissionView {
             public void actionPerformed(ActionEvent e) {
                 coauthorsTable.setModel(coauthorsTableModel);
                 coauthorsTableModel.addRow(new Object[]{"","","","",""});
+
+                coauthorsTable.setRowSelectionInterval(coauthorsTable.getRowCount()-1, coauthorsTable.getRowCount()-1);
             }
         });
 
