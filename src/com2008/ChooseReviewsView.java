@@ -1,5 +1,7 @@
 package com2008;
 
+import com.javateam019.view.ChangePaswd;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -15,6 +17,9 @@ public class ChooseReviewsView {
     private JScrollPane articlesScrollPane;
     private JTable articlesTable;
     private JLabel counterLabel;
+    private JButton changePasswordButton;
+    private JButton chooseForReviewButton;
+    private JButton viewButton;
 
     private String email;
     private int reviewerSubmissionId;
@@ -34,6 +39,41 @@ public class ChooseReviewsView {
             public void actionPerformed(ActionEvent e) {
                 App.showMainApp();
                 frame.dispose();
+            }
+        });
+
+        changePasswordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ChangePaswd.showChangeP(email);
+            }
+        });
+
+        viewButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int submissionId = Integer.parseInt(articlesTable.getValueAt(articlesTable.getSelectedRow(), 0).toString());
+                SubmissionView.showSubmissionsView(submissionId, email, reviewerSubmissionId);
+                frame.dispose();
+            }
+        });
+
+        chooseForReviewButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int submissionId = Integer.parseInt(articlesTable.getValueAt(articlesTable.getSelectedRow(), 0).toString());
+                PublicationsController.chooseSubmissionToReview(submissionId, email, reviewerSubmissionId);
+
+                int reviewCount = PublicationsController.getSubmission(reviewerSubmissionId).getReviewCount();
+                if(reviewCount < 3) {
+                    JOptionPane.showMessageDialog(null, "Article chosen for review. You still need to review " + (3 - reviewCount) + " submissions.");
+                    frame.dispose();
+                    ChooseReviewsView.showChooseReviewsView(reviewerSubmissionId, email);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Article chosen for review. Thank you.");
+                    frame.dispose();
+                    App.showMainApp();
+                }
             }
         });
     }
@@ -69,19 +109,6 @@ public class ChooseReviewsView {
                 return false;
             };
         };
-
-        // add a listener for double click
-        articlesTable.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent mouseEvent) {
-                JTable table =(JTable) mouseEvent.getSource();
-                Point point = mouseEvent.getPoint();
-                int row = table.rowAtPoint(point);
-                if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-                    int submissionId = Integer.parseInt(articlesTable.getValueAt(articlesTable.getSelectedRow(), 0).toString());
-                    ChooseArticleForReviewDialog.showChooseArticleForReviewDialog(submissionId, email, reviewerSubmissionId);
-                }
-            }
-        });
     }
 
     public static void main(String[] args) {
