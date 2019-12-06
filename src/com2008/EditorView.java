@@ -222,6 +222,7 @@ public class EditorView {
         } else {
             PublicationsController.publishEdition(journalIssn);
             loadConsideredSubmissionsTable();
+            counterLabel.setText(counter + "/8");
         }
     }
 
