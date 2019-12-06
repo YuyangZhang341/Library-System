@@ -39,14 +39,25 @@ public class AddSubmissionView {
     private JPanel scrollPanel;
     private JTextArea abstractTextArea;
     private JLabel surnameLabel;
-    private JTextField targetIssnTextField;
     private JButton removeRowButton;
+    private JComboBox issnComboBox;
     private DefaultTableModel coauthorsTableModel = new DefaultTableModel(new String[]{"Email", "Title", "Forenames", "Surname", "University Affiliation", "Password"}, 0);
 
     private static JFrame frame = new JFrame("Add Submission");
     private File pdfFile = null;
+    private Journal[] journals;
 
     public AddSubmissionView() {
+        // Fill the combobox
+        journals = PublicationsController.getJournals();
+        for(Journal journal : journals) {
+            String journalName = journal.getName();
+            if(journalName.length() > 15) {
+                journalName = journalName.substring(0, 15) + "...";
+            }
+            issnComboBox.addItem(new ComboItem(journalName + ", ISSN: " + journal.getIssn(), journal.getIssn()));
+        }
+
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -96,7 +107,7 @@ public class AddSubmissionView {
                                                   coauthorsTable.getValueAt(i, 4).toString(), coauthorsTable.getValueAt(i, 5).toString());
                     }
 
-                    Submission submission = new Submission(-1, articleTitleField.getText(), abstractTextArea.getText(), pdfFile, emailField.getText(), targetIssnTextField.getText());
+                    Submission submission = new Submission(-1, articleTitleField.getText(), abstractTextArea.getText(), pdfFile, emailField.getText(), ((ComboItem)issnComboBox.getSelectedItem()).getValue());
 
                     PublicationsController.addSubmission(submission, authors);
 
@@ -125,7 +136,7 @@ public class AddSubmissionView {
     }
 
     public boolean verifyFields() {
-        JTextField[] fields = {articleTitleField, emailField, forenamesField, passwordField, surnameField, targetIssnTextField, titleField, universityAffiliationField};
+        JTextField[] fields = {articleTitleField, emailField, forenamesField, passwordField, surnameField, titleField, universityAffiliationField};
 
         // set everything to white (if previously was red)
         for(JTextField field : fields) {
@@ -174,13 +185,6 @@ public class AddSubmissionView {
             return false;
         }
 
-        // check if issn exisits
-        if(! Util.issnExists(targetIssnTextField.getText())) {
-            targetIssnTextField.setBackground(Color.red);
-            JOptionPane.showMessageDialog(null,"No journal with such ISSN.");
-            return false;
-        }
-
         return true;
     }
 
@@ -194,5 +198,28 @@ public class AddSubmissionView {
 
     public static void main(String[] args) {
         showAddSubmissionView();
+    }
+}
+
+class ComboItem {
+    private String key;
+    private String value;
+
+    public ComboItem(String key, String value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return key;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public String getValue() {
+        return value;
     }
 }
