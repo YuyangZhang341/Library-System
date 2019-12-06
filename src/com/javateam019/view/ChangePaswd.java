@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import com2008.Util;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
 public class ChangePaswd extends JDialog {
@@ -41,7 +42,25 @@ public class ChangePaswd extends JDialog {
 
         confirmButton1.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                changePasswordPerformed(e);
+                if(!Util.checkForbiddenCharacters(userNameTextField.getText())) {
+                    JOptionPane.showMessageDialog(d,"Characters ; : / \\ are forbidden in the email field.");
+                } else if(!Util.checkForbiddenCharacters(new String(newPasswordField1.getPassword()))) {
+                    JOptionPane.showMessageDialog(d,"Characters ; : / \\ are forbidden in the password fields.");
+                } else if(!Util.checkForbiddenCharacters(new String(newPasswordField2.getPassword()))) {
+                    JOptionPane.showMessageDialog(d,"Characters ; : / \\ are forbidden in the password fields.");
+                } else if(!Util.checkForbiddenCharacters(new String(oldPasswordField.getPassword()))) {
+                    JOptionPane.showMessageDialog(d,"Characters ; : / \\ are forbidden in the password fields.");
+                } else if(userNameTextField.getText().equals("")){
+                    JOptionPane.showMessageDialog(d,"The email field is empty.");
+                } else if((new String(newPasswordField1.getPassword())).equals("")){
+                    JOptionPane.showMessageDialog(d,"The new password field 1 is empty.");
+                } else if((new String(newPasswordField2.getPassword())).equals("")){
+                    JOptionPane.showMessageDialog(d,"The new password field 2 is empty.");
+                } else if((new String(oldPasswordField.getPassword())).equals("")){
+                    JOptionPane.showMessageDialog(d,"The old password field is empty.");
+                } else {
+                    changePasswordPerformed(e);
+                }
             }
         });
 

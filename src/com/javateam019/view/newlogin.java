@@ -46,7 +46,17 @@ public class newlogin {
 
         confirmButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                loginActionPerformed(e);
+                if(!Util.checkForbiddenCharacters(userNameTxt.getText())) {
+                    JOptionPane.showMessageDialog(null,"Characters ; : / \\ are forbidden in the email field.");
+                } else if(!Util.checkForbiddenCharacters(new String(passwordTxt.getPassword()))) {
+                    JOptionPane.showMessageDialog(null,"Characters ; : / \\ are forbidden in the password field.");
+                } else if(userNameTxt.getText().equals("")){
+                    JOptionPane.showMessageDialog(null,"The email field is empty.");
+                } else if((new String(passwordTxt.getPassword())).equals("")){
+                    JOptionPane.showMessageDialog(null,"The password field is empty.");
+                } else {
+                    loginActionPerformed(e);
+                }
             }
         });
 
