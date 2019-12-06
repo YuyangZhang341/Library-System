@@ -85,9 +85,10 @@ public class EditorView {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (isChiefEditor) {
-                    ChangeMainEditorDialog.showChangeMainEditorDialog(journalIssn, userEmail);
+                    ChangeMainEditorDialog.showChangeMainEditorDialog(journalIssn, userEmail, true);
+                } else {
+                    retireButtonPressed(userEmail);
                 }
-                retireButtonPressed(userEmail);
             }
         });
 

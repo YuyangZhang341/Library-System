@@ -15,8 +15,14 @@ public class ChangeMainEditorDialog extends JDialog {
 
     private String journalIssn;
     private String userEmail;
+    private boolean retireAfterwards = false;
 
     static ChangeMainEditorDialog d;
+
+    public ChangeMainEditorDialog(String journalIssn, String userEmail, boolean retireAfterwards) {
+        this(journalIssn, userEmail);
+        this.retireAfterwards = retireAfterwards;
+    }
 
     public ChangeMainEditorDialog(String journalIssn, String userEmail) {
         this.journalIssn = journalIssn;
@@ -59,9 +65,37 @@ public class ChangeMainEditorDialog extends JDialog {
     private void onOK() {
         if (editorsTable.getSelectedRow() != -1) {
             changeChiefEditor(journalIssn);
+
+            if(retireAfterwards) {
+                String query = "DELETE FROM editors WHERE email = ?";
+                PreparedStatement pstmt = null;
+
+                try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+                    pstmt = con.prepareStatement(query);
+                    pstmt.setString(1, userEmail);
+
+                    int res = pstmt.executeUpdate();
+                    System.out.println(res);
+
+                    if (PublicationsController.getRoles(userEmail).length == 0) {
+                        query = "DELETE FROM users WHERE email = ?";
+                        pstmt = con.prepareStatement(query);
+                        pstmt.setString(1,userEmail);
+                        res = pstmt.executeUpdate();
+                        System.out.println(res);
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
             dispose();
             ((Window)d.getParent()).dispose();
-            EditorView.showEditorView(journalIssn, userEmail);
+            if(retireAfterwards) {
+                App.showMainApp();
+            } else {
+                EditorView.showEditorView(journalIssn, userEmail);
+            }
         } else {
             JOptionPane.showMessageDialog(null, "Please select an editor.");
         }
@@ -82,6 +116,14 @@ public class ChangeMainEditorDialog extends JDialog {
                 model.addRow(new Object[]{editor.getTitle(), editor.getForenames(), editor.getSurname(), editor.getEmail()});
             }
         }
+    }
+
+    public static void showChangeMainEditorDialog(String journalIssn, String userEmail, boolean retireAfterwards) {
+        d = new ChangeMainEditorDialog(journalIssn, userEmail, retireAfterwards);
+        d.pack();
+        d.setSize(400,300);
+        d.setLocationRelativeTo(null);
+        d.setVisible(true);
     }
 
     public static void showChangeMainEditorDialog(String journalIssn, String userEmail) {
