@@ -36,10 +36,10 @@ public class Util {
         for(int i = 0; i < table.getColumnCount(); i++) {
             for(int j = 0; j < table.getRowCount(); j++) {
                 if(table.getValueAt(j, i) == null || table.getValueAt(j, i).toString().equals("")) {
-                    JOptionPane.showMessageDialog(parentComponent,"Field in row " + j + ", column " + i + " in the table is empty. (Make sure you finished editing the table. Press enter inside a cell to finish editing it.)");
+                    JOptionPane.showMessageDialog(parentComponent,"Field in row " + j+1 + ", column " + i+1 + " in the table is empty. (Make sure you finished editing the table. Press enter inside a cell to finish editing it.)");
                     return false;
                 } else if(! checkForbiddenCharacters(table.getValueAt(j, i).toString())) {
-                    JOptionPane.showMessageDialog(parentComponent,"Field in row " + j + ", column " + i + " contains a forbidden character (; : / \\)");
+                    JOptionPane.showMessageDialog(parentComponent,"Field in row " + j+1 + ", column " + i+1 + " contains a forbidden character (; : / \\)");
                     return false;
                 }
             }
@@ -55,7 +55,7 @@ public class Util {
         // check emails in the table
         for(int i = 0; i < table.getRowCount(); i++) {
             if(! Util.verifyEmail(table.getValueAt(i, emailColumn).toString())) {
-                JOptionPane.showMessageDialog(parentComponent,"Email in row " + i + " in the table is incorrect.");
+                JOptionPane.showMessageDialog(parentComponent,"Email in row " + i+1 + " in the table is incorrect.");
                 return false;
             }
         }

@@ -220,9 +220,21 @@ public class EditorView {
         } else if (counter == 0) {
             JOptionPane.showMessageDialog(null,"Accept at least one article.");
         } else {
-            PublicationsController.publishEdition(journalIssn);
-            loadConsideredSubmissionsTable();
-            counterLabel.setText(counter + "/8");
+            String conflicts = "";
+            for(int i = 0; i < submissionsTable.getRowCount(); i++) {
+                if(submissionsTable.getValueAt(i, 0).toString().equals("accepted")) {
+                    conflicts += submissionsTable.getValueAt(i, 5).toString();
+                }
+            }
+
+            if(conflicts.length() != 0) {
+                JOptionPane.showMessageDialog(null,"Conflict of interest detected.");
+            } else {
+                PublicationsController.publishEdition(journalIssn);
+                loadConsideredSubmissionsTable();
+                counter = 0;
+                counterLabel.setText(counter + "/8");
+            }
         }
     }
 

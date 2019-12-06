@@ -52,8 +52,8 @@ public class AddSubmissionView {
         journals = PublicationsController.getJournals();
         for(Journal journal : journals) {
             String journalName = journal.getName();
-            if(journalName.length() > 15) {
-                journalName = journalName.substring(0, 15) + "...";
+            if(journalName.length() > 20) {
+                journalName = journalName.substring(0, 20) + "...";
             }
             issnComboBox.addItem(new ComboItem(journalName + ", ISSN: " + journal.getIssn(), journal.getIssn()));
         }

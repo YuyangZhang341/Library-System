@@ -127,7 +127,7 @@ public class AddEditorsDialog extends JDialog {
     public static void showAddEditorsDialog(String journalIssn) {
         d = new AddEditorsDialog(journalIssn);
         d.pack();
-        d.setSize(400,300);
+        d.setSize(500,300);
         d.setLocationRelativeTo(null);
         d.setVisible(true);
     }
