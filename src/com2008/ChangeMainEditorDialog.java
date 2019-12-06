@@ -57,10 +57,15 @@ public class ChangeMainEditorDialog extends JDialog {
     }
 
     private void onOK() {
-        changeChiefEditor(journalIssn);
-        dispose();
-        ((Window)d.getParent()).dispose();
-        EditorView.showEditorView(journalIssn, userEmail);
+        if (editorsTable.getSelectedRow() != -1) {
+            changeChiefEditor(journalIssn);
+            dispose();
+            ((Window)d.getParent()).dispose();
+            EditorView.showEditorView(journalIssn, userEmail);
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select an editor.");
+        }
+
     }
 
     private void onCancel() {
