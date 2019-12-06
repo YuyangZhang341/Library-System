@@ -97,7 +97,7 @@ public class ChangeMainEditorDialog extends JDialog {
                 EditorView.showEditorView(journalIssn, userEmail);
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Please select an editor.");
+            JOptionPane.showMessageDialog(d, "Please select an editor.");
         }
 
     }
