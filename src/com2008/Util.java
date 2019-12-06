@@ -1,5 +1,7 @@
 package com2008;
 
+import org.jasypt.util.password.StrongPasswordEncryptor;
+
 import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
@@ -82,6 +84,46 @@ public class Util {
 
             return count >= 1;
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public static boolean checkUser(String email, String password) {
+        try (Connection con = DriverManager.getConnection("jdbc:mysql://stusql.dcs.shef.ac.uk/team019", "team019", "fd0751c6")) {
+            // check if an account already exists
+            PreparedStatement pstmt2 = con.prepareStatement("SELECT COUNT(email) AS count FROM users WHERE email = ?");
+
+            pstmt2.setString(1, email);
+
+            ResultSet res = pstmt2.executeQuery();
+            int count = 0;
+            while (res.next()) {
+                count = Integer.parseInt(res.getString("count"));
+            }
+
+            if(count == 0) {
+                return true;
+            }
+
+            //check if password matches
+            StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
+            String sql="SELECT * FROM users WHERE email = ?";
+            PreparedStatement pstmt = con.prepareStatement(sql);
+            pstmt.setString(1, email);
+            ResultSet rs = pstmt.executeQuery();
+            if(rs.next()){
+                String encryptedPassword = rs.getString("password");
+                if (passwordEncryptor.checkPassword(password, encryptedPassword)) {
+                    //correct
+                    return true;
+                } else {
+                    //wrong
+                    return false;
+                }
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

@@ -185,6 +185,14 @@ public class AddSubmissionView {
             return false;
         }
 
+        // check if password matches
+        String email = emailField.getText();
+        String password = new String(this.passwordField.getPassword());
+        if(!Util.checkUser(email, password)) {
+            JOptionPane.showMessageDialog(null,"Main author's account already exists and the password is incorrect.");
+            return false;
+        }
+
         return true;
     }
 
@@ -198,28 +206,5 @@ public class AddSubmissionView {
 
     public static void main(String[] args) {
         showAddSubmissionView();
-    }
-}
-
-class ComboItem {
-    private String key;
-    private String value;
-
-    public ComboItem(String key, String value) {
-        this.key = key;
-        this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return key;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public String getValue() {
-        return value;
     }
 }
