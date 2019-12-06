@@ -95,8 +95,9 @@ public class ChangePaswd extends JDialog {
 //            int changeNum = userDao.changePassword(con,newUser);
             if (recentUser != null) {
 
-                String sql="select * from users where email='"+userName+"' ";
+                String sql="select * from users where email = ?";
                 PreparedStatement pstmt = con.prepareStatement(sql);
+                pstmt.setString(1, userName);
                 rs = pstmt.executeQuery();
                 //check the user typed in text box and check if password is correct
                 if(rs.next()){
