@@ -96,8 +96,9 @@ public class newlogin {
             User recentUser = userDao.login(con,  user);
             // find the user if not null
             if (recentUser != null) {
-                String sql="select * from users where email='"+userName+"' ";
+                String sql="select * from users where email = ?";
                 PreparedStatement pstmt = con.prepareStatement(sql);
+                pstmt.setString(1, userName);
                 rs = pstmt.executeQuery();
                 //check the user typed in text box and check if password is correct
                 if(rs.next()){
