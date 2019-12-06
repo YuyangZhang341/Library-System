@@ -996,6 +996,7 @@ public class PublicationsController {
                 }
 
                 // delete the reviewers
+
                 pstmt2 = con.prepareStatement("DELETE FROM reviewers WHERE  submissionID = ?");
                 pstmt2.setInt(1, submissionId);
 
