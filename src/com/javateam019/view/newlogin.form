@@ -23,6 +23,7 @@
             <properties>
               <doubleBuffered value="false"/>
               <font size="22"/>
+              <icon value="images/loginSign.png"/>
               <text value="Log In"/>
             </properties>
           </component>
